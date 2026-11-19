@@ -104,7 +104,7 @@ Keycloak gère identités, rôles et groupes. Le Data Hub filtre ses pages et **
 | Suite | Commande | Contenu |
 |---|---|---|
 | Dagster + dbt | `make test-dagster` | 58 tests, dont de **vrais runs** du pipeline (ingestion → dbt → tests), l'idempotence, le backfill d'une plage en un run, les artefacts dbt docs, le sensor de fichiers et les **scénarios de panne** de la source simulée |
-| Interface | `make test-ui` | 95 tests : RBAC, auth OIDC, clients, lineage de colonnes sur le vrai SQL compilé, **chaque page rendue pour chaque rôle**, audit des actions, traces OpenTelemetry |
+| Interface | `make test-ui` | 97 tests : RBAC, auth OIDC, clients, lineage de colonnes sur le vrai SQL compilé, **chaque page rendue pour chaque rôle**, audit des actions, traces OpenTelemetry |
 | Configuration + déploiement | `make test-config` | 96 tests : Compose (ports, images épinglées, mémoire, variables, Docker Desktop, SELinux), bootstrap SUSE (SLES 15/16, Leap 16), realm Keycloak ↔ RBAC, hygiène des secrets, routage Caddy, dashboards, **déployeur pull** (17 scénarios) |
 | Alertes | `promtool test rules` | Tests unitaires des règles Prometheus |
 | Intégration | `make test-integration` | Dagster réel sur PostgreSQL : runs, ré-exécution, backfill, schedules/sensors, **pipeline créé depuis l'UI**, migrations et moindre privilège |

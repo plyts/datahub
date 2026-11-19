@@ -91,6 +91,11 @@ def test_dbt_artifacts_missing_dir(tmp_path):
         ('Catalog Error: Table with name "x" does not exist', "Erreur SQL / dbt"),
         ("IO Error: Could not set lock on file", "Verrou DuckDB / concurrence"),
         ("psycopg.OperationalError: connection refused", "Connexion / réseau"),
+        (
+            "datahub_pipelines.generators.SimulatedSourceError: Simulated source unavailable: HTTP 503 (attempt 4)",
+            "Connexion / réseau",
+        ),
+        ("HTTPError: 502 Bad Gateway", "Connexion / réseau"),
         ("Blocking check 'customers_email_completeness' failed", "Qualité des données (test dbt / check)"),
         ("Killed: out of memory", "Ressources (mémoire / disque)"),
         ("KeyError: 'amount'", "Erreur Python"),

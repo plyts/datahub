@@ -22,7 +22,8 @@ RULES: list[tuple[str, str, re.Pattern]] = [
         "high",
         re.compile(
             r"connection refused|could not connect|timed? ?out|name or service not known|unreachable|"
-            r"connection reset|ssl",
+            r"connection reset|ssl|\bhttp 50[234]\b|\b50[234] (bad gateway|service unavailable|gateway)|"
+            r"(service|source) unavailable|bad gateway",
             re.I,
         ),
     ),
