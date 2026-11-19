@@ -147,6 +147,8 @@ class FakeDagster:
 
     def launch_job(self, job_name, run_config=None, tags=None, partition_key=None):
         run = _run(job_name, "QUEUED", 0, 0, partition_key)
+        run["tags"].update(tags or {})
+        run["run_config"] = run_config or {}
         self.launched.insert(0, run)
         return run["runId"]
 

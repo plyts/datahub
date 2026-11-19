@@ -3,6 +3,7 @@
         materialized='incremental',
         unique_key='order_id',
         incremental_strategy='delete+insert',
+        pre_hook="{% if is_incremental() %}delete from {{ this }} where {{ incremental_window('order_date') }}{% endif %}",
         on_schema_change='append_new_columns',
         tags=['incremental', 'partitioned']
     )
@@ -10,7 +11,9 @@
 
 -- Table de faits des commandes, enrichie des paiements.
 -- Incrémentale : Dagster passe la fenêtre de partition (vars min_date / max_date)
--- ce qui rend les backfills idempotents.
+-- ce qui rend les backfills idempotents. Le pre_hook vide toute la fenêtre avant
+-- l'insertion : une commande disparue de la source (re-run d'une partition corrigée)
+-- disparaît aussi de la table, au lieu d'y rester orpheline.
 with orders as (
     select * from {{ ref('stg_orders') }}
     {% if is_incremental() %}

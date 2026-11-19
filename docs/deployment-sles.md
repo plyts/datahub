@@ -7,20 +7,23 @@
 | vCPU | 4 à 6 |
 | RAM | 12 à 16 Go |
 | Disque SSD | 100 à 150 Go (dynamique) |
-| OS | SUSE Linux Enterprise Server 15 SP6 ou plus récent |
+| OS | SUSE Linux Enterprise Server 16 (ou 15 SP7), ou openSUSE Leap 16 (gratuit, même base que SLES 16) |
 | Réseau | Carte en accès par pont (bridged) pour être joignable sur le LAN, ou NAT avec redirection des ports 80/443 |
 
-Dans VirtualBox : *Nouvelle* → type Linux / openSUSE (64-bit) → RAM et CPU ci-dessus → disque VDI → *Réseau* : « Accès par pont ». Installez SLES avec le rôle *Text Mode* et enregistrez le système (SUSEConnect).
+Dans VirtualBox : *Nouvelle* → type Linux / openSUSE (64-bit) → RAM et CPU ci-dessus → disque VDI → *Réseau* : « Accès par pont ». Installez le système sans interface graphique et, pour SLES, enregistrez-le (code d'essai ou d'abonnement). Le guide pas à pas Windows + VirtualBox détaille chaque écran.
 
 ## 2. Préparation du système
 
 ```bash
 sudo zypper install -y git make
-git clone https://github.com/plyts/datahub /opt/datahub && cd /opt/datahub
-sudo ./scripts/bootstrap-sles.sh $USER     # Docker Engine + Compose, rotation des logs, pare-feu 80/443, sysctl
+sudo git clone https://github.com/plyts/datahub /opt/datahub
+sudo chown -R "$USER": /opt/datahub && cd /opt/datahub
+sudo ./scripts/bootstrap-sles.sh "$USER"   # Docker + Compose, logs, pare-feu SSH/80/443, sysctl, SELinux
 # se déconnecter / reconnecter pour appartenir au groupe docker
 docker compose version                      # v2.17 ou plus récent
 ```
+
+SLES 16 et Leap 16 activent **SELinux en mode enforcing**. Le script étiquette `/opt/datahub` en `container_file_t` (règle persistante) pour que les conteneurs puissent lire les fichiers de configuration montés ; Alloy et node-exporter, qui lisent le socket Docker et le système de fichiers de l'hôte, tournent avec `label=disable`. Le Data Hub doit donc être cloné dans `/opt/datahub` (ou dans le dossier passé via `DATAHUB_DIR`).
 
 ## 3. Nom d'hôte
 

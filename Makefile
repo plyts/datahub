@@ -7,7 +7,7 @@ COMPOSE := docker compose --env-file envs/$(ENV).env --env-file .env $(COMPOSE_F
 PY ?= python3
 
 .DEFAULT_GOAL := help
-.PHONY: help secrets config build up down restart ps logs seed-demo-users smoke deploy rollback backup restore \
+.PHONY: help secrets config build up down restart ps logs seed-demo-users smoke deploy rollback backup restore deployer-status \
         lint test test-dagster test-ui test-config test-integration test-e2e dbt-parse dbt-build dashboards clean
 
 help: ## Show this help
@@ -73,8 +73,8 @@ test-dagster: ## Dagster + dbt tests (real pipeline runs on DuckDB)
 test-ui: ## Streamlit Data Hub unit tests (every page, every role)
 	cd services/datahub-ui && $(PY) -m pytest -q tests/unit
 
-test-config: ## Static checks of infrastructure configuration
-	$(PY) -m pytest -q tests/config
+test-config: ## Static checks of infrastructure configuration + deployer scenarios
+	$(PY) -m pytest -q tests/config tests/deployer
 
 test-integration: ## UI integration tests (needs DAGSTER_GRAPHQL_URL / DATAHUB_TEST_PG_URL)
 	cd services/datahub-ui && $(PY) -m pytest -q tests/integration
@@ -86,6 +86,9 @@ test: test-config test-dagster test-ui ## All tests that do not need a running s
 
 dashboards: ## Regenerate the Grafana dashboards from services/grafana/build_dashboards.py
 	$(PY) services/grafana/build_dashboards.py
+
+deployer-status: ## Status of the pull-based deployer on this machine
+	$(PY) scripts/deployer.py --env $(ENV) --state-dir /var/lib/datahub-deployer/$(ENV) status
 
 clean: ## Remove local caches
 	find . -name __pycache__ -type d -prune -exec rm -rf {} + ; rm -rf services/dagster/dbt_project/target services/dagster/dbt_project/logs

@@ -103,9 +103,9 @@ Keycloak gère identités, rôles et groupes. Le Data Hub filtre ses pages et **
 
 | Suite | Commande | Contenu |
 |---|---|---|
-| Dagster + dbt | `make test-dagster` | 44 tests, dont de **vrais runs** du pipeline (ingestion → dbt → tests), l'idempotence, le backfill d'une plage en un run, les artefacts dbt docs, le sensor de fichiers |
-| Interface | `make test-ui` | 86 tests : RBAC, auth OIDC, clients, lineage de colonnes sur le vrai SQL compilé, **chaque page rendue pour chaque rôle**, audit des actions, traces OpenTelemetry |
-| Configuration | `make test-config` | 64 tests : Compose (ports, images épinglées, mémoire, variables), realm Keycloak ↔ RBAC, hygiène des secrets, routage Caddy, dashboards |
+| Dagster + dbt | `make test-dagster` | 58 tests, dont de **vrais runs** du pipeline (ingestion → dbt → tests), l'idempotence, le backfill d'une plage en un run, les artefacts dbt docs, le sensor de fichiers et les **scénarios de panne** de la source simulée |
+| Interface | `make test-ui` | 95 tests : RBAC, auth OIDC, clients, lineage de colonnes sur le vrai SQL compilé, **chaque page rendue pour chaque rôle**, audit des actions, traces OpenTelemetry |
+| Configuration + déploiement | `make test-config` | 95 tests : Compose (ports, images épinglées, mémoire, variables, Docker Desktop, SELinux), bootstrap SUSE (SLES 15/16, Leap 16), realm Keycloak ↔ RBAC, hygiène des secrets, routage Caddy, dashboards, **déployeur pull** (16 scénarios) |
 | Alertes | `promtool test rules` | Tests unitaires des règles Prometheus |
 | Intégration | `make test-integration` | Dagster réel sur PostgreSQL : runs, ré-exécution, backfill, schedules/sensors, **pipeline créé depuis l'UI**, migrations et moindre privilège |
 | E2E | `make test-e2e` | Stack complète via Caddy : SSO Keycloak pour chaque rôle, RBAC de l'UI Dagster, pipeline exécuté à travers la plateforme |

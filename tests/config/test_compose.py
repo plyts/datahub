@@ -91,11 +91,11 @@ def test_oauth2_proxy_restricts_dagster_to_engineers():
     assert SERVICES["oauth2-proxy"]["environment"]["OAUTH2_PROXY_ALLOWED_ROLES"] == "ADMIN,DATA_ENGINEER"
 
 
-@pytest.mark.parametrize("env", ["dev", "staging", "prod"])
+@pytest.mark.parametrize("env", ["dev", "staging", "prod", "desktop"])
 def test_environment_files(env):
     values = dict(line.split("=", 1) for line in (ROOT / "envs" / f"{env}.env").read_text().splitlines()
                   if "=" in line and not line.startswith("#"))
-    assert values["DATAHUB_ENV"] == env
+    assert values["DATAHUB_ENV"] == {"desktop": "dev"}.get(env, env)
     assert values["DATAHUB_PUBLIC_URL"].endswith(values["DATAHUB_HOST"])
     assert values["DATAHUB_AUTH_MODE"] == "oidc"
     assert (ROOT / "compose" / f"docker-compose.{env}.yml").exists()
@@ -108,3 +108,31 @@ def test_locally_built_images_are_never_pulled():
     for name, svc in SERVICES.items():
         if svc["image"] in built and "build" not in svc:
             assert svc.get("pull_policy") == "never", name
+
+
+def test_docker_desktop_override_drops_rslave():
+    override = yaml.safe_load((ROOT / "compose/docker-compose.desktop.yml").read_text())
+    assert override["services"]["node-exporter"]["volumes"] == ["/:/host:ro"]
+    assert "rslave" in str(SERVICES["node-exporter"]["volumes"])  # kept on Linux servers
+
+
+def test_host_level_mounts_run_unconfined_on_selinux_hosts():
+    """SLES 16 / Leap 16 enforce SELinux: a confined container cannot read the Docker socket or /."""
+    for name, svc in SERVICES.items():
+        mounts = [str(v).split(":")[0] for v in svc.get("volumes", [])]
+        if any(m in ("/", "/var/run", "/var/run/docker.sock", "/sys") for m in mounts):
+            assert svc.get("privileged") or "label=disable" in svc.get("security_opt", []), name
+
+
+def test_docker_desktop_override_keeps_dev_debug_ports_on_localhost():
+    dev = yaml.safe_load((ROOT / "compose/docker-compose.dev.yml").read_text())["services"]
+    desktop = yaml.safe_load((ROOT / "compose/docker-compose.desktop.yml").read_text())["services"]
+    dev_ports = {name: svc["ports"] for name, svc in dev.items() if "ports" in svc}
+    desktop_ports = {name: svc["ports"] for name, svc in desktop.items() if "ports" in svc}
+    assert desktop_ports == dev_ports
+    assert all(port.startswith("127.0.0.1:") for ports in desktop_ports.values() for port in ports)
+
+
+def test_shell_scripts_keep_lf_line_endings_on_windows():
+    attributes = (ROOT / ".gitattributes").read_text()
+    assert "* text=auto eol=lf" in attributes

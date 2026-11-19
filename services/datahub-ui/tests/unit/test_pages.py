@@ -71,3 +71,23 @@ def test_failed_runs_become_classified_incidents():
     assert not at.exception
     incidents = fake_clients()["db"].list_incidents()
     assert incidents and incidents[0]["category"] == "Erreur SQL / dbt"
+
+
+def test_engineer_launches_a_fault_scenario():
+    from datahub_ui.testing.fakes import fake_clients
+
+    at = run_page("m01_pipelines", "DATA_ENGINEER")
+    at.selectbox(key="p01_fault").set_value("negative_amounts").run()
+    at.button(key="p01_launch").click().run()
+    assert not at.exception
+    run = fake_clients()["dagster"].launched[0]
+    assert run["run_config"] == {"ops": {"raw__orders": {"config": {"fault": "negative_amounts"}}}}
+    assert run["tags"]["datahub/scenario"] == "negative_amounts"
+    assert fake_clients()["db"].audit_rows[0]["details"]["scenario"] == "negative_amounts"
+
+
+def test_fault_scenarios_are_hidden_in_production(monkeypatch):
+    monkeypatch.setenv("DATAHUB_ENV", "prod")
+    at = run_page("m01_pipelines", "DATA_ENGINEER")
+    assert not at.exception
+    assert not [s for s in at.selectbox if s.key == "p01_fault"]

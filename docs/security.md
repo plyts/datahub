@@ -52,7 +52,8 @@
 - Un seul point d'exposition (Caddy). PostgreSQL, Dagster, Prometheus, Loki, Keycloak (port de management), etc. ne sont pas joignables depuis l'extérieur.
 - En-têtes : `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`, sans en-tête `Server` (testés en E2E).
 - HTTPS : voir [deployment-sles.md](deployment-sles.md#4-http-ou-https). En prod, `COOKIE_SECURE=true`.
-- Pare-feu de la VM : seuls 80/443 sont ouverts (`bootstrap-sles.sh`).
+- Pare-feu de la VM : seuls SSH, 80 et 443 sont ouverts (`bootstrap-sles.sh`).
+- SELinux reste en mode enforcing sur SLES 16 / Leap 16 : seul `/opt/datahub` est étiqueté pour les conteneurs ; Alloy et node-exporter (socket Docker, système de fichiers de l'hôte) tournent sans confinement SELinux, cAdvisor est privilégié.
 
 ## Points d'attention
 

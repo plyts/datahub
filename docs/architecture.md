@@ -67,7 +67,7 @@ reference/country_codes (seed dbt) ───────────────
 | Sensor | `refresh_docs_after_daily_success` | Après chaque succès du pipeline quotidien → `dbt docs generate` + publication du catalogue |
 | Sensor | `failure_notification_sensor` | Échec de run → webhook (Mattermost / Slack / Rocket.Chat) et/ou e-mail |
 | Fraîcheur | `FreshnessPolicy` | Données brutes J-1 avant 09:00 ; marts de moins de 26 h |
-| Retries | `RetryPolicy` + `run_retries` | Ingestion : 3 tentatives avec backoff exponentiel ; dbt : 1 ; runs tués par l'infra : 1 |
+| Retries | `RetryPolicy` + `run_retries` | Ingestion : 3 tentatives avec backoff exponentiel ; dbt : reprise uniquement sur verrou DuckDB (un test en échec n'est jamais relancé) ; runs tués par l'infra : 1 |
 
 ## Observabilité
 

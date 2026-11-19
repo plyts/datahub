@@ -1,0 +1,18 @@
+# Docker Desktop (Windows / macOS) override — `make up ENV=desktop`.
+# Differences with a Linux server:
+#  - node-exporter: "rslave" mount propagation is not supported by Docker Desktop
+#    ("path / is mounted on / but it is not a shared or slave mount") -> plain read-only mount.
+#    Host metrics then describe the Docker Desktop Linux VM, not Windows itself.
+#  - debug ports bound to 127.0.0.1 only (never exposed on the network).
+services:
+  postgres:
+    ports: ["127.0.0.1:5432:5432"]   # integration tests (make test-integration)
+  node-exporter:
+    volumes:
+      - /:/host:ro
+  dagster-webserver:
+    ports: ["127.0.0.1:3000:3000"]   # unauthenticated GraphQL: local integration tests only
+  prometheus:
+    ports: ["127.0.0.1:9090:9090"]
+  loki:
+    ports: ["127.0.0.1:3100:3100"]

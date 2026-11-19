@@ -9,6 +9,7 @@ import streamlit as st
 from datahub_ui.db.repository import ValidationError
 from datahub_ui.lineage import build_graph, to_dot
 from datahub_ui.rbac import Perm
+from datahub_ui.scenarios import FAULTS, fault_run_config, merge_run_config
 from datahub_ui.ui import badge, denied, fmt_duration, fmt_ts, header, safe
 
 PARTITIONED_JOBS = {"daily_partition_job"}
@@ -65,6 +66,16 @@ def _jobs_tab(ctx, jobs, assets) -> None:
     if partitioned:
         day = st.date_input("Partition (jour)", value=date.today() - timedelta(days=1), key="p01_partition")
         partition = day.isoformat()
+    fault = "none"
+    if job in PARTITIONED_JOBS and ctx.settings.env != "prod":
+        fault = st.selectbox(
+            "Scénario de test (source simulée)",
+            list(FAULTS),
+            format_func=lambda k: f"{k} — {FAULTS[k]}",
+            key="p01_fault",
+            help="Injecte une panne dans la source simulée pour répéter un scénario d'exception ou d'erreur. "
+            "Indisponible en production.",
+        )
     config_text = st.text_area("Configuration du run (JSON, optionnel)", value="{}", key="p01_config", height=80)
     if st.button("🚀 Lancer", type="primary", key="p01_launch"):
         try:
@@ -73,11 +84,13 @@ def _jobs_tab(ctx, jobs, assets) -> None:
             st.error(f"JSON invalide : {exc}")
             return
         ctx.user.require(Perm.PIPELINES_RUN)
+        run_config = merge_run_config(run_config, fault_run_config(fault))
+        tags = {"datahub/user": ctx.user.username}
+        if fault != "none":
+            tags["datahub/scenario"] = fault
         try:
-            run_id = ctx.dagster.launch_job(
-                job, run_config=run_config, partition_key=partition, tags={"datahub/user": ctx.user.username}
-            )
-            ctx.audit("pipeline.launch", job, {"run_id": run_id, "partition": partition})
+            run_id = ctx.dagster.launch_job(job, run_config=run_config, partition_key=partition, tags=tags)
+            ctx.audit("pipeline.launch", job, {"run_id": run_id, "partition": partition, "scenario": fault})
             st.success(
                 f"Run lancé : `{run_id}` — [suivre dans Dagster]({ctx.settings.dagster_public_url}/runs/{run_id})"
             )

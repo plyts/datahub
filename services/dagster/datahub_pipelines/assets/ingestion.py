@@ -9,10 +9,12 @@ from datetime import UTC, date, datetime
 import dagster as dg
 import pandas as pd
 from dagster_duckdb import DuckDBResource
+from pydantic import Field
 
 from datahub_pipelines import generators
 from datahub_pipelines.freshness import RAW_DAILY
 from datahub_pipelines.partitions import DUCKDB_POOL, daily_partitions
+from datahub_pipelines.settings import get_settings
 
 RAW_DDL = {
     "customers": """
@@ -41,6 +43,21 @@ COMMON = {
     "retry_policy": INGESTION_RETRY,
     "pool": DUCKDB_POOL,
 }
+
+
+class SimulatedSourceConfig(dg.Config):
+    """Test scenarios: inject a fault in the simulated source (refused in production)."""
+
+    fault: str = Field(default="none", description="Panne simulée : " + ", ".join(generators.FAULTS))
+
+
+def resolve_fault(config: SimulatedSourceConfig, applicable: set[str]) -> str:
+    fault = config.fault or "none"
+    if fault not in generators.FAULTS:
+        raise dg.Failure(f"Panne simulée inconnue : {fault!r}. Valeurs possibles : {', '.join(generators.FAULTS)}")
+    if fault != "none" and get_settings().env == "prod":
+        raise dg.Failure("L'injection de pannes est interdite en production.")
+    return fault if fault in applicable else "none"
 
 
 def ensure_raw_tables(conn) -> None:
@@ -79,8 +96,13 @@ def _partition_dates(context: dg.AssetExecutionContext) -> list[date]:
     tags={"layer": "raw", "domain": "customers"},
     **COMMON,
 )
-def raw_customers(context: dg.AssetExecutionContext, duckdb: DuckDBResource) -> dg.MaterializeResult:
-    df = generators.generate_customers()
+def raw_customers(
+    context: dg.AssetExecutionContext, config: SimulatedSourceConfig, duckdb: DuckDBResource
+) -> dg.MaterializeResult:
+    fault = resolve_fault(config, generators.CUSTOMER_FAULTS)
+    if fault != "none":
+        context.log.warning("Simulated fault injected: %s", generators.FAULTS[fault])
+    df = generators.customers_with_fault(fault)
     df["_loaded_at"] = _now()
     with duckdb.get_connection() as conn:
         ensure_raw_tables(conn)
@@ -103,13 +125,20 @@ def raw_customers(context: dg.AssetExecutionContext, duckdb: DuckDBResource) -> 
     tags={"layer": "raw", "domain": "sales"},
     **COMMON,
 )
-def raw_orders(context: dg.AssetExecutionContext, duckdb: DuckDBResource) -> dg.MaterializeResult:
+def raw_orders(
+    context: dg.AssetExecutionContext, config: SimulatedSourceConfig, duckdb: DuckDBResource
+) -> dg.MaterializeResult:
+    fault = resolve_fault(config, generators.ORDER_FAULTS)
+    if fault != "none":
+        context.log.warning("Simulated fault injected: %s", generators.FAULTS[fault])
+    # Transient errors of the source are retried by INGESTION_RETRY (exponential backoff).
+    generators.check_source(fault, context.retry_number)
     total = 0
     days = _partition_dates(context)
     with duckdb.get_connection() as conn:
         ensure_raw_tables(conn)
         for day in days:
-            total += replace_partition(conn, "orders", day, generators.generate_orders(day))
+            total += replace_partition(conn, "orders", day, generators.orders_with_fault(day, fault))
     context.log.info("Loaded %s orders for %s partition(s)", total, len(days))
     return dg.MaterializeResult(metadata={"dagster/row_count": total, "partitions": len(days), "table": "raw.orders"})
 

@@ -63,13 +63,18 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: {python-version: "${{ env.PYTHON_VERSION }}"}
+      - uses: astral-sh/setup-uv@v6
       - run: pip install pytest pyyaml
-      - name: Static checks (compose, Keycloak realm vs RBAC, secrets, dashboards)
+      - name: Static checks (compose, Keycloak realm vs RBAC, secrets, dashboards, scenarios)
         run: python -m pytest -q tests/config
+      - name: Pull-based deployer (scenarios with real git repos and a fake GitHub API)
+        run: python -m pytest -q tests/deployer
+      - name: Pull-based deployer on Python 3.9 (minimum supported on the servers)
+        run: uv run --no-project --python 3.9 --with pytest python -m pytest -q tests/deployer
       - name: Docker Compose config (all environments)
         run: |
           ./scripts/generate-secrets.sh
-          for env in dev staging prod ci; do
+          for env in dev staging prod desktop ci; do
             file=compose/docker-compose.$env.yml
             docker compose --env-file envs/${env/ci/dev}.env --env-file .env -f docker-compose.yml -f $file config -q
             echo "compose $env OK"

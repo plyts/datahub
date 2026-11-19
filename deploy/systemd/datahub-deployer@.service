@@ -1,0 +1,21 @@
+# Data Hub pull-based deployer — one instance per environment: datahub-deployer@staging.service
+# Installed by scripts/install-deployer.sh (which sets User= and the environment file).
+[Unit]
+Description=Data Hub pull-based deployer (%i)
+Documentation=https://github.com/plyts/datahub/blob/main/docs/cicd.md
+After=network-online.target docker.service
+Wants=network-online.target
+Requires=docker.service
+
+[Service]
+Type=oneshot
+User=__DEPLOYER_USER__
+Group=docker
+WorkingDirectory=/opt/datahub
+EnvironmentFile=/etc/datahub/deployer-%i.env
+EnvironmentFile=-/opt/datahub/.env
+ExecStart=/usr/bin/env ${DEPLOYER_PYTHON} /opt/datahub/scripts/deployer.py --env %i run
+TimeoutStartSec=3600
+Nice=10
+# 1 = deployment failed but was rolled back: logged, not a unit failure. 2/3 stay failures.
+SuccessExitStatus=1

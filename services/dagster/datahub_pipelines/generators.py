@@ -60,6 +60,23 @@ CATEGORIES = ["electronics", "books", "home", "fashion", "sports", "beauty"]
 STATUSES = ["placed", "shipped", "completed", "returned", "cancelled"]
 PAYMENT_METHODS = ["card", "paypal", "bank_transfer"]
 
+# Faults that can be injected in the simulated source to rehearse failure scenarios (never in production).
+FAULTS = {
+    "none": "Données normales",
+    "volume_spike": "Pic de volume : 5 fois plus de commandes (anomalie détectée, avertissement non bloquant)",
+    "negative_amounts": "Montants négatifs sur 5 % des commandes (tests dbt en échec, run en échec)",
+    "null_emails": "10 % d'emails clients vides (contrôle bloquant en échec, aval non exécuté)",
+    "source_flaky": "Source instable : 1re tentative en erreur 503, reprise automatique réussie",
+    "source_unavailable": "Source indisponible : erreur 503 à chaque tentative (échec après 3 reprises)",
+}
+CUSTOMER_FAULTS = {"null_emails"}
+ORDER_FAULTS = {"volume_spike", "negative_amounts", "source_flaky", "source_unavailable"}
+
+
+class SimulatedSourceError(ConnectionError):
+    """The simulated upstream system did not answer (HTTP 503)."""
+
+
 CUSTOMER_COLUMNS = ["customer_id", "first_name", "last_name", "email", "country_code", "created_at"]
 ORDER_COLUMNS = ["order_id", "customer_id", "order_date", "status", "product_category", "amount"]
 PAYMENT_COLUMNS = ["payment_id", "order_id", "payment_method", "amount", "paid_at"]
@@ -98,10 +115,11 @@ def _status_for(rng: random.Random) -> str:
     return rng.choices(STATUSES, weights=[10, 20, 60, 5, 5])[0]
 
 
-def generate_orders(day: date) -> pd.DataFrame:
+def generate_orders(day: date, volume_factor: int = 1) -> pd.DataFrame:
+    """Orders of one day. The first `expected_order_count(day)` rows never depend on `volume_factor`."""
     rng = random.Random(f"orders-{day.isoformat()}")
     rows = []
-    for i in range(expected_order_count(day)):
+    for i in range(expected_order_count(day) * volume_factor):
         amount = round(min(2000.0, rng.lognormvariate(4.0, 0.7)), 2)
         rows.append(
             {
@@ -154,3 +172,26 @@ def generate_payments(day: date, orders: pd.DataFrame | None = None) -> pd.DataF
             }
         )
     return pd.DataFrame(rows, columns=PAYMENT_COLUMNS)
+
+
+def check_source(fault: str, attempt: int) -> None:
+    """Simulate the availability of the upstream system for a given attempt (0 = first try)."""
+    if fault == "source_unavailable" or (fault == "source_flaky" and attempt == 0):
+        raise SimulatedSourceError(f"Simulated source unavailable: HTTP 503 (attempt {attempt + 1})")
+
+
+def orders_with_fault(day: date, fault: str) -> pd.DataFrame:
+    if fault == "volume_spike":
+        return generate_orders(day, volume_factor=5)
+    orders = generate_orders(day)
+    if fault == "negative_amounts":
+        bad = orders.index % 20 == 0  # 5 % of the orders, deterministic
+        orders.loc[bad, "amount"] = -orders.loc[bad, "amount"]
+    return orders
+
+
+def customers_with_fault(fault: str) -> pd.DataFrame:
+    customers = generate_customers()
+    if fault == "null_emails":
+        customers.loc[customers.index % 10 == 0, "email"] = None  # 10 % of the customers
+    return customers

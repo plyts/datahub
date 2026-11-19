@@ -392,6 +392,9 @@ services:
       - ./services/alloy/config.alloy:/etc/alloy/config.alloy:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - alloy_data:/var/lib/alloy/data
+    # SELinux hosts (SLES 16, openSUSE Leap 16): reading the Docker socket needs an unconfined
+    # label. No effect where SELinux is off (Ubuntu, Docker Desktop).
+    security_opt: ["label=disable"]
 
   node-exporter:
     image: prom/node-exporter:v1.12.0
@@ -400,6 +403,7 @@ services:
     mem_limit: 128m
     pid: host
     command: ["--path.rootfs=/host"]
+    security_opt: ["label=disable"]   # host filesystem stats on SELinux hosts
     volumes:
       - /:/host:ro,rslave
 

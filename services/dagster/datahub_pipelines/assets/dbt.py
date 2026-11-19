@@ -27,7 +27,8 @@ UPSTREAM_SELECT = "tag:staging tag:intermediate resource_type:seed"
 PARTITIONED_SELECT = "tag:partitioned"
 DOWNSTREAM_SELECT = "tag:marts"
 
-DBT_RETRY = dg.RetryPolicy(max_retries=1, delay=15)
+# A failing dbt test is a data problem, never retried. Only a transient DuckDB lock is (see _stream).
+LOCK_MARKERS = ("could not set lock", "conflicting lock")
 
 
 class DataHubDbtTranslator(DagsterDbtTranslator):
@@ -86,7 +87,21 @@ def enrich_with_table_stats(events: Iterable[Any], database: str) -> Iterator[An
     that is closed immediately. dagster-dbt's `fetch_row_counts()` cannot be used
     because it queries the database while dbt still holds the write lock.
     """
-    events = list(events)
+    buffered: list[Any] = []
+    failure: Exception | None = None
+    try:
+        for event in events:
+            buffered.append(event)
+    except Exception as exc:  # noqa: BLE001 - dbt failed (e.g. a test of severity error): report what ran first
+        failure = exc
+    yield from _with_stats(buffered, database)
+    if failure is not None:
+        if any(marker in str(failure).lower() for marker in LOCK_MARKERS):
+            raise dg.RetryRequested(max_retries=2, seconds_to_wait=15) from failure
+        raise failure
+
+
+def _with_stats(events: list[Any], database: str) -> Iterator[Any]:
     try:
         conn = duckdb_lib.connect(database, read_only=True)
     except duckdb_lib.Error:
@@ -120,7 +135,6 @@ def _stream(invocation):
     name="dbt_upstream",
     dagster_dbt_translator=translator,
     pool=DUCKDB_POOL,
-    retry_policy=DBT_RETRY,
 )
 def dbt_upstream_assets(context: dg.AssetExecutionContext, dbt: DbtCliResource):
     yield from _stream(dbt.cli(["build"], context=context))
@@ -141,7 +155,6 @@ def partition_vars(context: dg.AssetExecutionContext) -> dict[str, str]:
     backfill_policy=dg.BackfillPolicy.single_run(),
     dagster_dbt_translator=translator,
     pool=DUCKDB_POOL,
-    retry_policy=DBT_RETRY,
 )
 def dbt_partitioned_assets(context: dg.AssetExecutionContext, dbt: DbtCliResource):
     dbt_vars = partition_vars(context)
@@ -157,7 +170,6 @@ def dbt_partitioned_assets(context: dg.AssetExecutionContext, dbt: DbtCliResourc
     name="dbt_downstream",
     dagster_dbt_translator=translator,
     pool=DUCKDB_POOL,
-    retry_policy=DBT_RETRY,
 )
 def dbt_downstream_assets(context: dg.AssetExecutionContext, dbt: DbtCliResource):
     yield from _stream(dbt.cli(["build"], context=context))
