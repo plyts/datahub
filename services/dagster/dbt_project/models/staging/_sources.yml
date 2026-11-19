@@ -1,0 +1,46 @@
+version: 2
+
+sources:
+  - name: raw
+    description: "Données brutes chargées par les assets d'ingestion Dagster (schéma `raw` de DuckDB)."
+    schema: raw
+    config:
+      loaded_at_field: _loaded_at
+      freshness:
+        warn_after: {count: 26, period: hour}
+        error_after: {count: 48, period: hour}
+    tables:
+      - name: customers
+        description: "Clients (référentiel complet rechargé à chaque exécution)."
+        meta:
+          dagster:
+            asset_key: ["raw", "customers"]
+        columns:
+          - name: customer_id
+            description: "Identifiant technique du client."
+            data_tests: [unique, not_null]
+          - name: email
+            description: "Adresse email (PII)."
+            meta: {pii: true}
+          - name: _loaded_at
+            description: "Horodatage de chargement (UTC)."
+      - name: orders
+        description: "Commandes, partitionnées par jour (`_partition_date`)."
+        meta:
+          dagster:
+            asset_key: ["raw", "orders"]
+        columns:
+          - name: order_id
+            description: "Identifiant de commande."
+            data_tests: [unique, not_null]
+          - name: _partition_date
+            description: "Partition Dagster (jour) ayant produit la ligne."
+      - name: payments
+        description: "Paiements, partitionnés par jour (`_partition_date`)."
+        meta:
+          dagster:
+            asset_key: ["raw", "payments"]
+        columns:
+          - name: payment_id
+            description: "Identifiant de paiement."
+            data_tests: [unique, not_null]

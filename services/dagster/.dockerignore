@@ -1,0 +1,9 @@
+**/__pycache__
+**/*.pyc
+.tmp_dagster_home_*
+data/
+tests/
+dbt_project/target/
+dbt_project/logs/
+dbt_project/dbt_packages/
+*.duckdb

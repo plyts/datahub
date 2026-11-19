@@ -1,0 +1,53 @@
+name: datahub_dbt
+version: "1.0.0"
+config-version: 2
+profile: datahub_dbt
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+analysis-paths: ["analyses"]
+snapshot-paths: ["snapshots"]
+
+target-path: "target"
+clean-targets: ["target", "dbt_packages", "logs"]
+
+flags:
+  send_anonymous_usage_stats: false
+
+vars:
+  # Overridden by Dagster for partitioned (incremental) runs: {"min_date": "...", "max_date": "..."}
+  min_date: null
+  max_date: null
+  # Number of days re-processed by the incremental model when no partition window is given
+  incremental_lookback_days: 3
+
+models:
+  datahub_dbt:
+    +meta:
+      owner: data-team
+    staging:
+      +schema: staging
+      +materialized: view
+      +tags: ["staging"]
+    intermediate:
+      +schema: intermediate
+      +materialized: view
+      +tags: ["intermediate"]
+    marts:
+      +schema: marts
+      +materialized: table
+      core:
+        +tags: ["marts", "core"]
+      finance:
+        +tags: ["marts", "finance"]
+
+seeds:
+  datahub_dbt:
+    +schema: reference
+    +tags: ["reference"]
+
+data_tests:
+  datahub_dbt:
+    +store_failures: false

@@ -1,0 +1,6361 @@
+{
+ "child_map": {
+  "exposure.datahub_dbt.datahub_finance_dashboard": [],
+  "model.datahub_dbt.agg_daily_revenue": [
+   "exposure.datahub_dbt.datahub_finance_dashboard",
+   "test.datahub_dbt.assert_revenue_not_greater_than_orders",
+   "test.datahub_dbt.not_negative_agg_daily_revenue_revenue.72e5a0bb0d",
+   "test.datahub_dbt.not_null_agg_daily_revenue_order_date.51875ecb2c",
+   "test.datahub_dbt.unique_agg_daily_revenue_order_date.e9f1d20a43"
+  ],
+  "model.datahub_dbt.dim_customers": [
+   "exposure.datahub_dbt.datahub_finance_dashboard",
+   "test.datahub_dbt.accepted_values_dim_customers_customer_tier__gold__silver__bronze.3209902ac4",
+   "test.datahub_dbt.not_negative_dim_customers_lifetime_value.4e02dac5f9",
+   "test.datahub_dbt.not_null_dim_customers_customer_id.dd91cd1c8d",
+   "test.datahub_dbt.unique_dim_customers_customer_id.15c9f1e2fd"
+  ],
+  "model.datahub_dbt.fct_orders": [
+   "model.datahub_dbt.agg_daily_revenue",
+   "model.datahub_dbt.dim_customers",
+   "test.datahub_dbt.assert_payments_cover_completed_orders",
+   "test.datahub_dbt.assert_revenue_not_greater_than_orders",
+   "test.datahub_dbt.not_negative_fct_orders_order_amount.859b9b655e",
+   "test.datahub_dbt.not_negative_fct_orders_paid_amount.4a6b79883a",
+   "test.datahub_dbt.not_null_fct_orders_customer_id.16fe324f7b",
+   "test.datahub_dbt.not_null_fct_orders_order_date.84f0a76362",
+   "test.datahub_dbt.not_null_fct_orders_order_id.4e687af8d0",
+   "test.datahub_dbt.row_count_min_fct_orders_1.4e4dff6216",
+   "test.datahub_dbt.unique_fct_orders_order_id.523ddb6ce5"
+  ],
+  "model.datahub_dbt.int_order_payments": [
+   "model.datahub_dbt.fct_orders",
+   "test.datahub_dbt.not_negative_int_order_payments_paid_amount.62aea324f2",
+   "test.datahub_dbt.not_null_int_order_payments_order_id.57af36bc3b",
+   "test.datahub_dbt.unique_int_order_payments_order_id.804c2d5021",
+   "unit_test.datahub_dbt.int_order_payments.test_int_order_payments_aggregates_by_order"
+  ],
+  "model.datahub_dbt.stg_customers": [
+   "model.datahub_dbt.dim_customers",
+   "test.datahub_dbt.not_null_stg_customers_customer_id.e2cfb1f9aa",
+   "test.datahub_dbt.not_null_stg_customers_email.d7cf761533",
+   "test.datahub_dbt.relationships_stg_customers_country_code__country_code__ref_country_codes_.104e30b705",
+   "test.datahub_dbt.relationships_stg_orders_customer_id__customer_id__ref_stg_customers_.430bf21500",
+   "test.datahub_dbt.unique_stg_customers_customer_id.c7614daada"
+  ],
+  "model.datahub_dbt.stg_orders": [
+   "model.datahub_dbt.fct_orders",
+   "test.datahub_dbt.accepted_values_stg_orders_status__placed__shipped__completed__returned__cancelled.cb8754312d",
+   "test.datahub_dbt.not_negative_stg_orders_amount.6483c5955e",
+   "test.datahub_dbt.not_null_stg_orders_amount.2546645448",
+   "test.datahub_dbt.not_null_stg_orders_customer_id.af79d5e4b5",
+   "test.datahub_dbt.not_null_stg_orders_order_id.81cfe2fe64",
+   "test.datahub_dbt.relationships_stg_orders_customer_id__customer_id__ref_stg_customers_.430bf21500",
+   "test.datahub_dbt.relationships_stg_payments_order_id__order_id__ref_stg_orders_.8426a3f3d3",
+   "test.datahub_dbt.unique_stg_orders_order_id.e3b841c71a"
+  ],
+  "model.datahub_dbt.stg_payments": [
+   "model.datahub_dbt.int_order_payments",
+   "test.datahub_dbt.accepted_values_stg_payments_payment_method__card__bank_transfer__paypal__voucher.a6cf974ae7",
+   "test.datahub_dbt.not_negative_stg_payments_amount.a68995b59b",
+   "test.datahub_dbt.not_null_stg_payments_amount.4739fb3aea",
+   "test.datahub_dbt.not_null_stg_payments_order_id.601cf57649",
+   "test.datahub_dbt.not_null_stg_payments_payment_id.c19cc50075",
+   "test.datahub_dbt.relationships_stg_payments_order_id__order_id__ref_stg_orders_.8426a3f3d3",
+   "test.datahub_dbt.unique_stg_payments_payment_id.3744510712"
+  ],
+  "seed.datahub_dbt.country_codes": [
+   "model.datahub_dbt.dim_customers",
+   "test.datahub_dbt.accepted_values_country_codes_region__Europe__Afrique__Am_rique.475dd00c72",
+   "test.datahub_dbt.not_null_country_codes_country_code.f36afebdea",
+   "test.datahub_dbt.not_null_country_codes_country_name.b83efc697b",
+   "test.datahub_dbt.relationships_stg_customers_country_code__country_code__ref_country_codes_.104e30b705",
+   "test.datahub_dbt.unique_country_codes_country_code.ada89ec41f"
+  ],
+  "source.datahub_dbt.raw.customers": [
+   "model.datahub_dbt.stg_customers",
+   "test.datahub_dbt.source_not_null_raw_customers_customer_id.e869432dbb",
+   "test.datahub_dbt.source_unique_raw_customers_customer_id.3579d23017"
+  ],
+  "source.datahub_dbt.raw.orders": [
+   "model.datahub_dbt.stg_orders",
+   "test.datahub_dbt.source_not_null_raw_orders_order_id.03a065a98f",
+   "test.datahub_dbt.source_unique_raw_orders_order_id.2e0765462f"
+  ],
+  "source.datahub_dbt.raw.payments": [
+   "model.datahub_dbt.stg_payments",
+   "test.datahub_dbt.source_not_null_raw_payments_payment_id.a7f5b41ef5",
+   "test.datahub_dbt.source_unique_raw_payments_payment_id.ad2e113533"
+  ],
+  "test.datahub_dbt.accepted_values_country_codes_region__Europe__Afrique__Am_rique.475dd00c72": [],
+  "test.datahub_dbt.accepted_values_dim_customers_customer_tier__gold__silver__bronze.3209902ac4": [],
+  "test.datahub_dbt.accepted_values_stg_orders_status__placed__shipped__completed__returned__cancelled.cb8754312d": [],
+  "test.datahub_dbt.accepted_values_stg_payments_payment_method__card__bank_transfer__paypal__voucher.a6cf974ae7": [],
+  "test.datahub_dbt.assert_payments_cover_completed_orders": [],
+  "test.datahub_dbt.assert_revenue_not_greater_than_orders": [],
+  "test.datahub_dbt.not_negative_agg_daily_revenue_revenue.72e5a0bb0d": [],
+  "test.datahub_dbt.not_negative_dim_customers_lifetime_value.4e02dac5f9": [],
+  "test.datahub_dbt.not_negative_fct_orders_order_amount.859b9b655e": [],
+  "test.datahub_dbt.not_negative_fct_orders_paid_amount.4a6b79883a": [],
+  "test.datahub_dbt.not_negative_int_order_payments_paid_amount.62aea324f2": [],
+  "test.datahub_dbt.not_negative_stg_orders_amount.6483c5955e": [],
+  "test.datahub_dbt.not_negative_stg_payments_amount.a68995b59b": [],
+  "test.datahub_dbt.not_null_agg_daily_revenue_order_date.51875ecb2c": [],
+  "test.datahub_dbt.not_null_country_codes_country_code.f36afebdea": [],
+  "test.datahub_dbt.not_null_country_codes_country_name.b83efc697b": [],
+  "test.datahub_dbt.not_null_dim_customers_customer_id.dd91cd1c8d": [],
+  "test.datahub_dbt.not_null_fct_orders_customer_id.16fe324f7b": [],
+  "test.datahub_dbt.not_null_fct_orders_order_date.84f0a76362": [],
+  "test.datahub_dbt.not_null_fct_orders_order_id.4e687af8d0": [],
+  "test.datahub_dbt.not_null_int_order_payments_order_id.57af36bc3b": [],
+  "test.datahub_dbt.not_null_stg_customers_customer_id.e2cfb1f9aa": [],
+  "test.datahub_dbt.not_null_stg_customers_email.d7cf761533": [],
+  "test.datahub_dbt.not_null_stg_orders_amount.2546645448": [],
+  "test.datahub_dbt.not_null_stg_orders_customer_id.af79d5e4b5": [],
+  "test.datahub_dbt.not_null_stg_orders_order_id.81cfe2fe64": [],
+  "test.datahub_dbt.not_null_stg_payments_amount.4739fb3aea": [],
+  "test.datahub_dbt.not_null_stg_payments_order_id.601cf57649": [],
+  "test.datahub_dbt.not_null_stg_payments_payment_id.c19cc50075": [],
+  "test.datahub_dbt.relationships_stg_customers_country_code__country_code__ref_country_codes_.104e30b705": [],
+  "test.datahub_dbt.relationships_stg_orders_customer_id__customer_id__ref_stg_customers_.430bf21500": [],
+  "test.datahub_dbt.relationships_stg_payments_order_id__order_id__ref_stg_orders_.8426a3f3d3": [],
+  "test.datahub_dbt.row_count_min_fct_orders_1.4e4dff6216": [],
+  "test.datahub_dbt.source_not_null_raw_customers_customer_id.e869432dbb": [],
+  "test.datahub_dbt.source_not_null_raw_orders_order_id.03a065a98f": [],
+  "test.datahub_dbt.source_not_null_raw_payments_payment_id.a7f5b41ef5": [],
+  "test.datahub_dbt.source_unique_raw_customers_customer_id.3579d23017": [],
+  "test.datahub_dbt.source_unique_raw_orders_order_id.2e0765462f": [],
+  "test.datahub_dbt.source_unique_raw_payments_payment_id.ad2e113533": [],
+  "test.datahub_dbt.unique_agg_daily_revenue_order_date.e9f1d20a43": [],
+  "test.datahub_dbt.unique_country_codes_country_code.ada89ec41f": [],
+  "test.datahub_dbt.unique_dim_customers_customer_id.15c9f1e2fd": [],
+  "test.datahub_dbt.unique_fct_orders_order_id.523ddb6ce5": [],
+  "test.datahub_dbt.unique_int_order_payments_order_id.804c2d5021": [],
+  "test.datahub_dbt.unique_stg_customers_customer_id.c7614daada": [],
+  "test.datahub_dbt.unique_stg_orders_order_id.e3b841c71a": [],
+  "test.datahub_dbt.unique_stg_payments_payment_id.3744510712": [],
+  "unit_test.datahub_dbt.int_order_payments.test_int_order_payments_aggregates_by_order": []
+ },
+ "exposures": {
+  "exposure.datahub_dbt.datahub_finance_dashboard": {
+   "config": {
+    "enabled": true,
+    "meta": {},
+    "tags": []
+   },
+   "created_at": 1795112553.3042622,
+   "depends_on": {
+    "macros": [],
+    "nodes": [
+     "model.datahub_dbt.agg_daily_revenue",
+     "model.datahub_dbt.dim_customers"
+    ]
+   },
+   "description": "Indicateurs financiers affich\u00e9s dans le Data Hub et Grafana.",
+   "fqn": [
+    "datahub_dbt",
+    "marts",
+    "finance",
+    "datahub_finance_dashboard"
+   ],
+   "label": "Data Hub \u2014 Dashboard finance",
+   "maturity": "medium",
+   "meta": {},
+   "metrics": [],
+   "name": "datahub_finance_dashboard",
+   "original_file_path": "models/marts/finance/_finance.yml",
+   "owner": {
+    "email": "data-team@example.com",
+    "name": "Data Team"
+   },
+   "package_name": "datahub_dbt",
+   "path": "marts/finance/_finance.yml",
+   "refs": [
+    {
+     "name": "agg_daily_revenue",
+     "package": null,
+     "version": null
+    },
+    {
+     "name": "dim_customers",
+     "package": null,
+     "version": null
+    }
+   ],
+   "resource_type": "exposure",
+   "sources": [],
+   "tags": [],
+   "type": "dashboard",
+   "unique_id": "exposure.datahub_dbt.datahub_finance_dashboard",
+   "unrendered_config": {},
+   "url": null
+  }
+ },
+ "metadata": {
+  "dbt_schema_version": "https://schemas.getdbt.com/dbt/manifest/v12.json",
+  "dbt_version": "1.12.7",
+  "generated_at": "2026-11-19T18:22:31.287232Z",
+  "project_name": "datahub_dbt"
+ },
+ "nodes": {
+  "model.datahub_dbt.agg_daily_revenue": {
+   "access": "protected",
+   "alias": "agg_daily_revenue",
+   "columns": {
+    "avg_basket": {
+     "config": {
+      "meta": {},
+      "tags": []
+     },
+     "constraints": [],
+     "data_type": null,
+     "description": "Panier moyen (EUR).",
+     "dimension": null,
+     "doc_blocks": [],
+     "entity": null,
+     "granularity": null,
+     "meta": {},
+     "name": "avg_basket",
+     "quote": null,
+     "tags": []
+    },
+    "order_date": {
+     "config": {
+      "meta": {},
+      "tags": []
+     },
+     "constraints": [],
+     "data_type": null,
+     "description": "Jour.",
+     "dimension": null,
+     "doc_blocks": [],
+     "entity": null,
+     "granularity": null,
+     "meta": {},
+     "name": "order_date",
+     "quote": null,
+     "tags": []
+    },
+    "revenue": {
+     "config": {
+      "meta": {},
+      "tags": []
+     },
+     "constraints": [],
+     "data_type": null,
+     "description": "Chiffre d'affaires du jour (EUR).",
+     "dimension": null,
+     "doc_blocks": [],
+     "entity": null,
+     "granularity": null,
+     "meta": {},
+     "name": "revenue",
+     "quote": null,
+     "tags": []
+    }
+   },
+   "compiled": true,
+   "compiled_code": "-- Chiffre d'affaires quotidien.\nselect\n    order_date,\n    count(*)                                                    as order_count,\n    count(*) filter (where is_revenue)                          as revenue_order_count,\n    sum(case when is_revenue then order_amount else 0 end)      as revenue,\n    sum(paid_amount)                                            as cash_collected,\n    sum(outstanding_amount)                                     as outstanding,\n    round(avg(order_amount), 2)                                 as avg_basket\nfrom \"datahub_dev\".\"marts\".\"fct_orders\"\ngroup by order_date",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/marts/finance/agg_daily_revenue.sql",
+   "config": {
+    "access": "protected",
+    "alias": null,
+    "batch_size": null,
+    "begin": null,
+    "column_types": {},
+    "concurrent_batches": null,
+    "contract": {
+     "alias_types": true,
+     "enforced": false
+    },
+    "database": null,
+    "docs": {
+     "node_color": null,
+     "show": true
+    },
+    "enabled": true,
+    "event_time": null,
+    "freshness": null,
+    "full_refresh": null,
+    "grants": {},
+    "group": null,
+    "incremental_strategy": null,
+    "latest_version_pointer": {
+     "alias": null,
+     "enabled": null
+    },
+    "lookback": 1,
+    "materialized": "table",
+    "meta": {
+     "glossary": [
+      "Chiffre d'affaires",
+      "Panier moyen"
+     ],
+     "owner": "finance"
+    },
+    "on_configuration_change": "apply",
+    "on_error": null,
+    "on_schema_change": "ignore",
+    "packages": [],
+    "persist_docs": {},
+    "post-hook": [],
+    "pre-hook": [],
+    "quoting": {},
+    "schema": "marts",
+    "static_analysis": null,
+    "tags": [
+     "marts",
+     "finance"
+    ],
+    "unique_key": null
+   },
+   "constraints": [],
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [],
+    "nodes": [
+     "model.datahub_dbt.fct_orders"
+    ]
+   },
+   "deprecation_date": null,
+   "description": "Indicateurs financiers quotidiens (CA, encaissements, panier moyen).",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "fqn": [
+    "datahub_dbt",
+    "marts",
+    "finance",
+    "agg_daily_revenue"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "latest_version": null,
+   "meta": {
+    "glossary": [
+     "Chiffre d'affaires",
+     "Panier moyen"
+    ],
+    "owner": "finance"
+   },
+   "metrics": [],
+   "name": "agg_daily_revenue",
+   "original_file_path": "models/marts/finance/agg_daily_revenue.sql",
+   "package_name": "datahub_dbt",
+   "path": "marts/finance/agg_daily_revenue.sql",
+   "primary_key": [
+    "order_date"
+   ],
+   "raw_code": "-- Chiffre d'affaires quotidien.\nselect\n    order_date,\n    count(*)                                                    as order_count,\n    count(*) filter (where is_revenue)                          as revenue_order_count,\n    sum(case when is_revenue then order_amount else 0 end)      as revenue,\n    sum(paid_amount)                                            as cash_collected,\n    sum(outstanding_amount)                                     as outstanding,\n    round(avg(order_amount), 2)                                 as avg_basket\nfrom {{ ref('fct_orders') }}\ngroup by order_date",
+   "refs": [
+    {
+     "name": "fct_orders",
+     "package": null,
+     "version": null
+    }
+   ],
+   "resource_type": "model",
+   "schema": "marts",
+   "sources": [],
+   "tags": [
+    "marts",
+    "finance"
+   ],
+   "time_spine": null,
+   "unique_id": "model.datahub_dbt.agg_daily_revenue",
+   "version": null
+  },
+  "model.datahub_dbt.dim_customers": {
+   "access": "protected",
+   "alias": "dim_customers",
+   "columns": {
+    "customer_id": {
+     "config": {
+      "meta": {},
+      "tags": []
+     },
+     "constraints": [],
+     "data_type": null,
+     "description": "Identifiant du client.",
+     "dimension": null,
+     "doc_blocks": [],
+     "entity": null,
+     "granularity": null,
+     "meta": {},
+     "name": "customer_id",
+     "quote": null,
+     "tags": []
+    },
+    "customer_tier": {
+     "config": {
+      "meta": {},
+      "tags": []
+     },
+     "constraints": [],
+     "data_type": null,
+     "description": "Segment client : gold (\u2265 1000 \u20ac), silver (\u2265 300 \u20ac), bronze.",
+     "dimension": null,
+     "doc_blocks": [],
+     "entity": null,
+     "granularity": null,
+     "meta": {},
+     "name": "customer_tier",
+     "quote": null,
+     "tags": []
+    },
+    "email": {
+     "config": {
+      "meta": {
+       "pii": true
+      },
+      "tags": []
+     },
+     "constraints": [],
+     "data_type": null,
+     "description": "Email (PII).",
+     "dimension": null,
+     "doc_blocks": [],
+     "entity": null,
+     "granularity": null,
+     "meta": {
+      "pii": true
+     },
+     "name": "email",
+     "quote": null,
+     "tags": []
+    },
+    "lifetime_value": {
+     "config": {
+      "meta": {},
+      "tags": []
+     },
+     "constraints": [],
+     "data_type": null,
+     "description": "Somme des commandes g\u00e9n\u00e9ratrices de CA (EUR).",
+     "dimension": null,
+     "doc_blocks": [],
+     "entity": null,
+     "granularity": null,
+     "meta": {},
+     "name": "lifetime_value",
+     "quote": null,
+     "tags": []
+    }
+   },
+   "compiled": true,
+   "compiled_code": "-- Dimension clients : profil + indicateurs de cycle de vie.\nwith customers as (\n    select * from \"datahub_dev\".\"staging\".\"stg_customers\"\n),\n\ncountries as (\n    select * from \"datahub_dev\".\"reference\".\"country_codes\"\n),\n\norders as (\n    select * from \"datahub_dev\".\"marts\".\"fct_orders\"\n),\n\ncustomer_orders as (\n    select\n        customer_id,\n        min(order_date)                                         as first_order_date,\n        max(order_date)                                         as last_order_date,\n        count(*)                                                as order_count,\n        sum(case when is_revenue then order_amount else 0 end)  as lifetime_value\n    from orders\n    group by customer_id\n)\n\nselect\n    customers.customer_id,\n    customers.first_name,\n    customers.last_name,\n    customers.email,\n    customers.country_code,\n    countries.country_name,\n    countries.region,\n    customers.created_at,\n    customer_orders.first_order_date,\n    customer_orders.last_order_date,\n    coalesce(customer_orders.order_count, 0)        as order_count,\n    coalesce(customer_orders.lifetime_value, 0)     as lifetime_value,\n    case\n        when coalesce(customer_orders.lifetime_value, 0) >= 1000 then 'gold'\n        when coalesce(customer_orders.lifetime_value, 0) >= 300 then 'silver'\n        else 'bronze'\n    end                                             as customer_tier\nfrom customers\nleft join countries using (country_code)\nleft join customer_orders using (customer_id)",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/marts/core/dim_customers.sql",
+   "config": {
+    "access": "protected",
+    "alias": null,
+    "batch_size": null,
+    "begin": null,
+    "column_types": {},
+    "concurrent_batches": null,
+    "contract": {
+     "alias_types": true,
+     "enforced": false
+    },
+    "database": null,
+    "docs": {
+     "node_color": null,
+     "show": true
+    },
+    "enabled": true,
+    "event_time": null,
+    "freshness": null,
+    "full_refresh": null,
+    "grants": {},
+    "group": null,
+    "incremental_strategy": null,
+    "latest_version_pointer": {
+     "alias": null,
+     "enabled": null
+    },
+    "lookback": 1,
+    "materialized": "table",
+    "meta": {
+     "glossary": [
+      "Client",
+      "Lifetime value"
+     ],
+     "owner": "analytics-engineering"
+    },
+    "on_configuration_change": "apply",
+    "on_error": null,
+    "on_schema_change": "ignore",
+    "packages": [],
+    "persist_docs": {},
+    "post-hook": [],
+    "pre-hook": [],
+    "quoting": {},
+    "schema": "marts",
+    "static_analysis": null,
+    "tags": [
+     "marts",
+     "core"
+    ],
+    "unique_key": null
+   },
+   "constraints": [],
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [],
+    "nodes": [
+     "model.datahub_dbt.stg_customers",
+     "seed.datahub_dbt.country_codes",
+     "model.datahub_dbt.fct_orders"
+    ]
+   },
+   "deprecation_date": null,
+   "description": "Dimension clients avec indicateurs de cycle de vie (LTV, segment).",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "fqn": [
+    "datahub_dbt",
+    "marts",
+    "core",
+    "dim_customers"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "latest_version": null,
+   "meta": {
+    "glossary": [
+     "Client",
+     "Lifetime value"
+    ],
+    "owner": "analytics-engineering"
+   },
+   "metrics": [],
+   "name": "dim_customers",
+   "original_file_path": "models/marts/core/dim_customers.sql",
+   "package_name": "datahub_dbt",
+   "path": "marts/core/dim_customers.sql",
+   "primary_key": [
+    "customer_id"
+   ],
+   "raw_code": "-- Dimension clients : profil + indicateurs de cycle de vie.\nwith customers as (\n    select * from {{ ref('stg_customers') }}\n),\n\ncountries as (\n    select * from {{ ref('country_codes') }}\n),\n\norders as (\n    select * from {{ ref('fct_orders') }}\n),\n\ncustomer_orders as (\n    select\n        customer_id,\n        min(order_date)                                         as first_order_date,\n        max(order_date)                                         as last_order_date,\n        count(*)                                                as order_count,\n        sum(case when is_revenue then order_amount else 0 end)  as lifetime_value\n    from orders\n    group by customer_id\n)\n\nselect\n    customers.customer_id,\n    customers.first_name,\n    customers.last_name,\n    customers.email,\n    customers.country_code,\n    countries.country_name,\n    countries.region,\n    customers.created_at,\n    customer_orders.first_order_date,\n    customer_orders.last_order_date,\n    coalesce(customer_orders.order_count, 0)        as order_count,\n    coalesce(customer_orders.lifetime_value, 0)     as lifetime_value,\n    case\n        when coalesce(customer_orders.lifetime_value, 0) >= 1000 then 'gold'\n        when coalesce(customer_orders.lifetime_value, 0) >= 300 then 'silver'\n        else 'bronze'\n    end                                             as customer_tier\nfrom customers\nleft join countries using (country_code)\nleft join customer_orders using (customer_id)",
+   "refs": [
+    {
+     "name": "stg_customers",
+     "package": null,
+     "version": null
+    },
+    {
+     "name": "country_codes",
+     "package": null,
+     "version": null
+    },
+    {
+     "name": "fct_orders",
+     "package": null,
+     "version": null
+    }
+   ],
+   "resource_type": "model",
+   "schema": "marts",
+   "sources": [],
+   "tags": [
+    "marts",
+    "core"
+   ],
+   "time_spine": null,
+   "unique_id": "model.datahub_dbt.dim_customers",
+   "version": null
+  },
+  "model.datahub_dbt.fct_orders": {
+   "access": "protected",
+   "alias": "fct_orders",
+   "columns": {
+    "customer_id": {
+     "config": {
+      "meta": {},
+      "tags": []
+     },
+     "constraints": [],
+     "data_type": null,
+     "description": "Client.",
+     "dimension": null,
+     "doc_blocks": [],
+     "entity": null,
+     "granularity": null,
+     "meta": {},
+     "name": "customer_id",
+     "quote": null,
+     "tags": []
+    },
+    "is_revenue": {
+     "config": {
+      "meta": {},
+      "tags": []
+     },
+     "constraints": [],
+     "data_type": null,
+     "description": "Vrai si la commande compte dans le chiffre d'affaires (shipped / completed).",
+     "dimension": null,
+     "doc_blocks": [],
+     "entity": null,
+     "granularity": null,
+     "meta": {},
+     "name": "is_revenue",
+     "quote": null,
+     "tags": []
+    },
+    "order_amount": {
+     "config": {
+      "meta": {},
+      "tags": []
+     },
+     "constraints": [],
+     "data_type": null,
+     "description": "Montant de la commande (EUR).",
+     "dimension": null,
+     "doc_blocks": [],
+     "entity": null,
+     "granularity": null,
+     "meta": {},
+     "name": "order_amount",
+     "quote": null,
+     "tags": []
+    },
+    "order_date": {
+     "config": {
+      "meta": {},
+      "tags": []
+     },
+     "constraints": [],
+     "data_type": null,
+     "description": "Date de commande (cl\u00e9 de partition).",
+     "dimension": null,
+     "doc_blocks": [],
+     "entity": null,
+     "granularity": null,
+     "meta": {},
+     "name": "order_date",
+     "quote": null,
+     "tags": []
+    },
+    "order_id": {
+     "config": {
+      "meta": {},
+      "tags": []
+     },
+     "constraints": [],
+     "data_type": null,
+     "description": "Identifiant de commande.",
+     "dimension": null,
+     "doc_blocks": [],
+     "entity": null,
+     "granularity": null,
+     "meta": {},
+     "name": "order_id",
+     "quote": null,
+     "tags": []
+    },
+    "outstanding_amount": {
+     "config": {
+      "meta": {},
+      "tags": []
+     },
+     "constraints": [],
+     "data_type": null,
+     "description": "Reste \u00e0 encaisser = order_amount - paid_amount.",
+     "dimension": null,
+     "doc_blocks": [],
+     "entity": null,
+     "granularity": null,
+     "meta": {},
+     "name": "outstanding_amount",
+     "quote": null,
+     "tags": []
+    },
+    "paid_amount": {
+     "config": {
+      "meta": {},
+      "tags": []
+     },
+     "constraints": [],
+     "data_type": null,
+     "description": "Montant encaiss\u00e9 (EUR).",
+     "dimension": null,
+     "doc_blocks": [],
+     "entity": null,
+     "granularity": null,
+     "meta": {},
+     "name": "paid_amount",
+     "quote": null,
+     "tags": []
+    }
+   },
+   "compiled": true,
+   "compiled_code": "\n\n-- Table de faits des commandes, enrichie des paiements.\n-- Incr\u00e9mentale : Dagster passe la fen\u00eatre de partition (vars min_date / max_date)\n-- ce qui rend les backfills idempotents.\nwith orders as (\n    select * from \"datahub_dev\".\"staging\".\"stg_orders\"\n    \n    where order_date >= (\n            select coalesce(max(order_date), date '1900-01-01') - interval 3 day\n            from \"datahub_dev\".\"marts\".\"fct_orders\"\n        )\n    \n),\n\npayments as (\n    select * from \"datahub_dev\".\"intermediate\".\"int_order_payments\"\n)\n\nselect\n    orders.order_id,\n    orders.customer_id,\n    orders.order_date,\n    orders.status,\n    orders.product_category,\n    orders.amount                                       as order_amount,\n    coalesce(payments.paid_amount, 0)                   as paid_amount,\n    coalesce(payments.payment_count, 0)                 as payment_count,\n    orders.amount - coalesce(payments.paid_amount, 0)   as outstanding_amount,\n    orders.status in ('completed', 'shipped')           as is_revenue,\n    orders.partition_date,\n    current_timestamp                                   as dbt_updated_at\nfrom orders\nleft join payments using (order_id)",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/marts/core/fct_orders.sql",
+   "config": {
+    "access": "protected",
+    "alias": null,
+    "batch_size": null,
+    "begin": null,
+    "column_types": {},
+    "concurrent_batches": null,
+    "contract": {
+     "alias_types": true,
+     "enforced": false
+    },
+    "database": null,
+    "docs": {
+     "node_color": null,
+     "show": true
+    },
+    "enabled": true,
+    "event_time": null,
+    "freshness": null,
+    "full_refresh": null,
+    "grants": {},
+    "group": null,
+    "incremental_strategy": "delete+insert",
+    "latest_version_pointer": {
+     "alias": null,
+     "enabled": null
+    },
+    "lookback": 1,
+    "materialized": "incremental",
+    "meta": {
+     "glossary": [
+      "Commande",
+      "Chiffre d'affaires"
+     ],
+     "owner": "data-engineering"
+    },
+    "on_configuration_change": "apply",
+    "on_error": null,
+    "on_schema_change": "append_new_columns",
+    "packages": [],
+    "persist_docs": {},
+    "post-hook": [],
+    "pre-hook": [],
+    "quoting": {},
+    "schema": "marts",
+    "static_analysis": null,
+    "tags": [
+     "marts",
+     "core",
+     "incremental",
+     "partitioned"
+    ],
+    "unique_key": "order_id"
+   },
+   "constraints": [],
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [
+     "macro.dbt.is_incremental",
+     "macro.datahub_dbt.incremental_window"
+    ],
+    "nodes": [
+     "model.datahub_dbt.stg_orders",
+     "model.datahub_dbt.int_order_payments"
+    ]
+   },
+   "deprecation_date": null,
+   "description": "Table de faits des commandes (une ligne par commande) enrichie des paiements. Mod\u00e8le **incr\u00e9mental partitionn\u00e9 par jour** : chaque partition Dagster recalcule uniquement sa fen\u00eatre `[min_date, max_date)`.\n",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "fqn": [
+    "datahub_dbt",
+    "marts",
+    "core",
+    "fct_orders"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "latest_version": null,
+   "meta": {
+    "glossary": [
+     "Commande",
+     "Chiffre d'affaires"
+    ],
+    "owner": "data-engineering"
+   },
+   "metrics": [],
+   "name": "fct_orders",
+   "original_file_path": "models/marts/core/fct_orders.sql",
+   "package_name": "datahub_dbt",
+   "path": "marts/core/fct_orders.sql",
+   "primary_key": [
+    "order_id"
+   ],
+   "raw_code": "{{\n    config(\n        materialized='incremental',\n        unique_key='order_id',\n        incremental_strategy='delete+insert',\n        on_schema_change='append_new_columns',\n        tags=['incremental', 'partitioned']\n    )\n}}\n\n-- Table de faits des commandes, enrichie des paiements.\n-- Incr\u00e9mentale : Dagster passe la fen\u00eatre de partition (vars min_date / max_date)\n-- ce qui rend les backfills idempotents.\nwith orders as (\n    select * from {{ ref('stg_orders') }}\n    {% if is_incremental() %}\n    where {{ incremental_window('order_date') }}\n    {% endif %}\n),\n\npayments as (\n    select * from {{ ref('int_order_payments') }}\n)\n\nselect\n    orders.order_id,\n    orders.customer_id,\n    orders.order_date,\n    orders.status,\n    orders.product_category,\n    orders.amount                                       as order_amount,\n    coalesce(payments.paid_amount, 0)                   as paid_amount,\n    coalesce(payments.payment_count, 0)                 as payment_count,\n    orders.amount - coalesce(payments.paid_amount, 0)   as outstanding_amount,\n    orders.status in ('completed', 'shipped')           as is_revenue,\n    orders.partition_date,\n    current_timestamp                                   as dbt_updated_at\nfrom orders\nleft join payments using (order_id)",
+   "refs": [
+    {
+     "name": "stg_orders",
+     "package": null,
+     "version": null
+    },
+    {
+     "name": "int_order_payments",
+     "package": null,
+     "version": null
+    }
+   ],
+   "resource_type": "model",
+   "schema": "marts",
+   "sources": [],
+   "tags": [
+    "marts",
+    "core",
+    "incremental",
+    "partitioned"
+   ],
+   "time_spine": null,
+   "unique_id": "model.datahub_dbt.fct_orders",
+   "version": null
+  },
+  "model.datahub_dbt.int_order_payments": {
+   "access": "protected",
+   "alias": "int_order_payments",
+   "columns": {
+    "order_id": {
+     "config": {
+      "meta": {},
+      "tags": []
+     },
+     "constraints": [],
+     "data_type": null,
+     "description": "Commande.",
+     "dimension": null,
+     "doc_blocks": [],
+     "entity": null,
+     "granularity": null,
+     "meta": {},
+     "name": "order_id",
+     "quote": null,
+     "tags": []
+    },
+    "paid_amount": {
+     "config": {
+      "meta": {},
+      "tags": []
+     },
+     "constraints": [],
+     "data_type": null,
+     "description": "Somme des paiements de la commande.",
+     "dimension": null,
+     "doc_blocks": [],
+     "entity": null,
+     "granularity": null,
+     "meta": {},
+     "name": "paid_amount",
+     "quote": null,
+     "tags": []
+    }
+   },
+   "compiled": true,
+   "compiled_code": "-- Agr\u00e9gation des paiements par commande.\nwith payments as (\n    select * from \"datahub_dev\".\"staging\".\"stg_payments\"\n)\n\nselect\n    order_id,\n    count(*)                                                        as payment_count,\n    sum(amount)                                                     as paid_amount,\n    sum(case when payment_method = 'card' then amount else 0 end)   as card_amount,\n    sum(case when payment_method = 'voucher' then amount else 0 end) as voucher_amount,\n    max(paid_at)                                                    as last_paid_at\nfrom payments\ngroup by order_id",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/intermediate/int_order_payments.sql",
+   "config": {
+    "access": "protected",
+    "alias": null,
+    "batch_size": null,
+    "begin": null,
+    "column_types": {},
+    "concurrent_batches": null,
+    "contract": {
+     "alias_types": true,
+     "enforced": false
+    },
+    "database": null,
+    "docs": {
+     "node_color": null,
+     "show": true
+    },
+    "enabled": true,
+    "event_time": null,
+    "freshness": null,
+    "full_refresh": null,
+    "grants": {},
+    "group": null,
+    "incremental_strategy": null,
+    "latest_version_pointer": {
+     "alias": null,
+     "enabled": null
+    },
+    "lookback": 1,
+    "materialized": "view",
+    "meta": {
+     "owner": "data-team"
+    },
+    "on_configuration_change": "apply",
+    "on_error": null,
+    "on_schema_change": "ignore",
+    "packages": [],
+    "persist_docs": {},
+    "post-hook": [],
+    "pre-hook": [],
+    "quoting": {},
+    "schema": "intermediate",
+    "static_analysis": null,
+    "tags": [
+     "intermediate"
+    ],
+    "unique_key": null
+   },
+   "constraints": [],
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [],
+    "nodes": [
+     "model.datahub_dbt.stg_payments"
+    ]
+   },
+   "deprecation_date": null,
+   "description": "Paiements agr\u00e9g\u00e9s par commande (nombre, montant total, ventilation carte / bon d'achat).",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "fqn": [
+    "datahub_dbt",
+    "intermediate",
+    "int_order_payments"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "latest_version": null,
+   "meta": {
+    "owner": "data-team"
+   },
+   "metrics": [],
+   "name": "int_order_payments",
+   "original_file_path": "models/intermediate/int_order_payments.sql",
+   "package_name": "datahub_dbt",
+   "path": "intermediate/int_order_payments.sql",
+   "primary_key": [
+    "order_id"
+   ],
+   "raw_code": "-- Agr\u00e9gation des paiements par commande.\nwith payments as (\n    select * from {{ ref('stg_payments') }}\n)\n\nselect\n    order_id,\n    count(*)                                                        as payment_count,\n    sum(amount)                                                     as paid_amount,\n    sum(case when payment_method = 'card' then amount else 0 end)   as card_amount,\n    sum(case when payment_method = 'voucher' then amount else 0 end) as voucher_amount,\n    max(paid_at)                                                    as last_paid_at\nfrom payments\ngroup by order_id",
+   "refs": [
+    {
+     "name": "stg_payments",
+     "package": null,
+     "version": null
+    }
+   ],
+   "resource_type": "model",
+   "schema": "intermediate",
+   "sources": [],
+   "tags": [
+    "intermediate"
+   ],
+   "time_spine": null,
+   "unique_id": "model.datahub_dbt.int_order_payments",
+   "version": null
+  },
+  "model.datahub_dbt.stg_customers": {
+   "access": "protected",
+   "alias": "stg_customers",
+   "columns": {
+    "country_code": {
+     "config": {
+      "meta": {},
+      "tags": []
+     },
+     "constraints": [],
+     "data_type": null,
+     "description": "Code pays ISO 3166-1 alpha-2.",
+     "dimension": null,
+     "doc_blocks": [],
+     "entity": null,
+     "granularity": null,
+     "meta": {},
+     "name": "country_code",
+     "quote": null,
+     "tags": []
+    },
+    "customer_id": {
+     "config": {
+      "meta": {},
+      "tags": []
+     },
+     "constraints": [],
+     "data_type": null,
+     "description": "Identifiant technique du client.",
+     "dimension": null,
+     "doc_blocks": [],
+     "entity": null,
+     "granularity": null,
+     "meta": {},
+     "name": "customer_id",
+     "quote": null,
+     "tags": []
+    },
+    "email": {
+     "config": {
+      "meta": {
+       "pii": true
+      },
+      "tags": []
+     },
+     "constraints": [],
+     "data_type": null,
+     "description": "Email normalis\u00e9 (PII).",
+     "dimension": null,
+     "doc_blocks": [],
+     "entity": null,
+     "granularity": null,
+     "meta": {
+      "pii": true
+     },
+     "name": "email",
+     "quote": null,
+     "tags": []
+    }
+   },
+   "compiled": true,
+   "compiled_code": "-- Nettoyage et typage des clients bruts.\nselect\n    cast(customer_id as integer)            as customer_id,\n    trim(first_name)                        as first_name,\n    trim(last_name)                         as last_name,\n    lower(trim(email))                      as email,\n    upper(country_code)                     as country_code,\n    cast(created_at as timestamp)           as created_at,\n    cast(_loaded_at as timestamp)           as loaded_at\nfrom \"datahub_dev\".\"raw\".\"customers\"",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/staging/stg_customers.sql",
+   "config": {
+    "access": "protected",
+    "alias": null,
+    "batch_size": null,
+    "begin": null,
+    "column_types": {},
+    "concurrent_batches": null,
+    "contract": {
+     "alias_types": true,
+     "enforced": false
+    },
+    "database": null,
+    "docs": {
+     "node_color": null,
+     "show": true
+    },
+    "enabled": true,
+    "event_time": null,
+    "freshness": null,
+    "full_refresh": null,
+    "grants": {},
+    "group": null,
+    "incremental_strategy": null,
+    "latest_version_pointer": {
+     "alias": null,
+     "enabled": null
+    },
+    "lookback": 1,
+    "materialized": "view",
+    "meta": {
+     "owner": "data-team"
+    },
+    "on_configuration_change": "apply",
+    "on_error": null,
+    "on_schema_change": "ignore",
+    "packages": [],
+    "persist_docs": {},
+    "post-hook": [],
+    "pre-hook": [],
+    "quoting": {},
+    "schema": "staging",
+    "static_analysis": null,
+    "tags": [
+     "staging"
+    ],
+    "unique_key": null
+   },
+   "constraints": [],
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [],
+    "nodes": [
+     "source.datahub_dbt.raw.customers"
+    ]
+   },
+   "deprecation_date": null,
+   "description": "Clients nettoy\u00e9s : emails en minuscules, codes pays normalis\u00e9s.",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "fqn": [
+    "datahub_dbt",
+    "staging",
+    "stg_customers"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "latest_version": null,
+   "meta": {
+    "owner": "data-team"
+   },
+   "metrics": [],
+   "name": "stg_customers",
+   "original_file_path": "models/staging/stg_customers.sql",
+   "package_name": "datahub_dbt",
+   "path": "staging/stg_customers.sql",
+   "primary_key": [
+    "customer_id"
+   ],
+   "raw_code": "-- Nettoyage et typage des clients bruts.\nselect\n    cast(customer_id as integer)            as customer_id,\n    trim(first_name)                        as first_name,\n    trim(last_name)                         as last_name,\n    lower(trim(email))                      as email,\n    upper(country_code)                     as country_code,\n    cast(created_at as timestamp)           as created_at,\n    cast(_loaded_at as timestamp)           as loaded_at\nfrom {{ source('raw', 'customers') }}",
+   "refs": [],
+   "resource_type": "model",
+   "schema": "staging",
+   "sources": [
+    [
+     "raw",
+     "customers"
+    ]
+   ],
+   "tags": [
+    "staging"
+   ],
+   "time_spine": null,
+   "unique_id": "model.datahub_dbt.stg_customers",
+   "version": null
+  },
+  "model.datahub_dbt.stg_orders": {
+   "access": "protected",
+   "alias": "stg_orders",
+   "columns": {
+    "amount": {
+     "config": {
+      "meta": {},
+      "tags": []
+     },
+     "constraints": [],
+     "data_type": null,
+     "description": "Montant TTC de la commande (EUR).",
+     "dimension": null,
+     "doc_blocks": [],
+     "entity": null,
+     "granularity": null,
+     "meta": {},
+     "name": "amount",
+     "quote": null,
+     "tags": []
+    },
+    "customer_id": {
+     "config": {
+      "meta": {},
+      "tags": []
+     },
+     "constraints": [],
+     "data_type": null,
+     "description": "Client ayant pass\u00e9 la commande.",
+     "dimension": null,
+     "doc_blocks": [],
+     "entity": null,
+     "granularity": null,
+     "meta": {},
+     "name": "customer_id",
+     "quote": null,
+     "tags": []
+    },
+    "order_id": {
+     "config": {
+      "meta": {},
+      "tags": []
+     },
+     "constraints": [],
+     "data_type": null,
+     "description": "Identifiant de commande.",
+     "dimension": null,
+     "doc_blocks": [],
+     "entity": null,
+     "granularity": null,
+     "meta": {},
+     "name": "order_id",
+     "quote": null,
+     "tags": []
+    },
+    "status": {
+     "config": {
+      "meta": {},
+      "tags": []
+     },
+     "constraints": [],
+     "data_type": null,
+     "description": "Statut de la commande.",
+     "dimension": null,
+     "doc_blocks": [],
+     "entity": null,
+     "granularity": null,
+     "meta": {},
+     "name": "status",
+     "quote": null,
+     "tags": []
+    }
+   },
+   "compiled": true,
+   "compiled_code": "-- Nettoyage et typage des commandes brutes.\nselect\n    cast(order_id as varchar)               as order_id,\n    cast(customer_id as integer)            as customer_id,\n    cast(order_date as date)                as order_date,\n    lower(status)                           as status,\n    product_category,\n    cast(amount as decimal(12, 2))          as amount,\n    cast(_partition_date as date)           as partition_date,\n    cast(_loaded_at as timestamp)           as loaded_at\nfrom \"datahub_dev\".\"raw\".\"orders\"",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/staging/stg_orders.sql",
+   "config": {
+    "access": "protected",
+    "alias": null,
+    "batch_size": null,
+    "begin": null,
+    "column_types": {},
+    "concurrent_batches": null,
+    "contract": {
+     "alias_types": true,
+     "enforced": false
+    },
+    "database": null,
+    "docs": {
+     "node_color": null,
+     "show": true
+    },
+    "enabled": true,
+    "event_time": null,
+    "freshness": null,
+    "full_refresh": null,
+    "grants": {},
+    "group": null,
+    "incremental_strategy": null,
+    "latest_version_pointer": {
+     "alias": null,
+     "enabled": null
+    },
+    "lookback": 1,
+    "materialized": "view",
+    "meta": {
+     "owner": "data-team"
+    },
+    "on_configuration_change": "apply",
+    "on_error": null,
+    "on_schema_change": "ignore",
+    "packages": [],
+    "persist_docs": {},
+    "post-hook": [],
+    "pre-hook": [],
+    "quoting": {},
+    "schema": "staging",
+    "static_analysis": null,
+    "tags": [
+     "staging"
+    ],
+    "unique_key": null
+   },
+   "constraints": [],
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [],
+    "nodes": [
+     "source.datahub_dbt.raw.orders"
+    ]
+   },
+   "deprecation_date": null,
+   "description": "Commandes nettoy\u00e9es et typ\u00e9es.",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "fqn": [
+    "datahub_dbt",
+    "staging",
+    "stg_orders"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "latest_version": null,
+   "meta": {
+    "owner": "data-team"
+   },
+   "metrics": [],
+   "name": "stg_orders",
+   "original_file_path": "models/staging/stg_orders.sql",
+   "package_name": "datahub_dbt",
+   "path": "staging/stg_orders.sql",
+   "primary_key": [
+    "order_id"
+   ],
+   "raw_code": "-- Nettoyage et typage des commandes brutes.\nselect\n    cast(order_id as varchar)               as order_id,\n    cast(customer_id as integer)            as customer_id,\n    cast(order_date as date)                as order_date,\n    lower(status)                           as status,\n    product_category,\n    cast(amount as decimal(12, 2))          as amount,\n    cast(_partition_date as date)           as partition_date,\n    cast(_loaded_at as timestamp)           as loaded_at\nfrom {{ source('raw', 'orders') }}",
+   "refs": [],
+   "resource_type": "model",
+   "schema": "staging",
+   "sources": [
+    [
+     "raw",
+     "orders"
+    ]
+   ],
+   "tags": [
+    "staging"
+   ],
+   "time_spine": null,
+   "unique_id": "model.datahub_dbt.stg_orders",
+   "version": null
+  },
+  "model.datahub_dbt.stg_payments": {
+   "access": "protected",
+   "alias": "stg_payments",
+   "columns": {
+    "amount": {
+     "config": {
+      "meta": {},
+      "tags": []
+     },
+     "constraints": [],
+     "data_type": null,
+     "description": "Montant pay\u00e9 (EUR).",
+     "dimension": null,
+     "doc_blocks": [],
+     "entity": null,
+     "granularity": null,
+     "meta": {},
+     "name": "amount",
+     "quote": null,
+     "tags": []
+    },
+    "order_id": {
+     "config": {
+      "meta": {},
+      "tags": []
+     },
+     "constraints": [],
+     "data_type": null,
+     "description": "Commande pay\u00e9e.",
+     "dimension": null,
+     "doc_blocks": [],
+     "entity": null,
+     "granularity": null,
+     "meta": {},
+     "name": "order_id",
+     "quote": null,
+     "tags": []
+    },
+    "payment_id": {
+     "config": {
+      "meta": {},
+      "tags": []
+     },
+     "constraints": [],
+     "data_type": null,
+     "description": "Identifiant de paiement.",
+     "dimension": null,
+     "doc_blocks": [],
+     "entity": null,
+     "granularity": null,
+     "meta": {},
+     "name": "payment_id",
+     "quote": null,
+     "tags": []
+    },
+    "payment_method": {
+     "config": {
+      "meta": {},
+      "tags": []
+     },
+     "constraints": [],
+     "data_type": null,
+     "description": "Moyen de paiement.",
+     "dimension": null,
+     "doc_blocks": [],
+     "entity": null,
+     "granularity": null,
+     "meta": {},
+     "name": "payment_method",
+     "quote": null,
+     "tags": []
+    }
+   },
+   "compiled": true,
+   "compiled_code": "-- Nettoyage et typage des paiements bruts.\nselect\n    cast(payment_id as varchar)             as payment_id,\n    cast(order_id as varchar)               as order_id,\n    lower(payment_method)                   as payment_method,\n    cast(amount as decimal(12, 2))          as amount,\n    cast(paid_at as timestamp)              as paid_at,\n    cast(_partition_date as date)           as partition_date\nfrom \"datahub_dev\".\"raw\".\"payments\"",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/staging/stg_payments.sql",
+   "config": {
+    "access": "protected",
+    "alias": null,
+    "batch_size": null,
+    "begin": null,
+    "column_types": {},
+    "concurrent_batches": null,
+    "contract": {
+     "alias_types": true,
+     "enforced": false
+    },
+    "database": null,
+    "docs": {
+     "node_color": null,
+     "show": true
+    },
+    "enabled": true,
+    "event_time": null,
+    "freshness": null,
+    "full_refresh": null,
+    "grants": {},
+    "group": null,
+    "incremental_strategy": null,
+    "latest_version_pointer": {
+     "alias": null,
+     "enabled": null
+    },
+    "lookback": 1,
+    "materialized": "view",
+    "meta": {
+     "owner": "data-team"
+    },
+    "on_configuration_change": "apply",
+    "on_error": null,
+    "on_schema_change": "ignore",
+    "packages": [],
+    "persist_docs": {},
+    "post-hook": [],
+    "pre-hook": [],
+    "quoting": {},
+    "schema": "staging",
+    "static_analysis": null,
+    "tags": [
+     "staging"
+    ],
+    "unique_key": null
+   },
+   "constraints": [],
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [],
+    "nodes": [
+     "source.datahub_dbt.raw.payments"
+    ]
+   },
+   "deprecation_date": null,
+   "description": "Paiements nettoy\u00e9s et typ\u00e9s.",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "fqn": [
+    "datahub_dbt",
+    "staging",
+    "stg_payments"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "latest_version": null,
+   "meta": {
+    "owner": "data-team"
+   },
+   "metrics": [],
+   "name": "stg_payments",
+   "original_file_path": "models/staging/stg_payments.sql",
+   "package_name": "datahub_dbt",
+   "path": "staging/stg_payments.sql",
+   "primary_key": [
+    "payment_id"
+   ],
+   "raw_code": "-- Nettoyage et typage des paiements bruts.\nselect\n    cast(payment_id as varchar)             as payment_id,\n    cast(order_id as varchar)               as order_id,\n    lower(payment_method)                   as payment_method,\n    cast(amount as decimal(12, 2))          as amount,\n    cast(paid_at as timestamp)              as paid_at,\n    cast(_partition_date as date)           as partition_date\nfrom {{ source('raw', 'payments') }}",
+   "refs": [],
+   "resource_type": "model",
+   "schema": "staging",
+   "sources": [
+    [
+     "raw",
+     "payments"
+    ]
+   ],
+   "tags": [
+    "staging"
+   ],
+   "time_spine": null,
+   "unique_id": "model.datahub_dbt.stg_payments",
+   "version": null
+  },
+  "seed.datahub_dbt.country_codes": {
+   "alias": "country_codes",
+   "columns": {
+    "country_code": {
+     "config": {
+      "meta": {},
+      "tags": []
+     },
+     "constraints": [],
+     "data_type": null,
+     "description": "Code pays ISO 3166-1 alpha-2.",
+     "dimension": null,
+     "doc_blocks": [],
+     "entity": null,
+     "granularity": null,
+     "meta": {},
+     "name": "country_code",
+     "quote": null,
+     "tags": []
+    },
+    "country_name": {
+     "config": {
+      "meta": {},
+      "tags": []
+     },
+     "constraints": [],
+     "data_type": null,
+     "description": "Libell\u00e9 du pays.",
+     "dimension": null,
+     "doc_blocks": [],
+     "entity": null,
+     "granularity": null,
+     "meta": {},
+     "name": "country_name",
+     "quote": null,
+     "tags": []
+    },
+    "region": {
+     "config": {
+      "meta": {},
+      "tags": []
+     },
+     "constraints": [],
+     "data_type": null,
+     "description": "R\u00e9gion g\u00e9ographique.",
+     "dimension": null,
+     "doc_blocks": [],
+     "entity": null,
+     "granularity": null,
+     "meta": {},
+     "name": "region",
+     "quote": null,
+     "tags": []
+    }
+   },
+   "config": {
+    "alias": null,
+    "batch_size": null,
+    "begin": null,
+    "column_types": {
+     "country_code": "varchar",
+     "country_name": "varchar",
+     "region": "varchar"
+    },
+    "concurrent_batches": null,
+    "contract": {
+     "alias_types": true,
+     "enforced": false
+    },
+    "database": null,
+    "delimiter": ",",
+    "docs": {
+     "node_color": null,
+     "show": true
+    },
+    "enabled": true,
+    "event_time": null,
+    "full_refresh": null,
+    "grants": {},
+    "group": null,
+    "incremental_strategy": null,
+    "lookback": 1,
+    "materialized": "seed",
+    "meta": {},
+    "on_configuration_change": "apply",
+    "on_schema_change": "ignore",
+    "packages": [],
+    "persist_docs": {},
+    "post-hook": [],
+    "pre-hook": [],
+    "quote_columns": null,
+    "quoting": {},
+    "schema": "reference",
+    "static_analysis": null,
+    "tags": [
+     "reference"
+    ],
+    "unique_key": null
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": []
+   },
+   "description": "R\u00e9f\u00e9rentiel des pays (code ISO 3166-1 alpha-2, libell\u00e9, r\u00e9gion).",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "fqn": [
+    "datahub_dbt",
+    "country_codes"
+   ],
+   "group": null,
+   "meta": {},
+   "name": "country_codes",
+   "original_file_path": "seeds/country_codes.csv",
+   "package_name": "datahub_dbt",
+   "path": "country_codes.csv",
+   "raw_code": "",
+   "resource_type": "seed",
+   "root_path": "/home/claude/datahub/services/dagster/dbt_project",
+   "schema": "reference",
+   "tags": [
+    "reference"
+   ],
+   "unique_id": "seed.datahub_dbt.country_codes"
+  },
+  "test.datahub_dbt.accepted_values_country_codes_region__Europe__Afrique__Am_rique.475dd00c72": {
+   "alias": "accepted_values_country_codes_region__Europe__Afrique__Am_rique",
+   "attached_node": "seed.datahub_dbt.country_codes",
+   "column_name": "region",
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "\n    \n    \n\nwith all_values as (\n\n    select\n        region as value_field,\n        count(*) as n_records\n\n    from \"datahub_dev\".\"reference\".\"country_codes\"\n    group by region\n\n)\n\nselect *\nfrom all_values\nwhere value_field not in (\n    'Europe','Afrique','Am\u00e9rique'\n)\n\n\n",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/seeds/seeds.yml/accepted_values_country_codes_region__Europe__Afrique__Am_rique.sql",
+   "config": {
+    "alias": null,
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "ERROR",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [
+     "macro.dbt.test_accepted_values",
+     "macro.dbt.get_where_subquery"
+    ],
+    "nodes": [
+     "seed.datahub_dbt.country_codes"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "file_key_name": "seeds.country_codes",
+   "fqn": [
+    "datahub_dbt",
+    "accepted_values_country_codes_region__Europe__Afrique__Am_rique"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "accepted_values_country_codes_region__Europe__Afrique__Am_rique",
+   "original_file_path": "seeds/seeds.yml",
+   "package_name": "datahub_dbt",
+   "path": "accepted_values_country_codes_region__Europe__Afrique__Am_rique.sql",
+   "raw_code": "{{ test_accepted_values(**_dbt_generic_test_kwargs) }}",
+   "refs": [
+    {
+     "name": "country_codes",
+     "package": null,
+     "version": null
+    }
+   ],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [],
+   "tags": [],
+   "test_metadata": {
+    "kwargs": {
+     "column_name": "region",
+     "model": "{{ get_where_subquery(ref('country_codes')) }}",
+     "values": [
+      "Europe",
+      "Afrique",
+      "Am\u00e9rique"
+     ]
+    },
+    "name": "accepted_values",
+    "namespace": null
+   },
+   "unique_id": "test.datahub_dbt.accepted_values_country_codes_region__Europe__Afrique__Am_rique.475dd00c72"
+  },
+  "test.datahub_dbt.accepted_values_dim_customers_customer_tier__gold__silver__bronze.3209902ac4": {
+   "alias": "accepted_values_dim_customers_3523f17534ee395715d02d760c8b79a0",
+   "attached_node": "model.datahub_dbt.dim_customers",
+   "column_name": "customer_tier",
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "\n    \n    \n\nwith all_values as (\n\n    select\n        customer_tier as value_field,\n        count(*) as n_records\n\n    from \"datahub_dev\".\"marts\".\"dim_customers\"\n    group by customer_tier\n\n)\n\nselect *\nfrom all_values\nwhere value_field not in (\n    'gold','silver','bronze'\n)\n\n\n",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/marts/core/_core.yml/accepted_values_dim_customers_3523f17534ee395715d02d760c8b79a0.sql",
+   "config": {
+    "alias": "accepted_values_dim_customers_3523f17534ee395715d02d760c8b79a0",
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "ERROR",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [
+     "macro.dbt.test_accepted_values",
+     "macro.dbt.get_where_subquery"
+    ],
+    "nodes": [
+     "model.datahub_dbt.dim_customers"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "file_key_name": "models.dim_customers",
+   "fqn": [
+    "datahub_dbt",
+    "marts",
+    "core",
+    "accepted_values_dim_customers_customer_tier__gold__silver__bronze"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "accepted_values_dim_customers_customer_tier__gold__silver__bronze",
+   "original_file_path": "models/marts/core/_core.yml",
+   "package_name": "datahub_dbt",
+   "path": "accepted_values_dim_customers_3523f17534ee395715d02d760c8b79a0.sql",
+   "raw_code": "{{ test_accepted_values(**_dbt_generic_test_kwargs) }}{{ config(alias=\"accepted_values_dim_customers_3523f17534ee395715d02d760c8b79a0\") }}",
+   "refs": [
+    {
+     "name": "dim_customers",
+     "package": null,
+     "version": null
+    }
+   ],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [],
+   "tags": [],
+   "test_metadata": {
+    "kwargs": {
+     "column_name": "customer_tier",
+     "model": "{{ get_where_subquery(ref('dim_customers')) }}",
+     "values": [
+      "gold",
+      "silver",
+      "bronze"
+     ]
+    },
+    "name": "accepted_values",
+    "namespace": null
+   },
+   "unique_id": "test.datahub_dbt.accepted_values_dim_customers_customer_tier__gold__silver__bronze.3209902ac4"
+  },
+  "test.datahub_dbt.accepted_values_stg_orders_status__placed__shipped__completed__returned__cancelled.cb8754312d": {
+   "alias": "accepted_values_stg_orders_47ad05fce107e4ad8ecaceef3ffb9db6",
+   "attached_node": "model.datahub_dbt.stg_orders",
+   "column_name": "status",
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "\n    \n    \n\nwith all_values as (\n\n    select\n        status as value_field,\n        count(*) as n_records\n\n    from \"datahub_dev\".\"staging\".\"stg_orders\"\n    group by status\n\n)\n\nselect *\nfrom all_values\nwhere value_field not in (\n    'placed','shipped','completed','returned','cancelled'\n)\n\n\n",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/staging/_staging.yml/accepted_values_stg_orders_47ad05fce107e4ad8ecaceef3ffb9db6.sql",
+   "config": {
+    "alias": "accepted_values_stg_orders_47ad05fce107e4ad8ecaceef3ffb9db6",
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "ERROR",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [
+     "macro.dbt.test_accepted_values",
+     "macro.dbt.get_where_subquery"
+    ],
+    "nodes": [
+     "model.datahub_dbt.stg_orders"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "file_key_name": "models.stg_orders",
+   "fqn": [
+    "datahub_dbt",
+    "staging",
+    "accepted_values_stg_orders_status__placed__shipped__completed__returned__cancelled"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "accepted_values_stg_orders_status__placed__shipped__completed__returned__cancelled",
+   "original_file_path": "models/staging/_staging.yml",
+   "package_name": "datahub_dbt",
+   "path": "accepted_values_stg_orders_47ad05fce107e4ad8ecaceef3ffb9db6.sql",
+   "raw_code": "{{ test_accepted_values(**_dbt_generic_test_kwargs) }}{{ config(alias=\"accepted_values_stg_orders_47ad05fce107e4ad8ecaceef3ffb9db6\") }}",
+   "refs": [
+    {
+     "name": "stg_orders",
+     "package": null,
+     "version": null
+    }
+   ],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [],
+   "tags": [],
+   "test_metadata": {
+    "kwargs": {
+     "column_name": "status",
+     "model": "{{ get_where_subquery(ref('stg_orders')) }}",
+     "values": [
+      "placed",
+      "shipped",
+      "completed",
+      "returned",
+      "cancelled"
+     ]
+    },
+    "name": "accepted_values",
+    "namespace": null
+   },
+   "unique_id": "test.datahub_dbt.accepted_values_stg_orders_status__placed__shipped__completed__returned__cancelled.cb8754312d"
+  },
+  "test.datahub_dbt.accepted_values_stg_payments_payment_method__card__bank_transfer__paypal__voucher.a6cf974ae7": {
+   "alias": "accepted_values_stg_payments_9f30668707c3a20e4c2ff8c7c52dff40",
+   "attached_node": "model.datahub_dbt.stg_payments",
+   "column_name": "payment_method",
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "\n    \n    \n\nwith all_values as (\n\n    select\n        payment_method as value_field,\n        count(*) as n_records\n\n    from \"datahub_dev\".\"staging\".\"stg_payments\"\n    group by payment_method\n\n)\n\nselect *\nfrom all_values\nwhere value_field not in (\n    'card','bank_transfer','paypal','voucher'\n)\n\n\n",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/staging/_staging.yml/accepted_values_stg_payments_9f30668707c3a20e4c2ff8c7c52dff40.sql",
+   "config": {
+    "alias": "accepted_values_stg_payments_9f30668707c3a20e4c2ff8c7c52dff40",
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "ERROR",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [
+     "macro.dbt.test_accepted_values",
+     "macro.dbt.get_where_subquery"
+    ],
+    "nodes": [
+     "model.datahub_dbt.stg_payments"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "file_key_name": "models.stg_payments",
+   "fqn": [
+    "datahub_dbt",
+    "staging",
+    "accepted_values_stg_payments_payment_method__card__bank_transfer__paypal__voucher"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "accepted_values_stg_payments_payment_method__card__bank_transfer__paypal__voucher",
+   "original_file_path": "models/staging/_staging.yml",
+   "package_name": "datahub_dbt",
+   "path": "accepted_values_stg_payments_9f30668707c3a20e4c2ff8c7c52dff40.sql",
+   "raw_code": "{{ test_accepted_values(**_dbt_generic_test_kwargs) }}{{ config(alias=\"accepted_values_stg_payments_9f30668707c3a20e4c2ff8c7c52dff40\") }}",
+   "refs": [
+    {
+     "name": "stg_payments",
+     "package": null,
+     "version": null
+    }
+   ],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [],
+   "tags": [],
+   "test_metadata": {
+    "kwargs": {
+     "column_name": "payment_method",
+     "model": "{{ get_where_subquery(ref('stg_payments')) }}",
+     "values": [
+      "card",
+      "bank_transfer",
+      "paypal",
+      "voucher"
+     ]
+    },
+    "name": "accepted_values",
+    "namespace": null
+   },
+   "unique_id": "test.datahub_dbt.accepted_values_stg_payments_payment_method__card__bank_transfer__paypal__voucher.a6cf974ae7"
+  },
+  "test.datahub_dbt.assert_payments_cover_completed_orders": {
+   "alias": "assert_payments_cover_completed_orders",
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "-- Une commande \"completed\" doit \u00eatre enti\u00e8rement pay\u00e9e (tol\u00e9rance 1 centime).\n\nselect order_id, order_amount, paid_amount\nfrom \"datahub_dev\".\"marts\".\"fct_orders\"\nwhere status = 'completed'\n  and abs(order_amount - paid_amount) > 0.01",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/tests/singular/assert_payments_cover_completed_orders.sql",
+   "config": {
+    "alias": null,
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "warn",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [],
+    "nodes": [
+     "model.datahub_dbt.fct_orders"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "fqn": [
+    "datahub_dbt",
+    "singular",
+    "assert_payments_cover_completed_orders"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "assert_payments_cover_completed_orders",
+   "original_file_path": "tests/singular/assert_payments_cover_completed_orders.sql",
+   "package_name": "datahub_dbt",
+   "path": "singular/assert_payments_cover_completed_orders.sql",
+   "raw_code": "-- Une commande \"completed\" doit \u00eatre enti\u00e8rement pay\u00e9e (tol\u00e9rance 1 centime).\n{{ config(severity='warn') }}\nselect order_id, order_amount, paid_amount\nfrom {{ ref('fct_orders') }}\nwhere status = 'completed'\n  and abs(order_amount - paid_amount) > 0.01",
+   "refs": [
+    {
+     "name": "fct_orders",
+     "package": null,
+     "version": null
+    }
+   ],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [],
+   "tags": [],
+   "unique_id": "test.datahub_dbt.assert_payments_cover_completed_orders"
+  },
+  "test.datahub_dbt.assert_revenue_not_greater_than_orders": {
+   "alias": "assert_revenue_not_greater_than_orders",
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "-- Le CA quotidien ne peut pas d\u00e9passer la somme des montants de commandes du jour.\nselect a.order_date\nfrom \"datahub_dev\".\"marts\".\"agg_daily_revenue\" a\njoin (\n    select order_date, sum(order_amount) as total\n    from \"datahub_dev\".\"marts\".\"fct_orders\"\n    group by order_date\n) f using (order_date)\nwhere a.revenue > f.total",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/tests/singular/assert_revenue_not_greater_than_orders.sql",
+   "config": {
+    "alias": null,
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "ERROR",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [],
+    "nodes": [
+     "model.datahub_dbt.agg_daily_revenue",
+     "model.datahub_dbt.fct_orders"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "fqn": [
+    "datahub_dbt",
+    "singular",
+    "assert_revenue_not_greater_than_orders"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "assert_revenue_not_greater_than_orders",
+   "original_file_path": "tests/singular/assert_revenue_not_greater_than_orders.sql",
+   "package_name": "datahub_dbt",
+   "path": "singular/assert_revenue_not_greater_than_orders.sql",
+   "raw_code": "-- Le CA quotidien ne peut pas d\u00e9passer la somme des montants de commandes du jour.\nselect a.order_date\nfrom {{ ref('agg_daily_revenue') }} a\njoin (\n    select order_date, sum(order_amount) as total\n    from {{ ref('fct_orders') }}\n    group by order_date\n) f using (order_date)\nwhere a.revenue > f.total",
+   "refs": [
+    {
+     "name": "agg_daily_revenue",
+     "package": null,
+     "version": null
+    },
+    {
+     "name": "fct_orders",
+     "package": null,
+     "version": null
+    }
+   ],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [],
+   "tags": [],
+   "unique_id": "test.datahub_dbt.assert_revenue_not_greater_than_orders"
+  },
+  "test.datahub_dbt.not_negative_agg_daily_revenue_revenue.72e5a0bb0d": {
+   "alias": "not_negative_agg_daily_revenue_revenue",
+   "attached_node": "model.datahub_dbt.agg_daily_revenue",
+   "column_name": "revenue",
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "\n    select revenue\n    from \"datahub_dev\".\"marts\".\"agg_daily_revenue\"\n    where revenue < 0\n",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/marts/finance/_finance.yml/not_negative_agg_daily_revenue_revenue.sql",
+   "config": {
+    "alias": null,
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "ERROR",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [
+     "macro.datahub_dbt.test_not_negative",
+     "macro.dbt.get_where_subquery"
+    ],
+    "nodes": [
+     "model.datahub_dbt.agg_daily_revenue"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "file_key_name": "models.agg_daily_revenue",
+   "fqn": [
+    "datahub_dbt",
+    "marts",
+    "finance",
+    "not_negative_agg_daily_revenue_revenue"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "not_negative_agg_daily_revenue_revenue",
+   "original_file_path": "models/marts/finance/_finance.yml",
+   "package_name": "datahub_dbt",
+   "path": "not_negative_agg_daily_revenue_revenue.sql",
+   "raw_code": "{{ test_not_negative(**_dbt_generic_test_kwargs) }}",
+   "refs": [
+    {
+     "name": "agg_daily_revenue",
+     "package": null,
+     "version": null
+    }
+   ],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [],
+   "tags": [],
+   "test_metadata": {
+    "kwargs": {
+     "column_name": "revenue",
+     "model": "{{ get_where_subquery(ref('agg_daily_revenue')) }}"
+    },
+    "name": "not_negative",
+    "namespace": null
+   },
+   "unique_id": "test.datahub_dbt.not_negative_agg_daily_revenue_revenue.72e5a0bb0d"
+  },
+  "test.datahub_dbt.not_negative_dim_customers_lifetime_value.4e02dac5f9": {
+   "alias": "not_negative_dim_customers_lifetime_value",
+   "attached_node": "model.datahub_dbt.dim_customers",
+   "column_name": "lifetime_value",
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "\n    select lifetime_value\n    from \"datahub_dev\".\"marts\".\"dim_customers\"\n    where lifetime_value < 0\n",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/marts/core/_core.yml/not_negative_dim_customers_lifetime_value.sql",
+   "config": {
+    "alias": null,
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "ERROR",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [
+     "macro.datahub_dbt.test_not_negative",
+     "macro.dbt.get_where_subquery"
+    ],
+    "nodes": [
+     "model.datahub_dbt.dim_customers"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "file_key_name": "models.dim_customers",
+   "fqn": [
+    "datahub_dbt",
+    "marts",
+    "core",
+    "not_negative_dim_customers_lifetime_value"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "not_negative_dim_customers_lifetime_value",
+   "original_file_path": "models/marts/core/_core.yml",
+   "package_name": "datahub_dbt",
+   "path": "not_negative_dim_customers_lifetime_value.sql",
+   "raw_code": "{{ test_not_negative(**_dbt_generic_test_kwargs) }}",
+   "refs": [
+    {
+     "name": "dim_customers",
+     "package": null,
+     "version": null
+    }
+   ],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [],
+   "tags": [],
+   "test_metadata": {
+    "kwargs": {
+     "column_name": "lifetime_value",
+     "model": "{{ get_where_subquery(ref('dim_customers')) }}"
+    },
+    "name": "not_negative",
+    "namespace": null
+   },
+   "unique_id": "test.datahub_dbt.not_negative_dim_customers_lifetime_value.4e02dac5f9"
+  },
+  "test.datahub_dbt.not_negative_fct_orders_order_amount.859b9b655e": {
+   "alias": "not_negative_fct_orders_order_amount",
+   "attached_node": "model.datahub_dbt.fct_orders",
+   "column_name": "order_amount",
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "\n    select order_amount\n    from \"datahub_dev\".\"marts\".\"fct_orders\"\n    where order_amount < 0\n",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/marts/core/_core.yml/not_negative_fct_orders_order_amount.sql",
+   "config": {
+    "alias": null,
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "ERROR",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [
+     "macro.datahub_dbt.test_not_negative",
+     "macro.dbt.get_where_subquery"
+    ],
+    "nodes": [
+     "model.datahub_dbt.fct_orders"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "file_key_name": "models.fct_orders",
+   "fqn": [
+    "datahub_dbt",
+    "marts",
+    "core",
+    "not_negative_fct_orders_order_amount"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "not_negative_fct_orders_order_amount",
+   "original_file_path": "models/marts/core/_core.yml",
+   "package_name": "datahub_dbt",
+   "path": "not_negative_fct_orders_order_amount.sql",
+   "raw_code": "{{ test_not_negative(**_dbt_generic_test_kwargs) }}",
+   "refs": [
+    {
+     "name": "fct_orders",
+     "package": null,
+     "version": null
+    }
+   ],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [],
+   "tags": [],
+   "test_metadata": {
+    "kwargs": {
+     "column_name": "order_amount",
+     "model": "{{ get_where_subquery(ref('fct_orders')) }}"
+    },
+    "name": "not_negative",
+    "namespace": null
+   },
+   "unique_id": "test.datahub_dbt.not_negative_fct_orders_order_amount.859b9b655e"
+  },
+  "test.datahub_dbt.not_negative_fct_orders_paid_amount.4a6b79883a": {
+   "alias": "not_negative_fct_orders_paid_amount",
+   "attached_node": "model.datahub_dbt.fct_orders",
+   "column_name": "paid_amount",
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "\n    select paid_amount\n    from \"datahub_dev\".\"marts\".\"fct_orders\"\n    where paid_amount < 0\n",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/marts/core/_core.yml/not_negative_fct_orders_paid_amount.sql",
+   "config": {
+    "alias": null,
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "ERROR",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [
+     "macro.datahub_dbt.test_not_negative",
+     "macro.dbt.get_where_subquery"
+    ],
+    "nodes": [
+     "model.datahub_dbt.fct_orders"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "file_key_name": "models.fct_orders",
+   "fqn": [
+    "datahub_dbt",
+    "marts",
+    "core",
+    "not_negative_fct_orders_paid_amount"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "not_negative_fct_orders_paid_amount",
+   "original_file_path": "models/marts/core/_core.yml",
+   "package_name": "datahub_dbt",
+   "path": "not_negative_fct_orders_paid_amount.sql",
+   "raw_code": "{{ test_not_negative(**_dbt_generic_test_kwargs) }}",
+   "refs": [
+    {
+     "name": "fct_orders",
+     "package": null,
+     "version": null
+    }
+   ],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [],
+   "tags": [],
+   "test_metadata": {
+    "kwargs": {
+     "column_name": "paid_amount",
+     "model": "{{ get_where_subquery(ref('fct_orders')) }}"
+    },
+    "name": "not_negative",
+    "namespace": null
+   },
+   "unique_id": "test.datahub_dbt.not_negative_fct_orders_paid_amount.4a6b79883a"
+  },
+  "test.datahub_dbt.not_negative_int_order_payments_paid_amount.62aea324f2": {
+   "alias": "not_negative_int_order_payments_paid_amount",
+   "attached_node": "model.datahub_dbt.int_order_payments",
+   "column_name": "paid_amount",
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "\n    select paid_amount\n    from \"datahub_dev\".\"intermediate\".\"int_order_payments\"\n    where paid_amount < 0\n",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/intermediate/_intermediate.yml/not_negative_int_order_payments_paid_amount.sql",
+   "config": {
+    "alias": null,
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "ERROR",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [
+     "macro.datahub_dbt.test_not_negative",
+     "macro.dbt.get_where_subquery"
+    ],
+    "nodes": [
+     "model.datahub_dbt.int_order_payments"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "file_key_name": "models.int_order_payments",
+   "fqn": [
+    "datahub_dbt",
+    "intermediate",
+    "not_negative_int_order_payments_paid_amount"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "not_negative_int_order_payments_paid_amount",
+   "original_file_path": "models/intermediate/_intermediate.yml",
+   "package_name": "datahub_dbt",
+   "path": "not_negative_int_order_payments_paid_amount.sql",
+   "raw_code": "{{ test_not_negative(**_dbt_generic_test_kwargs) }}",
+   "refs": [
+    {
+     "name": "int_order_payments",
+     "package": null,
+     "version": null
+    }
+   ],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [],
+   "tags": [],
+   "test_metadata": {
+    "kwargs": {
+     "column_name": "paid_amount",
+     "model": "{{ get_where_subquery(ref('int_order_payments')) }}"
+    },
+    "name": "not_negative",
+    "namespace": null
+   },
+   "unique_id": "test.datahub_dbt.not_negative_int_order_payments_paid_amount.62aea324f2"
+  },
+  "test.datahub_dbt.not_negative_stg_orders_amount.6483c5955e": {
+   "alias": "not_negative_stg_orders_amount",
+   "attached_node": "model.datahub_dbt.stg_orders",
+   "column_name": "amount",
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "\n    select amount\n    from \"datahub_dev\".\"staging\".\"stg_orders\"\n    where amount < 0\n",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/staging/_staging.yml/not_negative_stg_orders_amount.sql",
+   "config": {
+    "alias": null,
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "ERROR",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [
+     "macro.datahub_dbt.test_not_negative",
+     "macro.dbt.get_where_subquery"
+    ],
+    "nodes": [
+     "model.datahub_dbt.stg_orders"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "file_key_name": "models.stg_orders",
+   "fqn": [
+    "datahub_dbt",
+    "staging",
+    "not_negative_stg_orders_amount"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "not_negative_stg_orders_amount",
+   "original_file_path": "models/staging/_staging.yml",
+   "package_name": "datahub_dbt",
+   "path": "not_negative_stg_orders_amount.sql",
+   "raw_code": "{{ test_not_negative(**_dbt_generic_test_kwargs) }}",
+   "refs": [
+    {
+     "name": "stg_orders",
+     "package": null,
+     "version": null
+    }
+   ],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [],
+   "tags": [],
+   "test_metadata": {
+    "kwargs": {
+     "column_name": "amount",
+     "model": "{{ get_where_subquery(ref('stg_orders')) }}"
+    },
+    "name": "not_negative",
+    "namespace": null
+   },
+   "unique_id": "test.datahub_dbt.not_negative_stg_orders_amount.6483c5955e"
+  },
+  "test.datahub_dbt.not_negative_stg_payments_amount.a68995b59b": {
+   "alias": "not_negative_stg_payments_amount",
+   "attached_node": "model.datahub_dbt.stg_payments",
+   "column_name": "amount",
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "\n    select amount\n    from \"datahub_dev\".\"staging\".\"stg_payments\"\n    where amount < 0\n",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/staging/_staging.yml/not_negative_stg_payments_amount.sql",
+   "config": {
+    "alias": null,
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "ERROR",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [
+     "macro.datahub_dbt.test_not_negative",
+     "macro.dbt.get_where_subquery"
+    ],
+    "nodes": [
+     "model.datahub_dbt.stg_payments"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "file_key_name": "models.stg_payments",
+   "fqn": [
+    "datahub_dbt",
+    "staging",
+    "not_negative_stg_payments_amount"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "not_negative_stg_payments_amount",
+   "original_file_path": "models/staging/_staging.yml",
+   "package_name": "datahub_dbt",
+   "path": "not_negative_stg_payments_amount.sql",
+   "raw_code": "{{ test_not_negative(**_dbt_generic_test_kwargs) }}",
+   "refs": [
+    {
+     "name": "stg_payments",
+     "package": null,
+     "version": null
+    }
+   ],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [],
+   "tags": [],
+   "test_metadata": {
+    "kwargs": {
+     "column_name": "amount",
+     "model": "{{ get_where_subquery(ref('stg_payments')) }}"
+    },
+    "name": "not_negative",
+    "namespace": null
+   },
+   "unique_id": "test.datahub_dbt.not_negative_stg_payments_amount.a68995b59b"
+  },
+  "test.datahub_dbt.not_null_agg_daily_revenue_order_date.51875ecb2c": {
+   "alias": "not_null_agg_daily_revenue_order_date",
+   "attached_node": "model.datahub_dbt.agg_daily_revenue",
+   "column_name": "order_date",
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "\n    \n    \n\n\n\nselect order_date\nfrom \"datahub_dev\".\"marts\".\"agg_daily_revenue\"\nwhere order_date is null\n\n\n",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/marts/finance/_finance.yml/not_null_agg_daily_revenue_order_date.sql",
+   "config": {
+    "alias": null,
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "ERROR",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [
+     "macro.dbt.test_not_null",
+     "macro.dbt.get_where_subquery"
+    ],
+    "nodes": [
+     "model.datahub_dbt.agg_daily_revenue"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "file_key_name": "models.agg_daily_revenue",
+   "fqn": [
+    "datahub_dbt",
+    "marts",
+    "finance",
+    "not_null_agg_daily_revenue_order_date"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "not_null_agg_daily_revenue_order_date",
+   "original_file_path": "models/marts/finance/_finance.yml",
+   "package_name": "datahub_dbt",
+   "path": "not_null_agg_daily_revenue_order_date.sql",
+   "raw_code": "{{ test_not_null(**_dbt_generic_test_kwargs) }}",
+   "refs": [
+    {
+     "name": "agg_daily_revenue",
+     "package": null,
+     "version": null
+    }
+   ],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [],
+   "tags": [],
+   "test_metadata": {
+    "kwargs": {
+     "column_name": "order_date",
+     "model": "{{ get_where_subquery(ref('agg_daily_revenue')) }}"
+    },
+    "name": "not_null",
+    "namespace": null
+   },
+   "unique_id": "test.datahub_dbt.not_null_agg_daily_revenue_order_date.51875ecb2c"
+  },
+  "test.datahub_dbt.not_null_country_codes_country_code.f36afebdea": {
+   "alias": "not_null_country_codes_country_code",
+   "attached_node": "seed.datahub_dbt.country_codes",
+   "column_name": "country_code",
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "\n    \n    \n\n\n\nselect country_code\nfrom \"datahub_dev\".\"reference\".\"country_codes\"\nwhere country_code is null\n\n\n",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/seeds/seeds.yml/not_null_country_codes_country_code.sql",
+   "config": {
+    "alias": null,
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "ERROR",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [
+     "macro.dbt.test_not_null",
+     "macro.dbt.get_where_subquery"
+    ],
+    "nodes": [
+     "seed.datahub_dbt.country_codes"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "file_key_name": "seeds.country_codes",
+   "fqn": [
+    "datahub_dbt",
+    "not_null_country_codes_country_code"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "not_null_country_codes_country_code",
+   "original_file_path": "seeds/seeds.yml",
+   "package_name": "datahub_dbt",
+   "path": "not_null_country_codes_country_code.sql",
+   "raw_code": "{{ test_not_null(**_dbt_generic_test_kwargs) }}",
+   "refs": [
+    {
+     "name": "country_codes",
+     "package": null,
+     "version": null
+    }
+   ],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [],
+   "tags": [],
+   "test_metadata": {
+    "kwargs": {
+     "column_name": "country_code",
+     "model": "{{ get_where_subquery(ref('country_codes')) }}"
+    },
+    "name": "not_null",
+    "namespace": null
+   },
+   "unique_id": "test.datahub_dbt.not_null_country_codes_country_code.f36afebdea"
+  },
+  "test.datahub_dbt.not_null_country_codes_country_name.b83efc697b": {
+   "alias": "not_null_country_codes_country_name",
+   "attached_node": "seed.datahub_dbt.country_codes",
+   "column_name": "country_name",
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "\n    \n    \n\n\n\nselect country_name\nfrom \"datahub_dev\".\"reference\".\"country_codes\"\nwhere country_name is null\n\n\n",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/seeds/seeds.yml/not_null_country_codes_country_name.sql",
+   "config": {
+    "alias": null,
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "ERROR",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [
+     "macro.dbt.test_not_null",
+     "macro.dbt.get_where_subquery"
+    ],
+    "nodes": [
+     "seed.datahub_dbt.country_codes"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "file_key_name": "seeds.country_codes",
+   "fqn": [
+    "datahub_dbt",
+    "not_null_country_codes_country_name"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "not_null_country_codes_country_name",
+   "original_file_path": "seeds/seeds.yml",
+   "package_name": "datahub_dbt",
+   "path": "not_null_country_codes_country_name.sql",
+   "raw_code": "{{ test_not_null(**_dbt_generic_test_kwargs) }}",
+   "refs": [
+    {
+     "name": "country_codes",
+     "package": null,
+     "version": null
+    }
+   ],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [],
+   "tags": [],
+   "test_metadata": {
+    "kwargs": {
+     "column_name": "country_name",
+     "model": "{{ get_where_subquery(ref('country_codes')) }}"
+    },
+    "name": "not_null",
+    "namespace": null
+   },
+   "unique_id": "test.datahub_dbt.not_null_country_codes_country_name.b83efc697b"
+  },
+  "test.datahub_dbt.not_null_dim_customers_customer_id.dd91cd1c8d": {
+   "alias": "not_null_dim_customers_customer_id",
+   "attached_node": "model.datahub_dbt.dim_customers",
+   "column_name": "customer_id",
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "\n    \n    \n\n\n\nselect customer_id\nfrom \"datahub_dev\".\"marts\".\"dim_customers\"\nwhere customer_id is null\n\n\n",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/marts/core/_core.yml/not_null_dim_customers_customer_id.sql",
+   "config": {
+    "alias": null,
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "ERROR",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [
+     "macro.dbt.test_not_null",
+     "macro.dbt.get_where_subquery"
+    ],
+    "nodes": [
+     "model.datahub_dbt.dim_customers"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "file_key_name": "models.dim_customers",
+   "fqn": [
+    "datahub_dbt",
+    "marts",
+    "core",
+    "not_null_dim_customers_customer_id"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "not_null_dim_customers_customer_id",
+   "original_file_path": "models/marts/core/_core.yml",
+   "package_name": "datahub_dbt",
+   "path": "not_null_dim_customers_customer_id.sql",
+   "raw_code": "{{ test_not_null(**_dbt_generic_test_kwargs) }}",
+   "refs": [
+    {
+     "name": "dim_customers",
+     "package": null,
+     "version": null
+    }
+   ],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [],
+   "tags": [],
+   "test_metadata": {
+    "kwargs": {
+     "column_name": "customer_id",
+     "model": "{{ get_where_subquery(ref('dim_customers')) }}"
+    },
+    "name": "not_null",
+    "namespace": null
+   },
+   "unique_id": "test.datahub_dbt.not_null_dim_customers_customer_id.dd91cd1c8d"
+  },
+  "test.datahub_dbt.not_null_fct_orders_customer_id.16fe324f7b": {
+   "alias": "not_null_fct_orders_customer_id",
+   "attached_node": "model.datahub_dbt.fct_orders",
+   "column_name": "customer_id",
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "\n    \n    \n\n\n\nselect customer_id\nfrom \"datahub_dev\".\"marts\".\"fct_orders\"\nwhere customer_id is null\n\n\n",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/marts/core/_core.yml/not_null_fct_orders_customer_id.sql",
+   "config": {
+    "alias": null,
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "ERROR",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [
+     "macro.dbt.test_not_null",
+     "macro.dbt.get_where_subquery"
+    ],
+    "nodes": [
+     "model.datahub_dbt.fct_orders"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "file_key_name": "models.fct_orders",
+   "fqn": [
+    "datahub_dbt",
+    "marts",
+    "core",
+    "not_null_fct_orders_customer_id"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "not_null_fct_orders_customer_id",
+   "original_file_path": "models/marts/core/_core.yml",
+   "package_name": "datahub_dbt",
+   "path": "not_null_fct_orders_customer_id.sql",
+   "raw_code": "{{ test_not_null(**_dbt_generic_test_kwargs) }}",
+   "refs": [
+    {
+     "name": "fct_orders",
+     "package": null,
+     "version": null
+    }
+   ],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [],
+   "tags": [],
+   "test_metadata": {
+    "kwargs": {
+     "column_name": "customer_id",
+     "model": "{{ get_where_subquery(ref('fct_orders')) }}"
+    },
+    "name": "not_null",
+    "namespace": null
+   },
+   "unique_id": "test.datahub_dbt.not_null_fct_orders_customer_id.16fe324f7b"
+  },
+  "test.datahub_dbt.not_null_fct_orders_order_date.84f0a76362": {
+   "alias": "not_null_fct_orders_order_date",
+   "attached_node": "model.datahub_dbt.fct_orders",
+   "column_name": "order_date",
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "\n    \n    \n\n\n\nselect order_date\nfrom \"datahub_dev\".\"marts\".\"fct_orders\"\nwhere order_date is null\n\n\n",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/marts/core/_core.yml/not_null_fct_orders_order_date.sql",
+   "config": {
+    "alias": null,
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "ERROR",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [
+     "macro.dbt.test_not_null",
+     "macro.dbt.get_where_subquery"
+    ],
+    "nodes": [
+     "model.datahub_dbt.fct_orders"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "file_key_name": "models.fct_orders",
+   "fqn": [
+    "datahub_dbt",
+    "marts",
+    "core",
+    "not_null_fct_orders_order_date"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "not_null_fct_orders_order_date",
+   "original_file_path": "models/marts/core/_core.yml",
+   "package_name": "datahub_dbt",
+   "path": "not_null_fct_orders_order_date.sql",
+   "raw_code": "{{ test_not_null(**_dbt_generic_test_kwargs) }}",
+   "refs": [
+    {
+     "name": "fct_orders",
+     "package": null,
+     "version": null
+    }
+   ],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [],
+   "tags": [],
+   "test_metadata": {
+    "kwargs": {
+     "column_name": "order_date",
+     "model": "{{ get_where_subquery(ref('fct_orders')) }}"
+    },
+    "name": "not_null",
+    "namespace": null
+   },
+   "unique_id": "test.datahub_dbt.not_null_fct_orders_order_date.84f0a76362"
+  },
+  "test.datahub_dbt.not_null_fct_orders_order_id.4e687af8d0": {
+   "alias": "not_null_fct_orders_order_id",
+   "attached_node": "model.datahub_dbt.fct_orders",
+   "column_name": "order_id",
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "\n    \n    \n\n\n\nselect order_id\nfrom \"datahub_dev\".\"marts\".\"fct_orders\"\nwhere order_id is null\n\n\n",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/marts/core/_core.yml/not_null_fct_orders_order_id.sql",
+   "config": {
+    "alias": null,
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "ERROR",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [
+     "macro.dbt.test_not_null",
+     "macro.dbt.get_where_subquery"
+    ],
+    "nodes": [
+     "model.datahub_dbt.fct_orders"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "file_key_name": "models.fct_orders",
+   "fqn": [
+    "datahub_dbt",
+    "marts",
+    "core",
+    "not_null_fct_orders_order_id"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "not_null_fct_orders_order_id",
+   "original_file_path": "models/marts/core/_core.yml",
+   "package_name": "datahub_dbt",
+   "path": "not_null_fct_orders_order_id.sql",
+   "raw_code": "{{ test_not_null(**_dbt_generic_test_kwargs) }}",
+   "refs": [
+    {
+     "name": "fct_orders",
+     "package": null,
+     "version": null
+    }
+   ],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [],
+   "tags": [],
+   "test_metadata": {
+    "kwargs": {
+     "column_name": "order_id",
+     "model": "{{ get_where_subquery(ref('fct_orders')) }}"
+    },
+    "name": "not_null",
+    "namespace": null
+   },
+   "unique_id": "test.datahub_dbt.not_null_fct_orders_order_id.4e687af8d0"
+  },
+  "test.datahub_dbt.not_null_int_order_payments_order_id.57af36bc3b": {
+   "alias": "not_null_int_order_payments_order_id",
+   "attached_node": "model.datahub_dbt.int_order_payments",
+   "column_name": "order_id",
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "\n    \n    \n\n\n\nselect order_id\nfrom \"datahub_dev\".\"intermediate\".\"int_order_payments\"\nwhere order_id is null\n\n\n",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/intermediate/_intermediate.yml/not_null_int_order_payments_order_id.sql",
+   "config": {
+    "alias": null,
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "ERROR",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [
+     "macro.dbt.test_not_null",
+     "macro.dbt.get_where_subquery"
+    ],
+    "nodes": [
+     "model.datahub_dbt.int_order_payments"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "file_key_name": "models.int_order_payments",
+   "fqn": [
+    "datahub_dbt",
+    "intermediate",
+    "not_null_int_order_payments_order_id"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "not_null_int_order_payments_order_id",
+   "original_file_path": "models/intermediate/_intermediate.yml",
+   "package_name": "datahub_dbt",
+   "path": "not_null_int_order_payments_order_id.sql",
+   "raw_code": "{{ test_not_null(**_dbt_generic_test_kwargs) }}",
+   "refs": [
+    {
+     "name": "int_order_payments",
+     "package": null,
+     "version": null
+    }
+   ],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [],
+   "tags": [],
+   "test_metadata": {
+    "kwargs": {
+     "column_name": "order_id",
+     "model": "{{ get_where_subquery(ref('int_order_payments')) }}"
+    },
+    "name": "not_null",
+    "namespace": null
+   },
+   "unique_id": "test.datahub_dbt.not_null_int_order_payments_order_id.57af36bc3b"
+  },
+  "test.datahub_dbt.not_null_stg_customers_customer_id.e2cfb1f9aa": {
+   "alias": "not_null_stg_customers_customer_id",
+   "attached_node": "model.datahub_dbt.stg_customers",
+   "column_name": "customer_id",
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "\n    \n    \n\n\n\nselect customer_id\nfrom \"datahub_dev\".\"staging\".\"stg_customers\"\nwhere customer_id is null\n\n\n",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/staging/_staging.yml/not_null_stg_customers_customer_id.sql",
+   "config": {
+    "alias": null,
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "ERROR",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [
+     "macro.dbt.test_not_null",
+     "macro.dbt.get_where_subquery"
+    ],
+    "nodes": [
+     "model.datahub_dbt.stg_customers"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "file_key_name": "models.stg_customers",
+   "fqn": [
+    "datahub_dbt",
+    "staging",
+    "not_null_stg_customers_customer_id"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "not_null_stg_customers_customer_id",
+   "original_file_path": "models/staging/_staging.yml",
+   "package_name": "datahub_dbt",
+   "path": "not_null_stg_customers_customer_id.sql",
+   "raw_code": "{{ test_not_null(**_dbt_generic_test_kwargs) }}",
+   "refs": [
+    {
+     "name": "stg_customers",
+     "package": null,
+     "version": null
+    }
+   ],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [],
+   "tags": [],
+   "test_metadata": {
+    "kwargs": {
+     "column_name": "customer_id",
+     "model": "{{ get_where_subquery(ref('stg_customers')) }}"
+    },
+    "name": "not_null",
+    "namespace": null
+   },
+   "unique_id": "test.datahub_dbt.not_null_stg_customers_customer_id.e2cfb1f9aa"
+  },
+  "test.datahub_dbt.not_null_stg_customers_email.d7cf761533": {
+   "alias": "not_null_stg_customers_email",
+   "attached_node": "model.datahub_dbt.stg_customers",
+   "column_name": "email",
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "\n    \n    \n\n\n\nselect email\nfrom \"datahub_dev\".\"staging\".\"stg_customers\"\nwhere email is null\n\n\n",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/staging/_staging.yml/not_null_stg_customers_email.sql",
+   "config": {
+    "alias": null,
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "ERROR",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [
+     "macro.dbt.test_not_null",
+     "macro.dbt.get_where_subquery"
+    ],
+    "nodes": [
+     "model.datahub_dbt.stg_customers"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "file_key_name": "models.stg_customers",
+   "fqn": [
+    "datahub_dbt",
+    "staging",
+    "not_null_stg_customers_email"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "not_null_stg_customers_email",
+   "original_file_path": "models/staging/_staging.yml",
+   "package_name": "datahub_dbt",
+   "path": "not_null_stg_customers_email.sql",
+   "raw_code": "{{ test_not_null(**_dbt_generic_test_kwargs) }}",
+   "refs": [
+    {
+     "name": "stg_customers",
+     "package": null,
+     "version": null
+    }
+   ],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [],
+   "tags": [],
+   "test_metadata": {
+    "kwargs": {
+     "column_name": "email",
+     "model": "{{ get_where_subquery(ref('stg_customers')) }}"
+    },
+    "name": "not_null",
+    "namespace": null
+   },
+   "unique_id": "test.datahub_dbt.not_null_stg_customers_email.d7cf761533"
+  },
+  "test.datahub_dbt.not_null_stg_orders_amount.2546645448": {
+   "alias": "not_null_stg_orders_amount",
+   "attached_node": "model.datahub_dbt.stg_orders",
+   "column_name": "amount",
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "\n    \n    \n\n\n\nselect amount\nfrom \"datahub_dev\".\"staging\".\"stg_orders\"\nwhere amount is null\n\n\n",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/staging/_staging.yml/not_null_stg_orders_amount.sql",
+   "config": {
+    "alias": null,
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "ERROR",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [
+     "macro.dbt.test_not_null",
+     "macro.dbt.get_where_subquery"
+    ],
+    "nodes": [
+     "model.datahub_dbt.stg_orders"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "file_key_name": "models.stg_orders",
+   "fqn": [
+    "datahub_dbt",
+    "staging",
+    "not_null_stg_orders_amount"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "not_null_stg_orders_amount",
+   "original_file_path": "models/staging/_staging.yml",
+   "package_name": "datahub_dbt",
+   "path": "not_null_stg_orders_amount.sql",
+   "raw_code": "{{ test_not_null(**_dbt_generic_test_kwargs) }}",
+   "refs": [
+    {
+     "name": "stg_orders",
+     "package": null,
+     "version": null
+    }
+   ],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [],
+   "tags": [],
+   "test_metadata": {
+    "kwargs": {
+     "column_name": "amount",
+     "model": "{{ get_where_subquery(ref('stg_orders')) }}"
+    },
+    "name": "not_null",
+    "namespace": null
+   },
+   "unique_id": "test.datahub_dbt.not_null_stg_orders_amount.2546645448"
+  },
+  "test.datahub_dbt.not_null_stg_orders_customer_id.af79d5e4b5": {
+   "alias": "not_null_stg_orders_customer_id",
+   "attached_node": "model.datahub_dbt.stg_orders",
+   "column_name": "customer_id",
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "\n    \n    \n\n\n\nselect customer_id\nfrom \"datahub_dev\".\"staging\".\"stg_orders\"\nwhere customer_id is null\n\n\n",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/staging/_staging.yml/not_null_stg_orders_customer_id.sql",
+   "config": {
+    "alias": null,
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "ERROR",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [
+     "macro.dbt.test_not_null",
+     "macro.dbt.get_where_subquery"
+    ],
+    "nodes": [
+     "model.datahub_dbt.stg_orders"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "file_key_name": "models.stg_orders",
+   "fqn": [
+    "datahub_dbt",
+    "staging",
+    "not_null_stg_orders_customer_id"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "not_null_stg_orders_customer_id",
+   "original_file_path": "models/staging/_staging.yml",
+   "package_name": "datahub_dbt",
+   "path": "not_null_stg_orders_customer_id.sql",
+   "raw_code": "{{ test_not_null(**_dbt_generic_test_kwargs) }}",
+   "refs": [
+    {
+     "name": "stg_orders",
+     "package": null,
+     "version": null
+    }
+   ],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [],
+   "tags": [],
+   "test_metadata": {
+    "kwargs": {
+     "column_name": "customer_id",
+     "model": "{{ get_where_subquery(ref('stg_orders')) }}"
+    },
+    "name": "not_null",
+    "namespace": null
+   },
+   "unique_id": "test.datahub_dbt.not_null_stg_orders_customer_id.af79d5e4b5"
+  },
+  "test.datahub_dbt.not_null_stg_orders_order_id.81cfe2fe64": {
+   "alias": "not_null_stg_orders_order_id",
+   "attached_node": "model.datahub_dbt.stg_orders",
+   "column_name": "order_id",
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "\n    \n    \n\n\n\nselect order_id\nfrom \"datahub_dev\".\"staging\".\"stg_orders\"\nwhere order_id is null\n\n\n",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/staging/_staging.yml/not_null_stg_orders_order_id.sql",
+   "config": {
+    "alias": null,
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "ERROR",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [
+     "macro.dbt.test_not_null",
+     "macro.dbt.get_where_subquery"
+    ],
+    "nodes": [
+     "model.datahub_dbt.stg_orders"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "file_key_name": "models.stg_orders",
+   "fqn": [
+    "datahub_dbt",
+    "staging",
+    "not_null_stg_orders_order_id"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "not_null_stg_orders_order_id",
+   "original_file_path": "models/staging/_staging.yml",
+   "package_name": "datahub_dbt",
+   "path": "not_null_stg_orders_order_id.sql",
+   "raw_code": "{{ test_not_null(**_dbt_generic_test_kwargs) }}",
+   "refs": [
+    {
+     "name": "stg_orders",
+     "package": null,
+     "version": null
+    }
+   ],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [],
+   "tags": [],
+   "test_metadata": {
+    "kwargs": {
+     "column_name": "order_id",
+     "model": "{{ get_where_subquery(ref('stg_orders')) }}"
+    },
+    "name": "not_null",
+    "namespace": null
+   },
+   "unique_id": "test.datahub_dbt.not_null_stg_orders_order_id.81cfe2fe64"
+  },
+  "test.datahub_dbt.not_null_stg_payments_amount.4739fb3aea": {
+   "alias": "not_null_stg_payments_amount",
+   "attached_node": "model.datahub_dbt.stg_payments",
+   "column_name": "amount",
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "\n    \n    \n\n\n\nselect amount\nfrom \"datahub_dev\".\"staging\".\"stg_payments\"\nwhere amount is null\n\n\n",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/staging/_staging.yml/not_null_stg_payments_amount.sql",
+   "config": {
+    "alias": null,
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "ERROR",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [
+     "macro.dbt.test_not_null",
+     "macro.dbt.get_where_subquery"
+    ],
+    "nodes": [
+     "model.datahub_dbt.stg_payments"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "file_key_name": "models.stg_payments",
+   "fqn": [
+    "datahub_dbt",
+    "staging",
+    "not_null_stg_payments_amount"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "not_null_stg_payments_amount",
+   "original_file_path": "models/staging/_staging.yml",
+   "package_name": "datahub_dbt",
+   "path": "not_null_stg_payments_amount.sql",
+   "raw_code": "{{ test_not_null(**_dbt_generic_test_kwargs) }}",
+   "refs": [
+    {
+     "name": "stg_payments",
+     "package": null,
+     "version": null
+    }
+   ],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [],
+   "tags": [],
+   "test_metadata": {
+    "kwargs": {
+     "column_name": "amount",
+     "model": "{{ get_where_subquery(ref('stg_payments')) }}"
+    },
+    "name": "not_null",
+    "namespace": null
+   },
+   "unique_id": "test.datahub_dbt.not_null_stg_payments_amount.4739fb3aea"
+  },
+  "test.datahub_dbt.not_null_stg_payments_order_id.601cf57649": {
+   "alias": "not_null_stg_payments_order_id",
+   "attached_node": "model.datahub_dbt.stg_payments",
+   "column_name": "order_id",
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "\n    \n    \n\n\n\nselect order_id\nfrom \"datahub_dev\".\"staging\".\"stg_payments\"\nwhere order_id is null\n\n\n",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/staging/_staging.yml/not_null_stg_payments_order_id.sql",
+   "config": {
+    "alias": null,
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "ERROR",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [
+     "macro.dbt.test_not_null",
+     "macro.dbt.get_where_subquery"
+    ],
+    "nodes": [
+     "model.datahub_dbt.stg_payments"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "file_key_name": "models.stg_payments",
+   "fqn": [
+    "datahub_dbt",
+    "staging",
+    "not_null_stg_payments_order_id"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "not_null_stg_payments_order_id",
+   "original_file_path": "models/staging/_staging.yml",
+   "package_name": "datahub_dbt",
+   "path": "not_null_stg_payments_order_id.sql",
+   "raw_code": "{{ test_not_null(**_dbt_generic_test_kwargs) }}",
+   "refs": [
+    {
+     "name": "stg_payments",
+     "package": null,
+     "version": null
+    }
+   ],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [],
+   "tags": [],
+   "test_metadata": {
+    "kwargs": {
+     "column_name": "order_id",
+     "model": "{{ get_where_subquery(ref('stg_payments')) }}"
+    },
+    "name": "not_null",
+    "namespace": null
+   },
+   "unique_id": "test.datahub_dbt.not_null_stg_payments_order_id.601cf57649"
+  },
+  "test.datahub_dbt.not_null_stg_payments_payment_id.c19cc50075": {
+   "alias": "not_null_stg_payments_payment_id",
+   "attached_node": "model.datahub_dbt.stg_payments",
+   "column_name": "payment_id",
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "\n    \n    \n\n\n\nselect payment_id\nfrom \"datahub_dev\".\"staging\".\"stg_payments\"\nwhere payment_id is null\n\n\n",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/staging/_staging.yml/not_null_stg_payments_payment_id.sql",
+   "config": {
+    "alias": null,
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "ERROR",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [
+     "macro.dbt.test_not_null",
+     "macro.dbt.get_where_subquery"
+    ],
+    "nodes": [
+     "model.datahub_dbt.stg_payments"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "file_key_name": "models.stg_payments",
+   "fqn": [
+    "datahub_dbt",
+    "staging",
+    "not_null_stg_payments_payment_id"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "not_null_stg_payments_payment_id",
+   "original_file_path": "models/staging/_staging.yml",
+   "package_name": "datahub_dbt",
+   "path": "not_null_stg_payments_payment_id.sql",
+   "raw_code": "{{ test_not_null(**_dbt_generic_test_kwargs) }}",
+   "refs": [
+    {
+     "name": "stg_payments",
+     "package": null,
+     "version": null
+    }
+   ],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [],
+   "tags": [],
+   "test_metadata": {
+    "kwargs": {
+     "column_name": "payment_id",
+     "model": "{{ get_where_subquery(ref('stg_payments')) }}"
+    },
+    "name": "not_null",
+    "namespace": null
+   },
+   "unique_id": "test.datahub_dbt.not_null_stg_payments_payment_id.c19cc50075"
+  },
+  "test.datahub_dbt.relationships_stg_customers_country_code__country_code__ref_country_codes_.104e30b705": {
+   "alias": "relationships_stg_customers_6b229771d7fe504be3fff70d96a35599",
+   "attached_node": "model.datahub_dbt.stg_customers",
+   "column_name": "country_code",
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "\n    \n    \n\nwith child as (\n    select country_code as from_field\n    from \"datahub_dev\".\"staging\".\"stg_customers\"\n    where country_code is not null\n),\n\nparent as (\n    select country_code as to_field\n    from \"datahub_dev\".\"reference\".\"country_codes\"\n)\n\nselect\n    from_field\n\nfrom child\nleft join parent\n    on child.from_field = parent.to_field\n\nwhere parent.to_field is null\n\n\n",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/staging/_staging.yml/relationships_stg_customers_6b229771d7fe504be3fff70d96a35599.sql",
+   "config": {
+    "alias": "relationships_stg_customers_6b229771d7fe504be3fff70d96a35599",
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "ERROR",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [
+     "macro.dbt.test_relationships",
+     "macro.dbt.get_where_subquery"
+    ],
+    "nodes": [
+     "seed.datahub_dbt.country_codes",
+     "model.datahub_dbt.stg_customers"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "file_key_name": "models.stg_customers",
+   "fqn": [
+    "datahub_dbt",
+    "staging",
+    "relationships_stg_customers_country_code__country_code__ref_country_codes_"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "relationships_stg_customers_country_code__country_code__ref_country_codes_",
+   "original_file_path": "models/staging/_staging.yml",
+   "package_name": "datahub_dbt",
+   "path": "relationships_stg_customers_6b229771d7fe504be3fff70d96a35599.sql",
+   "raw_code": "{{ test_relationships(**_dbt_generic_test_kwargs) }}{{ config(alias=\"relationships_stg_customers_6b229771d7fe504be3fff70d96a35599\") }}",
+   "refs": [
+    {
+     "name": "country_codes",
+     "package": null,
+     "version": null
+    },
+    {
+     "name": "stg_customers",
+     "package": null,
+     "version": null
+    }
+   ],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [],
+   "tags": [],
+   "test_metadata": {
+    "kwargs": {
+     "column_name": "country_code",
+     "field": "country_code",
+     "model": "{{ get_where_subquery(ref('stg_customers')) }}",
+     "to": "ref('country_codes')"
+    },
+    "name": "relationships",
+    "namespace": null
+   },
+   "unique_id": "test.datahub_dbt.relationships_stg_customers_country_code__country_code__ref_country_codes_.104e30b705"
+  },
+  "test.datahub_dbt.relationships_stg_orders_customer_id__customer_id__ref_stg_customers_.430bf21500": {
+   "alias": "relationships_stg_orders_96411fe0c89b49c3f4da955dfd358ba0",
+   "attached_node": "model.datahub_dbt.stg_orders",
+   "column_name": "customer_id",
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "\n    \n    \n\nwith child as (\n    select customer_id as from_field\n    from \"datahub_dev\".\"staging\".\"stg_orders\"\n    where customer_id is not null\n),\n\nparent as (\n    select customer_id as to_field\n    from \"datahub_dev\".\"staging\".\"stg_customers\"\n)\n\nselect\n    from_field\n\nfrom child\nleft join parent\n    on child.from_field = parent.to_field\n\nwhere parent.to_field is null\n\n\n",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/staging/_staging.yml/relationships_stg_orders_96411fe0c89b49c3f4da955dfd358ba0.sql",
+   "config": {
+    "alias": "relationships_stg_orders_96411fe0c89b49c3f4da955dfd358ba0",
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "ERROR",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [
+     "macro.dbt.test_relationships",
+     "macro.dbt.get_where_subquery"
+    ],
+    "nodes": [
+     "model.datahub_dbt.stg_customers",
+     "model.datahub_dbt.stg_orders"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "file_key_name": "models.stg_orders",
+   "fqn": [
+    "datahub_dbt",
+    "staging",
+    "relationships_stg_orders_customer_id__customer_id__ref_stg_customers_"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "relationships_stg_orders_customer_id__customer_id__ref_stg_customers_",
+   "original_file_path": "models/staging/_staging.yml",
+   "package_name": "datahub_dbt",
+   "path": "relationships_stg_orders_96411fe0c89b49c3f4da955dfd358ba0.sql",
+   "raw_code": "{{ test_relationships(**_dbt_generic_test_kwargs) }}{{ config(alias=\"relationships_stg_orders_96411fe0c89b49c3f4da955dfd358ba0\") }}",
+   "refs": [
+    {
+     "name": "stg_customers",
+     "package": null,
+     "version": null
+    },
+    {
+     "name": "stg_orders",
+     "package": null,
+     "version": null
+    }
+   ],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [],
+   "tags": [],
+   "test_metadata": {
+    "kwargs": {
+     "column_name": "customer_id",
+     "field": "customer_id",
+     "model": "{{ get_where_subquery(ref('stg_orders')) }}",
+     "to": "ref('stg_customers')"
+    },
+    "name": "relationships",
+    "namespace": null
+   },
+   "unique_id": "test.datahub_dbt.relationships_stg_orders_customer_id__customer_id__ref_stg_customers_.430bf21500"
+  },
+  "test.datahub_dbt.relationships_stg_payments_order_id__order_id__ref_stg_orders_.8426a3f3d3": {
+   "alias": "relationships_stg_payments_order_id__order_id__ref_stg_orders_",
+   "attached_node": "model.datahub_dbt.stg_payments",
+   "column_name": "order_id",
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "\n    \n    \n\nwith child as (\n    select order_id as from_field\n    from \"datahub_dev\".\"staging\".\"stg_payments\"\n    where order_id is not null\n),\n\nparent as (\n    select order_id as to_field\n    from \"datahub_dev\".\"staging\".\"stg_orders\"\n)\n\nselect\n    from_field\n\nfrom child\nleft join parent\n    on child.from_field = parent.to_field\n\nwhere parent.to_field is null\n\n\n",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/staging/_staging.yml/relationships_stg_payments_order_id__order_id__ref_stg_orders_.sql",
+   "config": {
+    "alias": null,
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "ERROR",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [
+     "macro.dbt.test_relationships",
+     "macro.dbt.get_where_subquery"
+    ],
+    "nodes": [
+     "model.datahub_dbt.stg_orders",
+     "model.datahub_dbt.stg_payments"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "file_key_name": "models.stg_payments",
+   "fqn": [
+    "datahub_dbt",
+    "staging",
+    "relationships_stg_payments_order_id__order_id__ref_stg_orders_"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "relationships_stg_payments_order_id__order_id__ref_stg_orders_",
+   "original_file_path": "models/staging/_staging.yml",
+   "package_name": "datahub_dbt",
+   "path": "relationships_stg_payments_order_id__order_id__ref_stg_orders_.sql",
+   "raw_code": "{{ test_relationships(**_dbt_generic_test_kwargs) }}",
+   "refs": [
+    {
+     "name": "stg_orders",
+     "package": null,
+     "version": null
+    },
+    {
+     "name": "stg_payments",
+     "package": null,
+     "version": null
+    }
+   ],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [],
+   "tags": [],
+   "test_metadata": {
+    "kwargs": {
+     "column_name": "order_id",
+     "field": "order_id",
+     "model": "{{ get_where_subquery(ref('stg_payments')) }}",
+     "to": "ref('stg_orders')"
+    },
+    "name": "relationships",
+    "namespace": null
+   },
+   "unique_id": "test.datahub_dbt.relationships_stg_payments_order_id__order_id__ref_stg_orders_.8426a3f3d3"
+  },
+  "test.datahub_dbt.row_count_min_fct_orders_1.4e4dff6216": {
+   "alias": "row_count_min_fct_orders_1",
+   "attached_node": "model.datahub_dbt.fct_orders",
+   "column_name": null,
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "\n    select count(*) as row_count\n    from \"datahub_dev\".\"marts\".\"fct_orders\"\n    having count(*) < 1\n",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/marts/core/_core.yml/row_count_min_fct_orders_1.sql",
+   "config": {
+    "alias": null,
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "ERROR",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [
+     "macro.datahub_dbt.test_row_count_min",
+     "macro.dbt.get_where_subquery"
+    ],
+    "nodes": [
+     "model.datahub_dbt.fct_orders"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "file_key_name": "models.fct_orders",
+   "fqn": [
+    "datahub_dbt",
+    "marts",
+    "core",
+    "row_count_min_fct_orders_1"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "row_count_min_fct_orders_1",
+   "original_file_path": "models/marts/core/_core.yml",
+   "package_name": "datahub_dbt",
+   "path": "row_count_min_fct_orders_1.sql",
+   "raw_code": "{{ test_row_count_min(**_dbt_generic_test_kwargs) }}",
+   "refs": [
+    {
+     "name": "fct_orders",
+     "package": null,
+     "version": null
+    }
+   ],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [],
+   "tags": [],
+   "test_metadata": {
+    "kwargs": {
+     "min_rows": 1,
+     "model": "{{ get_where_subquery(ref('fct_orders')) }}"
+    },
+    "name": "row_count_min",
+    "namespace": null
+   },
+   "unique_id": "test.datahub_dbt.row_count_min_fct_orders_1.4e4dff6216"
+  },
+  "test.datahub_dbt.source_not_null_raw_customers_customer_id.e869432dbb": {
+   "alias": "source_not_null_raw_customers_customer_id",
+   "attached_node": null,
+   "column_name": "customer_id",
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "\n    \n    \n\n\n\nselect customer_id\nfrom \"datahub_dev\".\"raw\".\"customers\"\nwhere customer_id is null\n\n\n",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/staging/_sources.yml/source_not_null_raw_customers_customer_id.sql",
+   "config": {
+    "alias": null,
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "ERROR",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [
+     "macro.dbt.test_not_null",
+     "macro.dbt.get_where_subquery"
+    ],
+    "nodes": [
+     "source.datahub_dbt.raw.customers"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "file_key_name": "sources.raw",
+   "fqn": [
+    "datahub_dbt",
+    "staging",
+    "source_not_null_raw_customers_customer_id"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "source_not_null_raw_customers_customer_id",
+   "original_file_path": "models/staging/_sources.yml",
+   "package_name": "datahub_dbt",
+   "path": "source_not_null_raw_customers_customer_id.sql",
+   "raw_code": "{{ test_not_null(**_dbt_generic_test_kwargs) }}",
+   "refs": [],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [
+    [
+     "raw",
+     "customers"
+    ]
+   ],
+   "tags": [],
+   "test_metadata": {
+    "kwargs": {
+     "column_name": "customer_id",
+     "model": "{{ get_where_subquery(source('raw', 'customers')) }}"
+    },
+    "name": "not_null",
+    "namespace": null
+   },
+   "unique_id": "test.datahub_dbt.source_not_null_raw_customers_customer_id.e869432dbb"
+  },
+  "test.datahub_dbt.source_not_null_raw_orders_order_id.03a065a98f": {
+   "alias": "source_not_null_raw_orders_order_id",
+   "attached_node": null,
+   "column_name": "order_id",
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "\n    \n    \n\n\n\nselect order_id\nfrom \"datahub_dev\".\"raw\".\"orders\"\nwhere order_id is null\n\n\n",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/staging/_sources.yml/source_not_null_raw_orders_order_id.sql",
+   "config": {
+    "alias": null,
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "ERROR",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [
+     "macro.dbt.test_not_null",
+     "macro.dbt.get_where_subquery"
+    ],
+    "nodes": [
+     "source.datahub_dbt.raw.orders"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "file_key_name": "sources.raw",
+   "fqn": [
+    "datahub_dbt",
+    "staging",
+    "source_not_null_raw_orders_order_id"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "source_not_null_raw_orders_order_id",
+   "original_file_path": "models/staging/_sources.yml",
+   "package_name": "datahub_dbt",
+   "path": "source_not_null_raw_orders_order_id.sql",
+   "raw_code": "{{ test_not_null(**_dbt_generic_test_kwargs) }}",
+   "refs": [],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [
+    [
+     "raw",
+     "orders"
+    ]
+   ],
+   "tags": [],
+   "test_metadata": {
+    "kwargs": {
+     "column_name": "order_id",
+     "model": "{{ get_where_subquery(source('raw', 'orders')) }}"
+    },
+    "name": "not_null",
+    "namespace": null
+   },
+   "unique_id": "test.datahub_dbt.source_not_null_raw_orders_order_id.03a065a98f"
+  },
+  "test.datahub_dbt.source_not_null_raw_payments_payment_id.a7f5b41ef5": {
+   "alias": "source_not_null_raw_payments_payment_id",
+   "attached_node": null,
+   "column_name": "payment_id",
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "\n    \n    \n\n\n\nselect payment_id\nfrom \"datahub_dev\".\"raw\".\"payments\"\nwhere payment_id is null\n\n\n",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/staging/_sources.yml/source_not_null_raw_payments_payment_id.sql",
+   "config": {
+    "alias": null,
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "ERROR",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [
+     "macro.dbt.test_not_null",
+     "macro.dbt.get_where_subquery"
+    ],
+    "nodes": [
+     "source.datahub_dbt.raw.payments"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "file_key_name": "sources.raw",
+   "fqn": [
+    "datahub_dbt",
+    "staging",
+    "source_not_null_raw_payments_payment_id"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "source_not_null_raw_payments_payment_id",
+   "original_file_path": "models/staging/_sources.yml",
+   "package_name": "datahub_dbt",
+   "path": "source_not_null_raw_payments_payment_id.sql",
+   "raw_code": "{{ test_not_null(**_dbt_generic_test_kwargs) }}",
+   "refs": [],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [
+    [
+     "raw",
+     "payments"
+    ]
+   ],
+   "tags": [],
+   "test_metadata": {
+    "kwargs": {
+     "column_name": "payment_id",
+     "model": "{{ get_where_subquery(source('raw', 'payments')) }}"
+    },
+    "name": "not_null",
+    "namespace": null
+   },
+   "unique_id": "test.datahub_dbt.source_not_null_raw_payments_payment_id.a7f5b41ef5"
+  },
+  "test.datahub_dbt.source_unique_raw_customers_customer_id.3579d23017": {
+   "alias": "source_unique_raw_customers_customer_id",
+   "attached_node": null,
+   "column_name": "customer_id",
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "\n    \n    \n\nselect\n    customer_id as unique_field,\n    count(*) as n_records\n\nfrom \"datahub_dev\".\"raw\".\"customers\"\nwhere customer_id is not null\ngroup by customer_id\nhaving count(*) > 1\n\n\n",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/staging/_sources.yml/source_unique_raw_customers_customer_id.sql",
+   "config": {
+    "alias": null,
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "ERROR",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [
+     "macro.dbt.test_unique",
+     "macro.dbt.get_where_subquery"
+    ],
+    "nodes": [
+     "source.datahub_dbt.raw.customers"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "file_key_name": "sources.raw",
+   "fqn": [
+    "datahub_dbt",
+    "staging",
+    "source_unique_raw_customers_customer_id"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "source_unique_raw_customers_customer_id",
+   "original_file_path": "models/staging/_sources.yml",
+   "package_name": "datahub_dbt",
+   "path": "source_unique_raw_customers_customer_id.sql",
+   "raw_code": "{{ test_unique(**_dbt_generic_test_kwargs) }}",
+   "refs": [],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [
+    [
+     "raw",
+     "customers"
+    ]
+   ],
+   "tags": [],
+   "test_metadata": {
+    "kwargs": {
+     "column_name": "customer_id",
+     "model": "{{ get_where_subquery(source('raw', 'customers')) }}"
+    },
+    "name": "unique",
+    "namespace": null
+   },
+   "unique_id": "test.datahub_dbt.source_unique_raw_customers_customer_id.3579d23017"
+  },
+  "test.datahub_dbt.source_unique_raw_orders_order_id.2e0765462f": {
+   "alias": "source_unique_raw_orders_order_id",
+   "attached_node": null,
+   "column_name": "order_id",
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "\n    \n    \n\nselect\n    order_id as unique_field,\n    count(*) as n_records\n\nfrom \"datahub_dev\".\"raw\".\"orders\"\nwhere order_id is not null\ngroup by order_id\nhaving count(*) > 1\n\n\n",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/staging/_sources.yml/source_unique_raw_orders_order_id.sql",
+   "config": {
+    "alias": null,
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "ERROR",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [
+     "macro.dbt.test_unique",
+     "macro.dbt.get_where_subquery"
+    ],
+    "nodes": [
+     "source.datahub_dbt.raw.orders"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "file_key_name": "sources.raw",
+   "fqn": [
+    "datahub_dbt",
+    "staging",
+    "source_unique_raw_orders_order_id"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "source_unique_raw_orders_order_id",
+   "original_file_path": "models/staging/_sources.yml",
+   "package_name": "datahub_dbt",
+   "path": "source_unique_raw_orders_order_id.sql",
+   "raw_code": "{{ test_unique(**_dbt_generic_test_kwargs) }}",
+   "refs": [],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [
+    [
+     "raw",
+     "orders"
+    ]
+   ],
+   "tags": [],
+   "test_metadata": {
+    "kwargs": {
+     "column_name": "order_id",
+     "model": "{{ get_where_subquery(source('raw', 'orders')) }}"
+    },
+    "name": "unique",
+    "namespace": null
+   },
+   "unique_id": "test.datahub_dbt.source_unique_raw_orders_order_id.2e0765462f"
+  },
+  "test.datahub_dbt.source_unique_raw_payments_payment_id.ad2e113533": {
+   "alias": "source_unique_raw_payments_payment_id",
+   "attached_node": null,
+   "column_name": "payment_id",
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "\n    \n    \n\nselect\n    payment_id as unique_field,\n    count(*) as n_records\n\nfrom \"datahub_dev\".\"raw\".\"payments\"\nwhere payment_id is not null\ngroup by payment_id\nhaving count(*) > 1\n\n\n",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/staging/_sources.yml/source_unique_raw_payments_payment_id.sql",
+   "config": {
+    "alias": null,
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "ERROR",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [
+     "macro.dbt.test_unique",
+     "macro.dbt.get_where_subquery"
+    ],
+    "nodes": [
+     "source.datahub_dbt.raw.payments"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "file_key_name": "sources.raw",
+   "fqn": [
+    "datahub_dbt",
+    "staging",
+    "source_unique_raw_payments_payment_id"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "source_unique_raw_payments_payment_id",
+   "original_file_path": "models/staging/_sources.yml",
+   "package_name": "datahub_dbt",
+   "path": "source_unique_raw_payments_payment_id.sql",
+   "raw_code": "{{ test_unique(**_dbt_generic_test_kwargs) }}",
+   "refs": [],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [
+    [
+     "raw",
+     "payments"
+    ]
+   ],
+   "tags": [],
+   "test_metadata": {
+    "kwargs": {
+     "column_name": "payment_id",
+     "model": "{{ get_where_subquery(source('raw', 'payments')) }}"
+    },
+    "name": "unique",
+    "namespace": null
+   },
+   "unique_id": "test.datahub_dbt.source_unique_raw_payments_payment_id.ad2e113533"
+  },
+  "test.datahub_dbt.unique_agg_daily_revenue_order_date.e9f1d20a43": {
+   "alias": "unique_agg_daily_revenue_order_date",
+   "attached_node": "model.datahub_dbt.agg_daily_revenue",
+   "column_name": "order_date",
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "\n    \n    \n\nselect\n    order_date as unique_field,\n    count(*) as n_records\n\nfrom \"datahub_dev\".\"marts\".\"agg_daily_revenue\"\nwhere order_date is not null\ngroup by order_date\nhaving count(*) > 1\n\n\n",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/marts/finance/_finance.yml/unique_agg_daily_revenue_order_date.sql",
+   "config": {
+    "alias": null,
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "ERROR",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [
+     "macro.dbt.test_unique",
+     "macro.dbt.get_where_subquery"
+    ],
+    "nodes": [
+     "model.datahub_dbt.agg_daily_revenue"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "file_key_name": "models.agg_daily_revenue",
+   "fqn": [
+    "datahub_dbt",
+    "marts",
+    "finance",
+    "unique_agg_daily_revenue_order_date"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "unique_agg_daily_revenue_order_date",
+   "original_file_path": "models/marts/finance/_finance.yml",
+   "package_name": "datahub_dbt",
+   "path": "unique_agg_daily_revenue_order_date.sql",
+   "raw_code": "{{ test_unique(**_dbt_generic_test_kwargs) }}",
+   "refs": [
+    {
+     "name": "agg_daily_revenue",
+     "package": null,
+     "version": null
+    }
+   ],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [],
+   "tags": [],
+   "test_metadata": {
+    "kwargs": {
+     "column_name": "order_date",
+     "model": "{{ get_where_subquery(ref('agg_daily_revenue')) }}"
+    },
+    "name": "unique",
+    "namespace": null
+   },
+   "unique_id": "test.datahub_dbt.unique_agg_daily_revenue_order_date.e9f1d20a43"
+  },
+  "test.datahub_dbt.unique_country_codes_country_code.ada89ec41f": {
+   "alias": "unique_country_codes_country_code",
+   "attached_node": "seed.datahub_dbt.country_codes",
+   "column_name": "country_code",
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "\n    \n    \n\nselect\n    country_code as unique_field,\n    count(*) as n_records\n\nfrom \"datahub_dev\".\"reference\".\"country_codes\"\nwhere country_code is not null\ngroup by country_code\nhaving count(*) > 1\n\n\n",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/seeds/seeds.yml/unique_country_codes_country_code.sql",
+   "config": {
+    "alias": null,
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "ERROR",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [
+     "macro.dbt.test_unique",
+     "macro.dbt.get_where_subquery"
+    ],
+    "nodes": [
+     "seed.datahub_dbt.country_codes"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "file_key_name": "seeds.country_codes",
+   "fqn": [
+    "datahub_dbt",
+    "unique_country_codes_country_code"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "unique_country_codes_country_code",
+   "original_file_path": "seeds/seeds.yml",
+   "package_name": "datahub_dbt",
+   "path": "unique_country_codes_country_code.sql",
+   "raw_code": "{{ test_unique(**_dbt_generic_test_kwargs) }}",
+   "refs": [
+    {
+     "name": "country_codes",
+     "package": null,
+     "version": null
+    }
+   ],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [],
+   "tags": [],
+   "test_metadata": {
+    "kwargs": {
+     "column_name": "country_code",
+     "model": "{{ get_where_subquery(ref('country_codes')) }}"
+    },
+    "name": "unique",
+    "namespace": null
+   },
+   "unique_id": "test.datahub_dbt.unique_country_codes_country_code.ada89ec41f"
+  },
+  "test.datahub_dbt.unique_dim_customers_customer_id.15c9f1e2fd": {
+   "alias": "unique_dim_customers_customer_id",
+   "attached_node": "model.datahub_dbt.dim_customers",
+   "column_name": "customer_id",
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "\n    \n    \n\nselect\n    customer_id as unique_field,\n    count(*) as n_records\n\nfrom \"datahub_dev\".\"marts\".\"dim_customers\"\nwhere customer_id is not null\ngroup by customer_id\nhaving count(*) > 1\n\n\n",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/marts/core/_core.yml/unique_dim_customers_customer_id.sql",
+   "config": {
+    "alias": null,
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "ERROR",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [
+     "macro.dbt.test_unique",
+     "macro.dbt.get_where_subquery"
+    ],
+    "nodes": [
+     "model.datahub_dbt.dim_customers"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "file_key_name": "models.dim_customers",
+   "fqn": [
+    "datahub_dbt",
+    "marts",
+    "core",
+    "unique_dim_customers_customer_id"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "unique_dim_customers_customer_id",
+   "original_file_path": "models/marts/core/_core.yml",
+   "package_name": "datahub_dbt",
+   "path": "unique_dim_customers_customer_id.sql",
+   "raw_code": "{{ test_unique(**_dbt_generic_test_kwargs) }}",
+   "refs": [
+    {
+     "name": "dim_customers",
+     "package": null,
+     "version": null
+    }
+   ],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [],
+   "tags": [],
+   "test_metadata": {
+    "kwargs": {
+     "column_name": "customer_id",
+     "model": "{{ get_where_subquery(ref('dim_customers')) }}"
+    },
+    "name": "unique",
+    "namespace": null
+   },
+   "unique_id": "test.datahub_dbt.unique_dim_customers_customer_id.15c9f1e2fd"
+  },
+  "test.datahub_dbt.unique_fct_orders_order_id.523ddb6ce5": {
+   "alias": "unique_fct_orders_order_id",
+   "attached_node": "model.datahub_dbt.fct_orders",
+   "column_name": "order_id",
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "\n    \n    \n\nselect\n    order_id as unique_field,\n    count(*) as n_records\n\nfrom \"datahub_dev\".\"marts\".\"fct_orders\"\nwhere order_id is not null\ngroup by order_id\nhaving count(*) > 1\n\n\n",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/marts/core/_core.yml/unique_fct_orders_order_id.sql",
+   "config": {
+    "alias": null,
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "ERROR",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [
+     "macro.dbt.test_unique",
+     "macro.dbt.get_where_subquery"
+    ],
+    "nodes": [
+     "model.datahub_dbt.fct_orders"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "file_key_name": "models.fct_orders",
+   "fqn": [
+    "datahub_dbt",
+    "marts",
+    "core",
+    "unique_fct_orders_order_id"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "unique_fct_orders_order_id",
+   "original_file_path": "models/marts/core/_core.yml",
+   "package_name": "datahub_dbt",
+   "path": "unique_fct_orders_order_id.sql",
+   "raw_code": "{{ test_unique(**_dbt_generic_test_kwargs) }}",
+   "refs": [
+    {
+     "name": "fct_orders",
+     "package": null,
+     "version": null
+    }
+   ],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [],
+   "tags": [],
+   "test_metadata": {
+    "kwargs": {
+     "column_name": "order_id",
+     "model": "{{ get_where_subquery(ref('fct_orders')) }}"
+    },
+    "name": "unique",
+    "namespace": null
+   },
+   "unique_id": "test.datahub_dbt.unique_fct_orders_order_id.523ddb6ce5"
+  },
+  "test.datahub_dbt.unique_int_order_payments_order_id.804c2d5021": {
+   "alias": "unique_int_order_payments_order_id",
+   "attached_node": "model.datahub_dbt.int_order_payments",
+   "column_name": "order_id",
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "\n    \n    \n\nselect\n    order_id as unique_field,\n    count(*) as n_records\n\nfrom \"datahub_dev\".\"intermediate\".\"int_order_payments\"\nwhere order_id is not null\ngroup by order_id\nhaving count(*) > 1\n\n\n",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/intermediate/_intermediate.yml/unique_int_order_payments_order_id.sql",
+   "config": {
+    "alias": null,
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "ERROR",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [
+     "macro.dbt.test_unique",
+     "macro.dbt.get_where_subquery"
+    ],
+    "nodes": [
+     "model.datahub_dbt.int_order_payments"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "file_key_name": "models.int_order_payments",
+   "fqn": [
+    "datahub_dbt",
+    "intermediate",
+    "unique_int_order_payments_order_id"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "unique_int_order_payments_order_id",
+   "original_file_path": "models/intermediate/_intermediate.yml",
+   "package_name": "datahub_dbt",
+   "path": "unique_int_order_payments_order_id.sql",
+   "raw_code": "{{ test_unique(**_dbt_generic_test_kwargs) }}",
+   "refs": [
+    {
+     "name": "int_order_payments",
+     "package": null,
+     "version": null
+    }
+   ],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [],
+   "tags": [],
+   "test_metadata": {
+    "kwargs": {
+     "column_name": "order_id",
+     "model": "{{ get_where_subquery(ref('int_order_payments')) }}"
+    },
+    "name": "unique",
+    "namespace": null
+   },
+   "unique_id": "test.datahub_dbt.unique_int_order_payments_order_id.804c2d5021"
+  },
+  "test.datahub_dbt.unique_stg_customers_customer_id.c7614daada": {
+   "alias": "unique_stg_customers_customer_id",
+   "attached_node": "model.datahub_dbt.stg_customers",
+   "column_name": "customer_id",
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "\n    \n    \n\nselect\n    customer_id as unique_field,\n    count(*) as n_records\n\nfrom \"datahub_dev\".\"staging\".\"stg_customers\"\nwhere customer_id is not null\ngroup by customer_id\nhaving count(*) > 1\n\n\n",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/staging/_staging.yml/unique_stg_customers_customer_id.sql",
+   "config": {
+    "alias": null,
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "ERROR",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [
+     "macro.dbt.test_unique",
+     "macro.dbt.get_where_subquery"
+    ],
+    "nodes": [
+     "model.datahub_dbt.stg_customers"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "file_key_name": "models.stg_customers",
+   "fqn": [
+    "datahub_dbt",
+    "staging",
+    "unique_stg_customers_customer_id"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "unique_stg_customers_customer_id",
+   "original_file_path": "models/staging/_staging.yml",
+   "package_name": "datahub_dbt",
+   "path": "unique_stg_customers_customer_id.sql",
+   "raw_code": "{{ test_unique(**_dbt_generic_test_kwargs) }}",
+   "refs": [
+    {
+     "name": "stg_customers",
+     "package": null,
+     "version": null
+    }
+   ],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [],
+   "tags": [],
+   "test_metadata": {
+    "kwargs": {
+     "column_name": "customer_id",
+     "model": "{{ get_where_subquery(ref('stg_customers')) }}"
+    },
+    "name": "unique",
+    "namespace": null
+   },
+   "unique_id": "test.datahub_dbt.unique_stg_customers_customer_id.c7614daada"
+  },
+  "test.datahub_dbt.unique_stg_orders_order_id.e3b841c71a": {
+   "alias": "unique_stg_orders_order_id",
+   "attached_node": "model.datahub_dbt.stg_orders",
+   "column_name": "order_id",
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "\n    \n    \n\nselect\n    order_id as unique_field,\n    count(*) as n_records\n\nfrom \"datahub_dev\".\"staging\".\"stg_orders\"\nwhere order_id is not null\ngroup by order_id\nhaving count(*) > 1\n\n\n",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/staging/_staging.yml/unique_stg_orders_order_id.sql",
+   "config": {
+    "alias": null,
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "ERROR",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [
+     "macro.dbt.test_unique",
+     "macro.dbt.get_where_subquery"
+    ],
+    "nodes": [
+     "model.datahub_dbt.stg_orders"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "file_key_name": "models.stg_orders",
+   "fqn": [
+    "datahub_dbt",
+    "staging",
+    "unique_stg_orders_order_id"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "unique_stg_orders_order_id",
+   "original_file_path": "models/staging/_staging.yml",
+   "package_name": "datahub_dbt",
+   "path": "unique_stg_orders_order_id.sql",
+   "raw_code": "{{ test_unique(**_dbt_generic_test_kwargs) }}",
+   "refs": [
+    {
+     "name": "stg_orders",
+     "package": null,
+     "version": null
+    }
+   ],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [],
+   "tags": [],
+   "test_metadata": {
+    "kwargs": {
+     "column_name": "order_id",
+     "model": "{{ get_where_subquery(ref('stg_orders')) }}"
+    },
+    "name": "unique",
+    "namespace": null
+   },
+   "unique_id": "test.datahub_dbt.unique_stg_orders_order_id.e3b841c71a"
+  },
+  "test.datahub_dbt.unique_stg_payments_payment_id.3744510712": {
+   "alias": "unique_stg_payments_payment_id",
+   "attached_node": "model.datahub_dbt.stg_payments",
+   "column_name": "payment_id",
+   "columns": {},
+   "compiled": true,
+   "compiled_code": "\n    \n    \n\nselect\n    payment_id as unique_field,\n    count(*) as n_records\n\nfrom \"datahub_dev\".\"staging\".\"stg_payments\"\nwhere payment_id is not null\ngroup by payment_id\nhaving count(*) > 1\n\n\n",
+   "compiled_path": "target/c682868/compiled/datahub_dbt/models/staging/_staging.yml/unique_stg_payments_payment_id.sql",
+   "config": {
+    "alias": null,
+    "database": null,
+    "enabled": true,
+    "error_if": "!= 0",
+    "fail_calc": "count(*)",
+    "group": null,
+    "limit": null,
+    "materialized": "test",
+    "meta": {},
+    "schema": "dbt_test__audit",
+    "severity": "ERROR",
+    "sql_header": null,
+    "static_analysis": null,
+    "store_failures": false,
+    "store_failures_as": "ephemeral",
+    "tags": [],
+    "warn_if": "!= 0",
+    "where": null
+   },
+   "contract": {
+    "alias_types": true,
+    "checksum": null,
+    "enforced": false
+   },
+   "database": "datahub_dev",
+   "depends_on": {
+    "macros": [
+     "macro.dbt.test_unique",
+     "macro.dbt.get_where_subquery"
+    ],
+    "nodes": [
+     "model.datahub_dbt.stg_payments"
+    ]
+   },
+   "description": "",
+   "doc_blocks": [],
+   "docs": {
+    "node_color": null,
+    "show": true
+   },
+   "extra_ctes": [],
+   "extra_ctes_injected": true,
+   "file_key_name": "models.stg_payments",
+   "fqn": [
+    "datahub_dbt",
+    "staging",
+    "unique_stg_payments_payment_id"
+   ],
+   "functions": [],
+   "group": null,
+   "language": "sql",
+   "meta": {},
+   "metrics": [],
+   "name": "unique_stg_payments_payment_id",
+   "original_file_path": "models/staging/_staging.yml",
+   "package_name": "datahub_dbt",
+   "path": "unique_stg_payments_payment_id.sql",
+   "raw_code": "{{ test_unique(**_dbt_generic_test_kwargs) }}",
+   "refs": [
+    {
+     "name": "stg_payments",
+     "package": null,
+     "version": null
+    }
+   ],
+   "resource_type": "test",
+   "schema": "dbt_test__audit",
+   "sources": [],
+   "tags": [],
+   "test_metadata": {
+    "kwargs": {
+     "column_name": "payment_id",
+     "model": "{{ get_where_subquery(ref('stg_payments')) }}"
+    },
+    "name": "unique",
+    "namespace": null
+   },
+   "unique_id": "test.datahub_dbt.unique_stg_payments_payment_id.3744510712"
+  }
+ },
+ "parent_map": {
+  "exposure.datahub_dbt.datahub_finance_dashboard": [
+   "model.datahub_dbt.agg_daily_revenue",
+   "model.datahub_dbt.dim_customers"
+  ],
+  "model.datahub_dbt.agg_daily_revenue": [
+   "model.datahub_dbt.fct_orders"
+  ],
+  "model.datahub_dbt.dim_customers": [
+   "model.datahub_dbt.fct_orders",
+   "model.datahub_dbt.stg_customers",
+   "seed.datahub_dbt.country_codes"
+  ],
+  "model.datahub_dbt.fct_orders": [
+   "model.datahub_dbt.int_order_payments",
+   "model.datahub_dbt.stg_orders"
+  ],
+  "model.datahub_dbt.int_order_payments": [
+   "model.datahub_dbt.stg_payments"
+  ],
+  "model.datahub_dbt.stg_customers": [
+   "source.datahub_dbt.raw.customers"
+  ],
+  "model.datahub_dbt.stg_orders": [
+   "source.datahub_dbt.raw.orders"
+  ],
+  "model.datahub_dbt.stg_payments": [
+   "source.datahub_dbt.raw.payments"
+  ],
+  "seed.datahub_dbt.country_codes": [],
+  "source.datahub_dbt.raw.customers": [],
+  "source.datahub_dbt.raw.orders": [],
+  "source.datahub_dbt.raw.payments": [],
+  "test.datahub_dbt.accepted_values_country_codes_region__Europe__Afrique__Am_rique.475dd00c72": [
+   "seed.datahub_dbt.country_codes"
+  ],
+  "test.datahub_dbt.accepted_values_dim_customers_customer_tier__gold__silver__bronze.3209902ac4": [
+   "model.datahub_dbt.dim_customers"
+  ],
+  "test.datahub_dbt.accepted_values_stg_orders_status__placed__shipped__completed__returned__cancelled.cb8754312d": [
+   "model.datahub_dbt.stg_orders"
+  ],
+  "test.datahub_dbt.accepted_values_stg_payments_payment_method__card__bank_transfer__paypal__voucher.a6cf974ae7": [
+   "model.datahub_dbt.stg_payments"
+  ],
+  "test.datahub_dbt.assert_payments_cover_completed_orders": [
+   "model.datahub_dbt.fct_orders"
+  ],
+  "test.datahub_dbt.assert_revenue_not_greater_than_orders": [
+   "model.datahub_dbt.agg_daily_revenue",
+   "model.datahub_dbt.fct_orders"
+  ],
+  "test.datahub_dbt.not_negative_agg_daily_revenue_revenue.72e5a0bb0d": [
+   "model.datahub_dbt.agg_daily_revenue"
+  ],
+  "test.datahub_dbt.not_negative_dim_customers_lifetime_value.4e02dac5f9": [
+   "model.datahub_dbt.dim_customers"
+  ],
+  "test.datahub_dbt.not_negative_fct_orders_order_amount.859b9b655e": [
+   "model.datahub_dbt.fct_orders"
+  ],
+  "test.datahub_dbt.not_negative_fct_orders_paid_amount.4a6b79883a": [
+   "model.datahub_dbt.fct_orders"
+  ],
+  "test.datahub_dbt.not_negative_int_order_payments_paid_amount.62aea324f2": [
+   "model.datahub_dbt.int_order_payments"
+  ],
+  "test.datahub_dbt.not_negative_stg_orders_amount.6483c5955e": [
+   "model.datahub_dbt.stg_orders"
+  ],
+  "test.datahub_dbt.not_negative_stg_payments_amount.a68995b59b": [
+   "model.datahub_dbt.stg_payments"
+  ],
+  "test.datahub_dbt.not_null_agg_daily_revenue_order_date.51875ecb2c": [
+   "model.datahub_dbt.agg_daily_revenue"
+  ],
+  "test.datahub_dbt.not_null_country_codes_country_code.f36afebdea": [
+   "seed.datahub_dbt.country_codes"
+  ],
+  "test.datahub_dbt.not_null_country_codes_country_name.b83efc697b": [
+   "seed.datahub_dbt.country_codes"
+  ],
+  "test.datahub_dbt.not_null_dim_customers_customer_id.dd91cd1c8d": [
+   "model.datahub_dbt.dim_customers"
+  ],
+  "test.datahub_dbt.not_null_fct_orders_customer_id.16fe324f7b": [
+   "model.datahub_dbt.fct_orders"
+  ],
+  "test.datahub_dbt.not_null_fct_orders_order_date.84f0a76362": [
+   "model.datahub_dbt.fct_orders"
+  ],
+  "test.datahub_dbt.not_null_fct_orders_order_id.4e687af8d0": [
+   "model.datahub_dbt.fct_orders"
+  ],
+  "test.datahub_dbt.not_null_int_order_payments_order_id.57af36bc3b": [
+   "model.datahub_dbt.int_order_payments"
+  ],
+  "test.datahub_dbt.not_null_stg_customers_customer_id.e2cfb1f9aa": [
+   "model.datahub_dbt.stg_customers"
+  ],
+  "test.datahub_dbt.not_null_stg_customers_email.d7cf761533": [
+   "model.datahub_dbt.stg_customers"
+  ],
+  "test.datahub_dbt.not_null_stg_orders_amount.2546645448": [
+   "model.datahub_dbt.stg_orders"
+  ],
+  "test.datahub_dbt.not_null_stg_orders_customer_id.af79d5e4b5": [
+   "model.datahub_dbt.stg_orders"
+  ],
+  "test.datahub_dbt.not_null_stg_orders_order_id.81cfe2fe64": [
+   "model.datahub_dbt.stg_orders"
+  ],
+  "test.datahub_dbt.not_null_stg_payments_amount.4739fb3aea": [
+   "model.datahub_dbt.stg_payments"
+  ],
+  "test.datahub_dbt.not_null_stg_payments_order_id.601cf57649": [
+   "model.datahub_dbt.stg_payments"
+  ],
+  "test.datahub_dbt.not_null_stg_payments_payment_id.c19cc50075": [
+   "model.datahub_dbt.stg_payments"
+  ],
+  "test.datahub_dbt.relationships_stg_customers_country_code__country_code__ref_country_codes_.104e30b705": [
+   "model.datahub_dbt.stg_customers",
+   "seed.datahub_dbt.country_codes"
+  ],
+  "test.datahub_dbt.relationships_stg_orders_customer_id__customer_id__ref_stg_customers_.430bf21500": [
+   "model.datahub_dbt.stg_customers",
+   "model.datahub_dbt.stg_orders"
+  ],
+  "test.datahub_dbt.relationships_stg_payments_order_id__order_id__ref_stg_orders_.8426a3f3d3": [
+   "model.datahub_dbt.stg_orders",
+   "model.datahub_dbt.stg_payments"
+  ],
+  "test.datahub_dbt.row_count_min_fct_orders_1.4e4dff6216": [
+   "model.datahub_dbt.fct_orders"
+  ],
+  "test.datahub_dbt.source_not_null_raw_customers_customer_id.e869432dbb": [
+   "source.datahub_dbt.raw.customers"
+  ],
+  "test.datahub_dbt.source_not_null_raw_orders_order_id.03a065a98f": [
+   "source.datahub_dbt.raw.orders"
+  ],
+  "test.datahub_dbt.source_not_null_raw_payments_payment_id.a7f5b41ef5": [
+   "source.datahub_dbt.raw.payments"
+  ],
+  "test.datahub_dbt.source_unique_raw_customers_customer_id.3579d23017": [
+   "source.datahub_dbt.raw.customers"
+  ],
+  "test.datahub_dbt.source_unique_raw_orders_order_id.2e0765462f": [
+   "source.datahub_dbt.raw.orders"
+  ],
+  "test.datahub_dbt.source_unique_raw_payments_payment_id.ad2e113533": [
+   "source.datahub_dbt.raw.payments"
+  ],
+  "test.datahub_dbt.unique_agg_daily_revenue_order_date.e9f1d20a43": [
+   "model.datahub_dbt.agg_daily_revenue"
+  ],
+  "test.datahub_dbt.unique_country_codes_country_code.ada89ec41f": [
+   "seed.datahub_dbt.country_codes"
+  ],
+  "test.datahub_dbt.unique_dim_customers_customer_id.15c9f1e2fd": [
+   "model.datahub_dbt.dim_customers"
+  ],
+  "test.datahub_dbt.unique_fct_orders_order_id.523ddb6ce5": [
+   "model.datahub_dbt.fct_orders"
+  ],
+  "test.datahub_dbt.unique_int_order_payments_order_id.804c2d5021": [
+   "model.datahub_dbt.int_order_payments"
+  ],
+  "test.datahub_dbt.unique_stg_customers_customer_id.c7614daada": [
+   "model.datahub_dbt.stg_customers"
+  ],
+  "test.datahub_dbt.unique_stg_orders_order_id.e3b841c71a": [
+   "model.datahub_dbt.stg_orders"
+  ],
+  "test.datahub_dbt.unique_stg_payments_payment_id.3744510712": [
+   "model.datahub_dbt.stg_payments"
+  ],
+  "unit_test.datahub_dbt.int_order_payments.test_int_order_payments_aggregates_by_order": [
+   "model.datahub_dbt.int_order_payments"
+  ]
+ },
+ "sources": {
+  "source.datahub_dbt.raw.customers": {
+   "columns": {
+    "_loaded_at": {
+     "config": {
+      "meta": {},
+      "tags": []
+     },
+     "constraints": [],
+     "data_type": null,
+     "description": "Horodatage de chargement (UTC).",
+     "dimension": null,
+     "doc_blocks": [],
+     "entity": null,
+     "granularity": null,
+     "meta": {},
+     "name": "_loaded_at",
+     "quote": null,
+     "tags": []
+    },
+    "customer_id": {
+     "config": {
+      "meta": {},
+      "tags": []
+     },
+     "constraints": [],
+     "data_type": null,
+     "description": "Identifiant technique du client.",
+     "dimension": null,
+     "doc_blocks": [],
+     "entity": null,
+     "granularity": null,
+     "meta": {},
+     "name": "customer_id",
+     "quote": null,
+     "tags": []
+    },
+    "email": {
+     "config": {
+      "meta": {
+       "pii": true
+      },
+      "tags": []
+     },
+     "constraints": [],
+     "data_type": null,
+     "description": "Adresse email (PII).",
+     "dimension": null,
+     "doc_blocks": [],
+     "entity": null,
+     "granularity": null,
+     "meta": {
+      "pii": true
+     },
+     "name": "email",
+     "quote": null,
+     "tags": []
+    }
+   },
+   "config": {
+    "enabled": true,
+    "event_time": null,
+    "freshness": {
+     "error_after": {
+      "count": 48,
+      "period": "hour"
+     },
+     "filter": null,
+     "warn_after": {
+      "count": 26,
+      "period": "hour"
+     }
+    },
+    "loaded_at_field": "_loaded_at",
+    "loaded_at_query": null,
+    "meta": {
+     "dagster": {
+      "asset_key": [
+       "raw",
+       "customers"
+      ]
+     }
+    },
+    "static_analysis": null,
+    "tags": []
+   },
+   "database": "datahub_dev",
+   "description": "Clients (r\u00e9f\u00e9rentiel complet recharg\u00e9 \u00e0 chaque ex\u00e9cution).",
+   "doc_blocks": [],
+   "external": null,
+   "fqn": [
+    "datahub_dbt",
+    "staging",
+    "raw",
+    "customers"
+   ],
+   "freshness": {
+    "error_after": {
+     "count": 48,
+     "period": "hour"
+    },
+    "filter": null,
+    "warn_after": {
+     "count": 26,
+     "period": "hour"
+    }
+   },
+   "identifier": "customers",
+   "loaded_at_field": "_loaded_at",
+   "loaded_at_query": null,
+   "loader": "",
+   "meta": {
+    "dagster": {
+     "asset_key": [
+      "raw",
+      "customers"
+     ]
+    }
+   },
+   "name": "customers",
+   "original_file_path": "models/staging/_sources.yml",
+   "package_name": "datahub_dbt",
+   "path": "models/staging/_sources.yml",
+   "quoting": {
+    "column": null,
+    "database": null,
+    "identifier": null,
+    "schema": null
+   },
+   "resource_type": "source",
+   "schema": "raw",
+   "source_description": "Donn\u00e9es brutes charg\u00e9es par les assets d'ingestion Dagster (sch\u00e9ma `raw` de DuckDB).",
+   "source_meta": {},
+   "source_name": "raw",
+   "tags": [],
+   "unique_id": "source.datahub_dbt.raw.customers",
+   "unrendered_database": null,
+   "unrendered_schema": "raw"
+  },
+  "source.datahub_dbt.raw.orders": {
+   "columns": {
+    "_partition_date": {
+     "config": {
+      "meta": {},
+      "tags": []
+     },
+     "constraints": [],
+     "data_type": null,
+     "description": "Partition Dagster (jour) ayant produit la ligne.",
+     "dimension": null,
+     "doc_blocks": [],
+     "entity": null,
+     "granularity": null,
+     "meta": {},
+     "name": "_partition_date",
+     "quote": null,
+     "tags": []
+    },
+    "order_id": {
+     "config": {
+      "meta": {},
+      "tags": []
+     },
+     "constraints": [],
+     "data_type": null,
+     "description": "Identifiant de commande.",
+     "dimension": null,
+     "doc_blocks": [],
+     "entity": null,
+     "granularity": null,
+     "meta": {},
+     "name": "order_id",
+     "quote": null,
+     "tags": []
+    }
+   },
+   "config": {
+    "enabled": true,
+    "event_time": null,
+    "freshness": {
+     "error_after": {
+      "count": 48,
+      "period": "hour"
+     },
+     "filter": null,
+     "warn_after": {
+      "count": 26,
+      "period": "hour"
+     }
+    },
+    "loaded_at_field": "_loaded_at",
+    "loaded_at_query": null,
+    "meta": {
+     "dagster": {
+      "asset_key": [
+       "raw",
+       "orders"
+      ]
+     }
+    },
+    "static_analysis": null,
+    "tags": []
+   },
+   "database": "datahub_dev",
+   "description": "Commandes, partitionn\u00e9es par jour (`_partition_date`).",
+   "doc_blocks": [],
+   "external": null,
+   "fqn": [
+    "datahub_dbt",
+    "staging",
+    "raw",
+    "orders"
+   ],
+   "freshness": {
+    "error_after": {
+     "count": 48,
+     "period": "hour"
+    },
+    "filter": null,
+    "warn_after": {
+     "count": 26,
+     "period": "hour"
+    }
+   },
+   "identifier": "orders",
+   "loaded_at_field": "_loaded_at",
+   "loaded_at_query": null,
+   "loader": "",
+   "meta": {
+    "dagster": {
+     "asset_key": [
+      "raw",
+      "orders"
+     ]
+    }
+   },
+   "name": "orders",
+   "original_file_path": "models/staging/_sources.yml",
+   "package_name": "datahub_dbt",
+   "path": "models/staging/_sources.yml",
+   "quoting": {
+    "column": null,
+    "database": null,
+    "identifier": null,
+    "schema": null
+   },
+   "resource_type": "source",
+   "schema": "raw",
+   "source_description": "Donn\u00e9es brutes charg\u00e9es par les assets d'ingestion Dagster (sch\u00e9ma `raw` de DuckDB).",
+   "source_meta": {},
+   "source_name": "raw",
+   "tags": [],
+   "unique_id": "source.datahub_dbt.raw.orders",
+   "unrendered_database": null,
+   "unrendered_schema": "raw"
+  },
+  "source.datahub_dbt.raw.payments": {
+   "columns": {
+    "payment_id": {
+     "config": {
+      "meta": {},
+      "tags": []
+     },
+     "constraints": [],
+     "data_type": null,
+     "description": "Identifiant de paiement.",
+     "dimension": null,
+     "doc_blocks": [],
+     "entity": null,
+     "granularity": null,
+     "meta": {},
+     "name": "payment_id",
+     "quote": null,
+     "tags": []
+    }
+   },
+   "config": {
+    "enabled": true,
+    "event_time": null,
+    "freshness": {
+     "error_after": {
+      "count": 48,
+      "period": "hour"
+     },
+     "filter": null,
+     "warn_after": {
+      "count": 26,
+      "period": "hour"
+     }
+    },
+    "loaded_at_field": "_loaded_at",
+    "loaded_at_query": null,
+    "meta": {
+     "dagster": {
+      "asset_key": [
+       "raw",
+       "payments"
+      ]
+     }
+    },
+    "static_analysis": null,
+    "tags": []
+   },
+   "database": "datahub_dev",
+   "description": "Paiements, partitionn\u00e9s par jour (`_partition_date`).",
+   "doc_blocks": [],
+   "external": null,
+   "fqn": [
+    "datahub_dbt",
+    "staging",
+    "raw",
+    "payments"
+   ],
+   "freshness": {
+    "error_after": {
+     "count": 48,
+     "period": "hour"
+    },
+    "filter": null,
+    "warn_after": {
+     "count": 26,
+     "period": "hour"
+    }
+   },
+   "identifier": "payments",
+   "loaded_at_field": "_loaded_at",
+   "loaded_at_query": null,
+   "loader": "",
+   "meta": {
+    "dagster": {
+     "asset_key": [
+      "raw",
+      "payments"
+     ]
+    }
+   },
+   "name": "payments",
+   "original_file_path": "models/staging/_sources.yml",
+   "package_name": "datahub_dbt",
+   "path": "models/staging/_sources.yml",
+   "quoting": {
+    "column": null,
+    "database": null,
+    "identifier": null,
+    "schema": null
+   },
+   "resource_type": "source",
+   "schema": "raw",
+   "source_description": "Donn\u00e9es brutes charg\u00e9es par les assets d'ingestion Dagster (sch\u00e9ma `raw` de DuckDB).",
+   "source_meta": {},
+   "source_name": "raw",
+   "tags": [],
+   "unique_id": "source.datahub_dbt.raw.payments",
+   "unrendered_database": null,
+   "unrendered_schema": "raw"
+  }
+ }
+}

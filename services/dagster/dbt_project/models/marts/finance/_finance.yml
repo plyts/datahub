@@ -1,0 +1,30 @@
+version: 2
+
+models:
+  - name: agg_daily_revenue
+    description: "Indicateurs financiers quotidiens (CA, encaissements, panier moyen)."
+    meta:
+      owner: finance
+      glossary: ["Chiffre d'affaires", "Panier moyen"]
+    columns:
+      - name: order_date
+        description: "Jour."
+        data_tests: [unique, not_null]
+      - name: revenue
+        description: "Chiffre d'affaires du jour (EUR)."
+        data_tests: [not_negative]
+      - name: avg_basket
+        description: "Panier moyen (EUR)."
+
+exposures:
+  - name: datahub_finance_dashboard
+    label: "Data Hub — Dashboard finance"
+    type: dashboard
+    maturity: medium
+    description: "Indicateurs financiers affichés dans le Data Hub et Grafana."
+    depends_on:
+      - ref('agg_daily_revenue')
+      - ref('dim_customers')
+    owner:
+      name: Data Team
+      email: data-team@example.com

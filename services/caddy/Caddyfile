@@ -1,0 +1,81 @@
+# Data Hub — single entry point (reverse proxy).
+#   /            -> Streamlit Data Hub (OIDC login handled by the app itself)
+#   /auth        -> Keycloak (SSO / OIDC)
+#   /dagster     -> Dagster UI, protected by oauth2-proxy (roles ADMIN / DATA_ENGINEER)
+#   /dbt-docs    -> dbt documentation site, protected by oauth2-proxy
+#   /grafana     -> Grafana (own OIDC login through Keycloak)
+#   /oauth2      -> oauth2-proxy endpoints
+# Upstreams are overridable so the same file serves Docker Compose and native test runs.
+# DATAHUB_SITE_ADDRESS: "http://datahub.local" (LAN) or "https://datahub.example.com" (automatic TLS;
+# *.local / *.internal names get a certificate from Caddy's internal CA).
+{
+	admin off
+	servers {
+		metrics
+	}
+}
+
+(security_headers) {
+	header {
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "SAMEORIGIN"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "camera=(), microphone=(), geolocation=()"
+		-Server
+	}
+}
+
+(protected) {
+	forward_auth {$OAUTH2_PROXY_UPSTREAM:oauth2-proxy:4180} {
+		uri /oauth2/auth
+		header_up X-Real-IP {remote_host}
+		copy_headers X-Auth-Request-User X-Auth-Request-Email X-Auth-Request-Preferred-Username
+		@unauthorized status 401
+		handle_response @unauthorized {
+			redir * /oauth2/start?rd={scheme}://{host}{uri} 302
+		}
+	}
+}
+
+{$DATAHUB_SITE_ADDRESS:http://datahub.local} {
+	import security_headers
+	encode zstd gzip
+
+	handle /auth* {
+		reverse_proxy {$KEYCLOAK_UPSTREAM:keycloak:8080}
+	}
+
+	handle /oauth2/* {
+		reverse_proxy {$OAUTH2_PROXY_UPSTREAM:oauth2-proxy:4180}
+	}
+
+	handle /dagster* {
+		import protected
+		reverse_proxy {$DAGSTER_UPSTREAM:dagster-webserver:3000}
+	}
+
+	redir /dbt-docs /dbt-docs/ 308
+	handle_path /dbt-docs/* {
+		import protected
+		root * {$DBT_DOCS_ROOT:/srv/dbt-docs}
+		file_server
+	}
+
+	handle /grafana* {
+		reverse_proxy {$GRAFANA_UPSTREAM:grafana:3000}
+	}
+
+	handle {
+		reverse_proxy {$DATAHUB_UI_UPSTREAM:datahub-ui:8501}
+	}
+
+	log {
+		output stdout
+		format json
+	}
+}
+
+# Internal metrics endpoint scraped by Prometheus (not published on the host).
+:2020 {
+	metrics /metrics
+}

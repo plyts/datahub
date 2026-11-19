@@ -1,0 +1,22 @@
+version: 2
+seeds:
+  - name: country_codes
+    description: "Référentiel des pays (code ISO 3166-1 alpha-2, libellé, région)."
+    config:
+      column_types:
+        country_code: varchar
+        country_name: varchar
+        region: varchar
+    columns:
+      - name: country_code
+        description: "Code pays ISO 3166-1 alpha-2."
+        data_tests: [unique, not_null]
+      - name: country_name
+        description: "Libellé du pays."
+        data_tests: [not_null]
+      - name: region
+        description: "Région géographique."
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["Europe", "Afrique", "Amérique"]

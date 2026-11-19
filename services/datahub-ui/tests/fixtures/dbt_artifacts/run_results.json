@@ -1,0 +1,398 @@
+{
+ "elapsed_time": 0.6604969501495361,
+ "metadata": {
+  "dbt_schema_version": "https://schemas.getdbt.com/dbt/run-results/v6.json",
+  "dbt_version": "1.12.7",
+  "env": {},
+  "generated_at": "2026-11-19T18:22:34.339105Z",
+  "invocation_id": "e563f2ca-8954-4924-b50e-17b0c706c13d",
+  "invocation_started_at": "2026-11-19T18:22:30.891920Z"
+ },
+ "results": [
+  {
+   "execution_time": 0.016081571578979492,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "seed.datahub_dbt.country_codes"
+  },
+  {
+   "execution_time": 0.0279080867767334,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "model.datahub_dbt.stg_payments"
+  },
+  {
+   "execution_time": 0.038341522216796875,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "model.datahub_dbt.stg_customers"
+  },
+  {
+   "execution_time": 0.03576517105102539,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "model.datahub_dbt.stg_orders"
+  },
+  {
+   "execution_time": 0.03446817398071289,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.source_not_null_raw_customers_customer_id.e869432dbb"
+  },
+  {
+   "execution_time": 0.02858757972717285,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.source_not_null_raw_orders_order_id.03a065a98f"
+  },
+  {
+   "execution_time": 0.02306199073791504,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.source_not_null_raw_payments_payment_id.a7f5b41ef5"
+  },
+  {
+   "execution_time": 0.025838375091552734,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.source_unique_raw_customers_customer_id.3579d23017"
+  },
+  {
+   "execution_time": 0.03132367134094238,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.source_unique_raw_payments_payment_id.ad2e113533"
+  },
+  {
+   "execution_time": 0.04201912879943848,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.source_unique_raw_orders_order_id.2e0765462f"
+  },
+  {
+   "execution_time": 0.04450273513793945,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.accepted_values_country_codes_region__Europe__Afrique__Am_rique.475dd00c72"
+  },
+  {
+   "execution_time": 0.018572092056274414,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.not_null_country_codes_country_name.b83efc697b"
+  },
+  {
+   "execution_time": 0.036165475845336914,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.not_null_country_codes_country_code.f36afebdea"
+  },
+  {
+   "execution_time": 0.026906251907348633,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.unique_country_codes_country_code.ada89ec41f"
+  },
+  {
+   "execution_time": 0.029203414916992188,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "model.datahub_dbt.int_order_payments"
+  },
+  {
+   "execution_time": 0.03845667839050293,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.accepted_values_stg_payments_payment_method__card__bank_transfer__paypal__voucher.a6cf974ae7"
+  },
+  {
+   "execution_time": 0.0384213924407959,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.not_negative_stg_payments_amount.a68995b59b"
+  },
+  {
+   "execution_time": 0.02138805389404297,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.not_null_stg_payments_amount.4739fb3aea"
+  },
+  {
+   "execution_time": 0.0354914665222168,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.not_null_stg_payments_payment_id.c19cc50075"
+  },
+  {
+   "execution_time": 0.05224752426147461,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.not_null_stg_payments_order_id.601cf57649"
+  },
+  {
+   "execution_time": 0.03173398971557617,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.accepted_values_stg_orders_status__placed__shipped__completed__returned__cancelled.cb8754312d"
+  },
+  {
+   "execution_time": 0.013735294342041016,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.not_negative_stg_orders_amount.6483c5955e"
+  },
+  {
+   "execution_time": 0.048621177673339844,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.unique_stg_payments_payment_id.3744510712"
+  },
+  {
+   "execution_time": 0.027335643768310547,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.not_null_stg_customers_customer_id.e2cfb1f9aa"
+  },
+  {
+   "execution_time": 0.0217132568359375,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.not_null_stg_orders_amount.2546645448"
+  },
+  {
+   "execution_time": 0.026589155197143555,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.not_null_stg_orders_customer_id.af79d5e4b5"
+  },
+  {
+   "execution_time": 0.02921772003173828,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.not_null_stg_customers_email.d7cf761533"
+  },
+  {
+   "execution_time": 0.0343174934387207,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.not_null_stg_orders_order_id.81cfe2fe64"
+  },
+  {
+   "execution_time": 0.03260922431945801,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.relationships_stg_customers_country_code__country_code__ref_country_codes_.104e30b705"
+  },
+  {
+   "execution_time": 0.02915477752685547,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.relationships_stg_orders_customer_id__customer_id__ref_stg_customers_.430bf21500"
+  },
+  {
+   "execution_time": 0.03342580795288086,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.relationships_stg_payments_order_id__order_id__ref_stg_orders_.8426a3f3d3"
+  },
+  {
+   "execution_time": 0.02210712432861328,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.unique_stg_orders_order_id.e3b841c71a"
+  },
+  {
+   "execution_time": 0.029875755310058594,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.unique_stg_customers_customer_id.c7614daada"
+  },
+  {
+   "execution_time": 0.03302192687988281,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "model.datahub_dbt.fct_orders"
+  },
+  {
+   "execution_time": 0.03949117660522461,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.not_negative_int_order_payments_paid_amount.62aea324f2"
+  },
+  {
+   "execution_time": 0.017507076263427734,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.unique_int_order_payments_order_id.804c2d5021"
+  },
+  {
+   "execution_time": 0.029300451278686523,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.not_null_int_order_payments_order_id.57af36bc3b"
+  },
+  {
+   "execution_time": 0.00964665412902832,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "model.datahub_dbt.dim_customers"
+  },
+  {
+   "execution_time": 0.01701951026916504,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "model.datahub_dbt.agg_daily_revenue"
+  },
+  {
+   "execution_time": 0.028652667999267578,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.assert_payments_cover_completed_orders"
+  },
+  {
+   "execution_time": 0.02697467803955078,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.not_negative_fct_orders_order_amount.859b9b655e"
+  },
+  {
+   "execution_time": 0.027676105499267578,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.not_null_fct_orders_customer_id.16fe324f7b"
+  },
+  {
+   "execution_time": 0.038309335708618164,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.not_negative_fct_orders_paid_amount.4a6b79883a"
+  },
+  {
+   "execution_time": 0.018836498260498047,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.not_null_fct_orders_order_id.4e687af8d0"
+  },
+  {
+   "execution_time": 0.02971482276916504,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.not_null_fct_orders_order_date.84f0a76362"
+  },
+  {
+   "execution_time": 0.020450115203857422,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.row_count_min_fct_orders_1.4e4dff6216"
+  },
+  {
+   "execution_time": 0.020679950714111328,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.unique_fct_orders_order_id.523ddb6ce5"
+  },
+  {
+   "execution_time": 0.021742582321166992,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.accepted_values_dim_customers_customer_tier__gold__silver__bronze.3209902ac4"
+  },
+  {
+   "execution_time": 0.029865264892578125,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.not_negative_dim_customers_lifetime_value.4e02dac5f9"
+  },
+  {
+   "execution_time": 0.027081727981567383,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.not_null_dim_customers_customer_id.dd91cd1c8d"
+  },
+  {
+   "execution_time": 0.01636958122253418,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.assert_revenue_not_greater_than_orders"
+  },
+  {
+   "execution_time": 0.03748512268066406,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.unique_dim_customers_customer_id.15c9f1e2fd"
+  },
+  {
+   "execution_time": 0.01853203773498535,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.not_null_agg_daily_revenue_order_date.51875ecb2c"
+  },
+  {
+   "execution_time": 0.03783893585205078,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.not_negative_agg_daily_revenue_revenue.72e5a0bb0d"
+  },
+  {
+   "execution_time": 0.010918855667114258,
+   "failures": null,
+   "message": null,
+   "status": "success",
+   "unique_id": "test.datahub_dbt.unique_agg_daily_revenue_order_date.e9f1d20a43"
+  }
+ ]
+}

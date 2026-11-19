@@ -1,0 +1,8 @@
+# The webserver and the daemon load the code location from the gRPC code server
+# running in the `dagster-code` container.
+load_from:
+  - grpc_server:
+      host:
+        env: DAGSTER_CODE_HOST
+      port: 4000
+      location_name: datahub

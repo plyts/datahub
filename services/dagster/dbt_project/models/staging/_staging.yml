@@ -1,0 +1,68 @@
+version: 2
+
+models:
+  - name: stg_customers
+    description: "Clients nettoyés : emails en minuscules, codes pays normalisés."
+    columns:
+      - name: customer_id
+        description: "Identifiant technique du client."
+        data_tests: [unique, not_null]
+      - name: email
+        description: "Email normalisé (PII)."
+        meta: {pii: true}
+        data_tests: [not_null]
+      - name: country_code
+        description: "Code pays ISO 3166-1 alpha-2."
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('country_codes')
+                field: country_code
+
+  - name: stg_orders
+    description: "Commandes nettoyées et typées."
+    columns:
+      - name: order_id
+        description: "Identifiant de commande."
+        data_tests: [unique, not_null]
+      - name: customer_id
+        description: "Client ayant passé la commande."
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_customers')
+                field: customer_id
+      - name: status
+        description: "Statut de la commande."
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["placed", "shipped", "completed", "returned", "cancelled"]
+      - name: amount
+        description: "Montant TTC de la commande (EUR)."
+        data_tests: [not_null, not_negative]
+
+  - name: stg_payments
+    description: "Paiements nettoyés et typés."
+    columns:
+      - name: payment_id
+        description: "Identifiant de paiement."
+        data_tests: [unique, not_null]
+      - name: order_id
+        description: "Commande payée."
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_orders')
+                field: order_id
+      - name: payment_method
+        description: "Moyen de paiement."
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["card", "bank_transfer", "paypal", "voucher"]
+      - name: amount
+        description: "Montant payé (EUR)."
+        data_tests: [not_null, not_negative]

@@ -1,0 +1,40 @@
+[project]
+name = "datahub-pipelines"
+version = "1.0.0"
+description = "Data Hub — Dagster code location (ingestion + dbt Core on DuckDB)"
+requires-python = ">=3.12,<3.13"
+license = "Apache-2.0"
+
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["datahub_pipelines*"]
+
+[tool.dagster]
+module_name = "datahub_pipelines.definitions"
+code_location_name = "datahub"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+markers = [
+  "integration: needs a running PostgreSQL (DATAHUB_TEST_PG_URL)",
+  "slow: executes dbt / full pipelines",
+]
+filterwarnings = ["ignore::DeprecationWarning:dbt.*", "ignore::DeprecationWarning:google.*"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+extend-exclude = ["dbt_project"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "S", "BLE", "RUF"]
+ignore = ["S101", "S608", "RUF001", "RUF002", "RUF003", "B008"]
+
+[tool.ruff.lint.per-file-ignores]
+# Synthetic demo data is deliberately generated with seeded (non-cryptographic) PRNGs.
+"datahub_pipelines/generators.py" = ["S311"]
+"tests/*" = ["RUF012", "S"]

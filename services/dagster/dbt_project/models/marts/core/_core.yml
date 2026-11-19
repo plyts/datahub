@@ -1,0 +1,60 @@
+version: 2
+
+models:
+  - name: fct_orders
+    description: >
+      Table de faits des commandes (une ligne par commande) enrichie des paiements.
+      Modèle **incrémental partitionné par jour** : chaque partition Dagster recalcule
+      uniquement sa fenêtre `[min_date, max_date)`.
+    meta:
+      owner: data-engineering
+      glossary: ["Commande", "Chiffre d'affaires"]
+    config:
+      contract:
+        enforced: false
+    columns:
+      - name: order_id
+        description: "Identifiant de commande."
+        data_tests: [unique, not_null]
+      - name: customer_id
+        description: "Client."
+        data_tests: [not_null]
+      - name: order_date
+        description: "Date de commande (clé de partition)."
+        data_tests: [not_null]
+      - name: order_amount
+        description: "Montant de la commande (EUR)."
+        data_tests: [not_negative]
+      - name: paid_amount
+        description: "Montant encaissé (EUR)."
+        data_tests: [not_negative]
+      - name: outstanding_amount
+        description: "Reste à encaisser = order_amount - paid_amount."
+      - name: is_revenue
+        description: "Vrai si la commande compte dans le chiffre d'affaires (shipped / completed)."
+    data_tests:
+      - row_count_min:
+          arguments:
+            min_rows: 1
+
+  - name: dim_customers
+    description: "Dimension clients avec indicateurs de cycle de vie (LTV, segment)."
+    meta:
+      owner: analytics-engineering
+      glossary: ["Client", "Lifetime value"]
+    columns:
+      - name: customer_id
+        description: "Identifiant du client."
+        data_tests: [unique, not_null]
+      - name: email
+        description: "Email (PII)."
+        meta: {pii: true}
+      - name: lifetime_value
+        description: "Somme des commandes génératrices de CA (EUR)."
+        data_tests: [not_negative]
+      - name: customer_tier
+        description: "Segment client : gold (≥ 1000 €), silver (≥ 300 €), bronze."
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["gold", "silver", "bronze"]

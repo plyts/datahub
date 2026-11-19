@@ -1,0 +1,86 @@
+# Dagster instance configuration (shared by webserver, daemon and code server).
+# Every secret / host comes from the environment (see .env.example).
+
+storage:
+  postgres:
+    postgres_db:
+      hostname:
+        env: DAGSTER_PG_HOST
+      port: 5432
+      db_name:
+        env: DAGSTER_PG_DB
+      username:
+        env: DAGSTER_PG_USER
+      password:
+        env: DAGSTER_PG_PASSWORD
+
+run_coordinator:
+  module: dagster.core.run_coordinator
+  class: QueuedRunCoordinator
+
+concurrency:
+  runs:
+    # Runs are queued beyond this number (the daemon dequeues them).
+    max_concurrent_runs: 4
+  pools:
+    # DuckDB accepts a single writer: every op writing to DuckDB uses the "duckdb" pool.
+    default_limit: 1
+    granularity: op
+
+# Runs are executed as sub-processes of the code server (dagster-code container),
+# where dbt Core and DuckDB are installed. No Docker socket is needed.
+run_launcher:
+  module: dagster.core.launcher
+  class: DefaultRunLauncher
+
+run_monitoring:
+  enabled: true
+  start_timeout_seconds: 180
+  poll_interval_seconds: 60
+  max_runtime_seconds: 14400
+
+# Automatic retry of runs that failed for infrastructure reasons (process crash, OOM...).
+# Step-level retries for transient errors are defined with RetryPolicy in the code.
+run_retries:
+  enabled: true
+  max_retries: 1
+  retry_on_asset_or_op_failure: false
+
+compute_logs:
+  module: dagster.core.storage.local_compute_log_manager
+  class: LocalComputeLogManager
+  config:
+    base_dir: /opt/dagster/storage/compute_logs
+
+local_artifact_storage:
+  module: dagster.core.storage.root
+  class: LocalArtifactStorage
+  config:
+    base_dir: /opt/dagster/storage
+
+retention:
+  schedule:
+    purge_after_days: 90
+  sensor:
+    purge_after_days:
+      skipped: 7
+      failure: 30
+      success: -1
+
+schedules:
+  use_threads: true
+  num_workers: 4
+
+sensors:
+  use_threads: true
+  num_workers: 4
+
+telemetry:
+  enabled: false
+
+nux:
+  enabled: false
+
+# Evaluate the FreshnessPolicy attached to assets (see datahub_pipelines/freshness.py).
+freshness:
+  enabled: true

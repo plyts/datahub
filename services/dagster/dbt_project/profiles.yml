@@ -1,0 +1,16 @@
+# All values come from the environment so the same project runs in DEV / STAGING / PROD.
+datahub_dbt:
+  target: "{{ env_var('DBT_TARGET', 'dev') }}"
+  outputs:
+    dev:
+      type: duckdb
+      path: "{{ env_var('DUCKDB_PATH', 'target/datahub_dev.duckdb') }}"
+      threads: "{{ env_var('DBT_THREADS', '4') | int }}"
+    staging:
+      type: duckdb
+      path: "{{ env_var('DUCKDB_PATH', '/data/duckdb/datahub_staging.duckdb') }}"
+      threads: "{{ env_var('DBT_THREADS', '4') | int }}"
+    prod:
+      type: duckdb
+      path: "{{ env_var('DUCKDB_PATH', '/data/duckdb/datahub_prod.duckdb') }}"
+      threads: "{{ env_var('DBT_THREADS', '4') | int }}"

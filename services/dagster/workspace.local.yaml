@@ -1,0 +1,6 @@
+# Local development / native E2E tests: code server started on localhost.
+load_from:
+  - grpc_server:
+      host: localhost
+      port: 4000
+      location_name: datahub
