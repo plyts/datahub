@@ -388,7 +388,7 @@ services:
       - alloy_data:/var/lib/alloy/data
 
   node-exporter:
-    image: prom/node-exporter:v1.13.0
+    image: prom/node-exporter:v1.12.0
     <<: *restart
     logging: *logging
     mem_limit: 128m
@@ -398,7 +398,7 @@ services:
       - /:/host:ro,rslave
 
   cadvisor:
-    image: gcr.io/cadvisor/cadvisor:v0.61.1
+    image: ghcr.io/google/cadvisor:v0.61.1
     <<: *restart
     logging: *logging
     mem_limit: 256m

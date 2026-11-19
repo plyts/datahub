@@ -19,7 +19,7 @@ Une seule VM VirtualBox sous **SUSE Linux Enterprise Server 15**, Docker Engine,
 | `loki` | Loki 3.7 | Logs (rétention 30 jours) | 1 Go |
 | `alloy` | Grafana Alloy 1.22 | Collecte des logs Docker, récepteur OTLP | 512 Mo |
 | `grafana` | Grafana OSS 13.3 | Dashboards provisionnés, SSO Keycloak | 512 Mo |
-| `node-exporter` | 1.13 | CPU / RAM / disque de la VM | 128 Mo |
+| `node-exporter` | 1.12 | CPU / RAM / disque de la VM | 128 Mo |
 | `cadvisor` | 0.61 | Ressources par conteneur | 256 Mo |
 | `postgres-exporter` | 0.21 | Santé et activité PostgreSQL | 128 Mo |
 

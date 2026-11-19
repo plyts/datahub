@@ -167,6 +167,8 @@ jobs:
         run: |
           ./scripts/generate-secrets.sh
           echo "127.0.0.1 datahub.local" | sudo tee -a /etc/hosts
+      - name: Pull pinned images (fails clearly on an unknown tag)
+        run: docker compose --env-file envs/dev.env --env-file .env -f docker-compose.yml -f compose/docker-compose.ci.yml pull --ignore-buildable --quiet
       - name: Build images
         run: docker compose --env-file envs/dev.env --env-file .env -f docker-compose.yml -f compose/docker-compose.ci.yml build
       - name: Start the stack
