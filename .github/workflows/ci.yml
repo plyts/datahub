@@ -198,6 +198,14 @@ jobs:
         run: |
           docker compose --env-file envs/dev.env --env-file .env -f docker-compose.yml -f compose/docker-compose.ci.yml ps
           docker compose --env-file envs/dev.env --env-file .env -f docker-compose.yml -f compose/docker-compose.ci.yml logs --no-color --tail=150 > compose-logs.txt
+      - name: Logs of the edge services (inline)
+        if: failure()
+        run: |
+          for s in oauth2-proxy caddy keycloak datahub-ui dagster-code dagster-webserver; do
+            echo "::group::$s"
+            docker compose --env-file envs/dev.env --env-file .env -f docker-compose.yml -f compose/docker-compose.ci.yml logs --no-color --tail=60 $s
+            echo "::endgroup::"
+          done
       - uses: actions/upload-artifact@v4
         if: always()
         with:

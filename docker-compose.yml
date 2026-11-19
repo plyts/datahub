@@ -295,6 +295,9 @@ services:
       OAUTH2_PROXY_WHITELIST_DOMAINS: ${DATAHUB_HOST:?}
       OAUTH2_PROXY_SCOPE: openid profile email
     depends_on:
+      # OIDC discovery goes through the public URL, i.e. through Caddy.
+      caddy:
+        condition: service_started
       keycloak:
         condition: service_healthy
 

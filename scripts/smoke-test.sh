@@ -10,8 +10,13 @@ set +a
 URL="${DATAHUB_PUBLIC_URL}"
 CURL=(curl -sk --noproxy '*' -o /dev/null -w '%{http_code}' --max-time 15)
 fail=0
-check() {  # name, url, expected codes (regex)
-  local code; code="$("${CURL[@]}" "$2" || true)"
+check() {  # name, url, expected codes (regex) — retried for up to 60 s (services finishing their startup)
+  local code _
+  for _ in $(seq 1 12); do
+    code="$("${CURL[@]}" "$2" || true)"
+    [[ "$code" =~ ^($3)$ ]] && break
+    sleep 5
+  done
   if [[ "$code" =~ ^($3)$ ]]; then printf '  ✔ %-28s %s\n' "$1" "$code"; else printf '  ✘ %-28s %s (expected %s)\n' "$1" "$code" "$3"; fail=1; fi
 }
 echo "Smoke tests on ${URL}"
