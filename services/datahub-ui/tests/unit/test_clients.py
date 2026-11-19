@@ -31,11 +31,19 @@ def test_metadata_conversion():
         {"label": "ratio", "__typename": "FloatMetadataEntry", "floatValue": 0.5},
         {"label": "tables", "__typename": "JsonMetadataEntry", "jsonString": '{"a": 1}'},
         {"label": "note", "__typename": "TextMetadataEntry", "text": "hello"},
-        {"label": "dagster/column_schema", "__typename": "TableSchemaMetadataEntry",
-         "schema": {"columns": [{"name": "id", "type": "INTEGER", "description": None}]}},
+        {
+            "label": "dagster/column_schema",
+            "__typename": "TableSchemaMetadataEntry",
+            "schema": {"columns": [{"name": "id", "type": "INTEGER", "description": None}]},
+        },
     ]
-    assert metadata_to_dict(entries) == {"dagster/row_count": 42, "ratio": 0.5, "tables": {"a": 1}, "note": "hello",
-                                         "dagster/column_schema": [("id", "INTEGER")]}
+    assert metadata_to_dict(entries) == {
+        "dagster/row_count": 42,
+        "ratio": 0.5,
+        "tables": {"a": 1},
+        "note": "hello",
+        "dagster/column_schema": [("id", "INTEGER")],
+    }
 
 
 def test_asset_key_helpers():
@@ -62,7 +70,11 @@ def test_launch_sends_partition_and_user_tags():
     params = session.calls[0]["variables"]["p"]
     tags = {t["key"]: t["value"] for t in params["executionMetadata"]["tags"]}
     assert tags == {"datahub/source": "datahub-ui", "datahub/user": "alice", "dagster/partition": "2026-01-02"}
-    assert params["selector"] == {"repositoryLocationName": "datahub", "repositoryName": "__repository__", "jobName": "daily"}
+    assert params["selector"] == {
+        "repositoryLocationName": "datahub",
+        "repositoryName": "__repository__",
+        "jobName": "daily",
+    }
 
 
 def test_unreachable_server():
@@ -78,12 +90,16 @@ def test_logql_builder_escapes_user_input():
 
 
 class _Api(BaseHTTPRequestHandler):
-    def do_GET(self):  # noqa: N802
+    def do_GET(self):
         if self.path.startswith("/api/v1/query"):
             body = {"status": "success", "data": {"result": [{"metric": {"job": "node"}, "value": [1, "0.25"]}]}}
         elif self.path.startswith("/loki/api/v1/query_range"):
-            body = {"status": "success", "data": {"result": [
-                {"stream": {"container": "datahub-ui"}, "values": [["1700000000000000000", "hello"]]}]}}
+            body = {
+                "status": "success",
+                "data": {
+                    "result": [{"stream": {"container": "datahub-ui"}, "values": [["1700000000000000000", "hello"]]}]
+                },
+            }
         else:
             self.send_response(200)
             self.end_headers()

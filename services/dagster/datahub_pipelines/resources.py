@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import os
+import shutil
+import sys
 from pathlib import Path
 
 from dagster_dbt import DbtCliResource, DbtProject
@@ -31,10 +33,19 @@ def ensure_duckdb_parent_dir(path: str) -> str:
     return path
 
 
+def dbt_executable() -> str:
+    """dbt from PATH, else the one installed next to the running interpreter (virtualenv not activated)."""
+    sibling = Path(sys.executable).parent / "dbt"
+    return shutil.which("dbt") or (str(sibling) if sibling.exists() else "dbt")
+
+
 def build_resources() -> dict:
     return {
         "duckdb": DuckDBResource(database=ensure_duckdb_parent_dir(_settings.duckdb_path)),
         "dbt": DbtCliResource(
-            project_dir=dbt_project, profiles_dir=_settings.dbt_project_dir, target=_settings.dbt_target
+            project_dir=dbt_project,
+            profiles_dir=_settings.dbt_project_dir,
+            target=_settings.dbt_target,
+            dbt_executable=dbt_executable(),
         ),
     }

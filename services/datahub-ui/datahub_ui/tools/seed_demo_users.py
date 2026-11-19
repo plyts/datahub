@@ -30,8 +30,12 @@ def main() -> int:
     if not password:
         print("DEMO_USERS_PASSWORD is required", file=sys.stderr)
         return 1
-    kc = KeycloakAdmin(settings.keycloak_url, settings.keycloak_realm, settings.keycloak_admin_client_id,
-                       settings.keycloak_admin_client_secret)
+    kc = KeycloakAdmin(
+        settings.keycloak_url,
+        settings.keycloak_realm,
+        settings.keycloak_admin_client_id,
+        settings.keycloak_admin_client_secret,
+    )
     for username, group, first_name in DEMO_USERS:
         kc.create_user(username, f"{username}@datahub.local", password, [group], first_name=first_name)
         print(f"✔ {username} ({group})")

@@ -35,8 +35,17 @@ DBT_PROJECT = Path(__file__).resolve().parents[1] / "dbt_project"
 def pytest_sessionstart(session):
     """Always test against a manifest generated from the current dbt sources (never a stale one)."""
     subprocess.run(
-        [sys.executable, "-m", "dbt.cli.main", "parse", "--profiles-dir", str(DBT_PROJECT), "--project-dir",
-         str(DBT_PROJECT), "--quiet"],
+        [
+            sys.executable,
+            "-m",
+            "dbt.cli.main",
+            "parse",
+            "--profiles-dir",
+            str(DBT_PROJECT),
+            "--project-dir",
+            str(DBT_PROJECT),
+            "--quiet",
+        ],
         check=True,
         env={**os.environ, "DUCKDB_PATH": str(_TMP / "parse.duckdb")},
     )

@@ -1,0 +1,64 @@
+# Unit tests of the alerting rules: promtool test rules services/prometheus/tests/datahub_rules_test.yml
+rule_files:
+  - ../rules/datahub.yml
+
+evaluation_interval: 1m
+
+tests:
+  - interval: 1m
+    input_series:
+      - series: 'datahub_dagster_up'
+        values: '1 1 0 0 0 0 0 0 0'
+      - series: 'datahub_dagster_last_run_success{job="daily_partition_job"}'
+        values: '1 1 0 0 0'
+      - series: 'datahub_dagster_asset_check_passed{asset="raw/customers",check="customers_email_completeness",severity="ERROR"}'
+        values: '0 0 0'
+      - series: 'datahub_dagster_asset_check_passed{asset="raw/orders",check="orders_volume_anomaly",severity="WARN"}'
+        values: '0 0 0'
+      - series: 'up{job="keycloak",instance="keycloak:9000"}'
+        values: '1 0 0 0 0 0 0 0'
+    alert_rule_test:
+      - eval_time: 8m
+        alertname: DagsterApiDown
+        exp_alerts:
+          - exp_labels: {severity: critical}
+            exp_annotations:
+              summary: "L'API Dagster ne répond plus depuis 5 minutes"
+              description: "L'exporter n'arrive plus à interroger dagster-webserver."
+      - eval_time: 4m
+        alertname: PipelineLastRunFailed
+        exp_alerts:
+          - exp_labels: {severity: warning, job: daily_partition_job}
+            exp_annotations:
+              summary: "Le dernier run du pipeline daily_partition_job a échoué"
+      - eval_time: 2m
+        alertname: BlockingQualityCheckFailed
+        exp_alerts:
+          - exp_labels: {severity: warning, asset: raw/customers, check: customers_email_completeness}
+            exp_annotations:
+              summary: "Contrôle qualité customers_email_completeness en échec sur raw/customers"
+      - eval_time: 7m
+        alertname: TargetDown
+        exp_alerts:
+          - exp_labels: {severity: critical, job: keycloak, instance: "keycloak:9000"}
+            exp_annotations:
+              summary: "Le service keycloak (keycloak:9000) ne répond plus"
+      - eval_time: 3m
+        alertname: DagsterApiDown
+        exp_alerts: []
+
+  - interval: 5m
+    input_series:
+      # last successful end at t=0, never updated afterwards (one sample every 5 minutes for 30 h)
+      - series: 'datahub_dagster_last_run_end_timestamp_seconds{job="daily_partition_job"}'
+        values: '0x360'
+    alert_rule_test:
+      - eval_time: 28h
+        alertname: DailyPipelineLate
+        exp_alerts:
+          - exp_labels: {severity: warning, job: daily_partition_job}
+            exp_annotations:
+              summary: "Le pipeline quotidien n'a pas terminé depuis plus de 26 h"
+      - eval_time: 25h
+        alertname: DailyPipelineLate
+        exp_alerts: []

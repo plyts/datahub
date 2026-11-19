@@ -20,10 +20,18 @@ def test_collector_exposes_metrics():
     collector.refresh()
     text = generate_latest(registry).decode()
     assert "datahub_dagster_up 1.0" in text
-    for metric in ("datahub_dagster_runs_24h", "datahub_dagster_last_run_success", "datahub_dagster_asset_freshness",
-                   "datahub_dagster_asset_check_passed", "datahub_dagster_daemon_healthy"):
+    for metric in (
+        "datahub_dagster_runs_24h",
+        "datahub_dagster_last_run_success",
+        "datahub_dagster_asset_freshness",
+        "datahub_dagster_asset_check_passed",
+        "datahub_dagster_daemon_healthy",
+    ):
         assert metric in text
-    assert 'datahub_dagster_asset_check_passed{asset="raw/orders",check="orders_volume_anomaly",severity="WARN"} 0.0' in text
+    assert (
+        'datahub_dagster_asset_check_passed{asset="raw/orders",check="orders_volume_anomaly",severity="WARN"} 0.0'
+        in text
+    )
 
 
 def test_collector_survives_backend_failure():

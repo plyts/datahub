@@ -1,0 +1,79 @@
+groups:
+  - name: datahub-pipelines
+    rules:
+      - alert: DagsterApiDown
+        expr: datahub_dagster_up == 0
+        for: 5m
+        labels: {severity: critical}
+        annotations:
+          summary: "L'API Dagster ne répond plus depuis 5 minutes"
+          description: "L'exporter n'arrive plus à interroger dagster-webserver."
+      - alert: DagsterDaemonUnhealthy
+        expr: datahub_dagster_daemon_healthy == 0
+        for: 5m
+        labels: {severity: critical}
+        annotations:
+          summary: "Daemon Dagster {{ $labels.daemon }} en échec : schedules / sensors / file d'attente arrêtés"
+      - alert: PipelineLastRunFailed
+        expr: datahub_dagster_last_run_success == 0
+        for: 1m
+        labels: {severity: warning}
+        annotations:
+          summary: "Le dernier run du pipeline {{ $labels.job }} a échoué"
+      - alert: DailyPipelineLate
+        expr: time() - datahub_dagster_last_run_end_timestamp_seconds{job="daily_partition_job"} > 26 * 3600
+        for: 10m
+        labels: {severity: warning}
+        annotations:
+          summary: "Le pipeline quotidien n'a pas terminé depuis plus de 26 h"
+      - alert: BlockingQualityCheckFailed
+        expr: datahub_dagster_asset_check_passed{severity="ERROR"} == 0
+        for: 1m
+        labels: {severity: warning}
+        annotations:
+          summary: "Contrôle qualité {{ $labels.check }} en échec sur {{ $labels.asset }}"
+      - alert: AssetNotFresh
+        expr: datahub_dagster_asset_freshness == 2
+        for: 15m
+        labels: {severity: warning}
+        annotations:
+          summary: "L'asset {{ $labels.asset }} ne respecte plus sa politique de fraîcheur"
+      - alert: RunQueueBacklog
+        expr: datahub_dagster_runs_queued > 10
+        for: 15m
+        labels: {severity: warning}
+        annotations:
+          summary: "{{ $value }} runs en attente depuis 15 minutes"
+
+  - name: datahub-infrastructure
+    rules:
+      - alert: TargetDown
+        expr: up == 0
+        for: 5m
+        labels: {severity: critical}
+        annotations:
+          summary: "Le service {{ $labels.job }} ({{ $labels.instance }}) ne répond plus"
+      - alert: HostHighCpu
+        expr: 100 * (1 - avg(rate(node_cpu_seconds_total{mode="idle"}[5m]))) > 90
+        for: 15m
+        labels: {severity: warning}
+        annotations:
+          summary: "CPU de la VM > 90 % depuis 15 minutes"
+      - alert: HostHighMemory
+        expr: 100 * (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) > 90
+        for: 10m
+        labels: {severity: warning}
+        annotations:
+          summary: "Mémoire de la VM utilisée à plus de 90 %"
+      - alert: HostDiskAlmostFull
+        expr: 100 * node_filesystem_avail_bytes{fstype!~"tmpfs|overlay"} / node_filesystem_size_bytes{fstype!~"tmpfs|overlay"} < 10
+        for: 10m
+        labels: {severity: critical}
+        annotations:
+          summary: "Moins de 10 % d'espace libre sur {{ $labels.mountpoint }}"
+      - alert: PostgresDown
+        expr: pg_up == 0
+        for: 2m
+        labels: {severity: critical}
+        annotations:
+          summary: "PostgreSQL injoignable (métadonnées Dagster, Keycloak, Data Hub)"

@@ -9,9 +9,11 @@ from datahub_ui.config import get_settings
 from datahub_ui.context import build_context
 from datahub_ui.navigation import render_function, visible_pages
 from datahub_ui.rbac import PermissionDenied, Role
+from datahub_ui.telemetry import setup_tracing
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
 st.set_page_config(page_title="Data Hub", page_icon="🛰️", layout="wide")
+setup_tracing("datahub-ui")
 
 settings = get_settings()
 errors = settings.validate()

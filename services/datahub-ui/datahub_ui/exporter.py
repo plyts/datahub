@@ -18,6 +18,7 @@ from prometheus_client.core import REGISTRY, GaugeMetricFamily
 from prometheus_client.registry import Collector
 
 from datahub_ui.clients.dagster import DagsterClient
+from datahub_ui.telemetry import setup_tracing
 
 log = logging.getLogger("datahub.exporter")
 FRESHNESS_CODES = {"HEALTHY": 0, "WARNING": 1, "DEGRADED": 2, "UNKNOWN": -1, "NOT_APPLICABLE": -1}
@@ -145,6 +146,7 @@ class DagsterCollector(Collector):
 
 def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
+    setup_tracing("datahub-exporter")
     url = os.getenv("DAGSTER_GRAPHQL_URL", "http://dagster-webserver:3000/dagster/graphql")
     port = int(os.getenv("EXPORTER_PORT", "9188"))
     collector = DagsterCollector(

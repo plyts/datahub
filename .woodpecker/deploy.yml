@@ -1,0 +1,30 @@
+# Deployment on the Data Hub VM itself. Requires a Woodpecker agent with the *local* backend
+# installed on the VM (label datahub-host), so that `make deploy` runs next to /opt/datahub.
+#   - tag v*       -> STAGING, then PROD after manual promotion (event: deployment / manual)
+#   - rollback     -> manual pipeline with ROLLBACK_TAG=v1.2.3
+when:
+  - event: tag
+    ref: refs/tags/v*
+  - event: [manual, deployment]
+
+depends_on: [ci]
+
+labels:
+  backend: local
+  host: datahub-host
+
+steps:
+  deploy:
+    image: bash
+    environment:
+      TARGET_ENV: ${CI_PIPELINE_DEPLOY_TARGET:-staging}
+    commands:
+      - cd /opt/datahub
+      - git fetch --tags --quiet
+      - |
+        if [ -n "${ROLLBACK_TAG:-}" ]; then
+          make rollback ENV="$TARGET_ENV" TAG="$ROLLBACK_TAG"
+        else
+          git checkout --quiet "${CI_COMMIT_TAG:-$CI_COMMIT_SHA}"
+          make deploy ENV="$TARGET_ENV"
+        fi

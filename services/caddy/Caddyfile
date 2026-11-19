@@ -41,6 +41,15 @@
 	import security_headers
 	encode zstd gzip
 
+	# Streamlit's own OIDC endpoints (st.login / st.logout) share the /auth prefix with Keycloak:
+	# these exact paths are more specific than /auth* and are therefore matched first.
+	handle /auth/login {
+		reverse_proxy {$DATAHUB_UI_UPSTREAM:datahub-ui:8501}
+	}
+	handle /auth/logout {
+		reverse_proxy {$DATAHUB_UI_UPSTREAM:datahub-ui:8501}
+	}
+
 	handle /auth* {
 		reverse_proxy {$KEYCLOAK_UPSTREAM:keycloak:8080}
 	}

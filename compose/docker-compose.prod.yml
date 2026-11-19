@@ -1,0 +1,17 @@
+# PROD override.
+services:
+  postgres:
+    restart: always
+  keycloak:
+    restart: always
+  dagster-code:
+    restart: always
+    mem_limit: 4g
+  dagster-webserver:
+    restart: always
+  dagster-daemon:
+    restart: always
+  datahub-ui:
+    restart: always
+  caddy:
+    restart: always

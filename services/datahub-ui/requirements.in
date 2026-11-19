@@ -1,5 +1,6 @@
 streamlit==1.67.0
 authlib==1.9.9
+httpx>=0.28  # required by authlib's Starlette integration used by st.login()
 requests>=2.32
 pandas>=2.2
 plotly>=6
@@ -8,3 +9,7 @@ sqlglot>=26
 duckdb==2.0.0  # must match dagster-code (same DuckDB file format)
 pyyaml>=6
 prometheus-client>=0.21
+# OpenTelemetry: traces of every backend call (Dagster, Keycloak, Loki, Prometheus) -> Alloy (OTLP)
+opentelemetry-sdk>=1.30
+opentelemetry-exporter-otlp-proto-http>=1.30
+opentelemetry-instrumentation-requests>=0.51b0

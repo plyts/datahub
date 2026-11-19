@@ -115,20 +115,28 @@ class KeycloakAdmin:
         users = self._request("GET", "/users", params={"username": username, "exact": "true"})
         return users[0] if users else None
 
-    def create_user(self, username: str, email: str, password: str, groups: list[str], first_name: str = "",
-                    last_name: str = "") -> str:
+    def create_user(
+        self, username: str, email: str, password: str, groups: list[str], first_name: str = "", last_name: str = ""
+    ) -> str:
         """Create (or update) a user with a non-temporary password and group memberships. Returns its id."""
         existing = self.find_user(username)
-        body = {"username": username, "email": email, "emailVerified": True, "enabled": True,
-                "firstName": first_name or username, "lastName": last_name or "Data Hub"}
+        body = {
+            "username": username,
+            "email": email,
+            "emailVerified": True,
+            "enabled": True,
+            "firstName": first_name or username,
+            "lastName": last_name or "Data Hub",
+        }
         if existing:
             user_id = existing["id"]
             self._request("PUT", f"/users/{user_id}", json=body)
         else:
             self._request("POST", "/users", json=body)
             user_id = self.find_user(username)["id"]
-        self._request("PUT", f"/users/{user_id}/reset-password",
-                      json={"type": "password", "value": password, "temporary": False})
+        self._request(
+            "PUT", f"/users/{user_id}/reset-password", json={"type": "password", "value": password, "temporary": False}
+        )
         all_groups = {g["path"]: g["id"] for g in self.groups()}
         for path in groups:
             self._request("PUT", f"/users/{user_id}/groups/{all_groups[path]}")

@@ -1,0 +1,39 @@
+# Woodpecker CI (self-hosted, with Gitea) — same quality gates as GitHub Actions.
+when:
+  - event: [push, pull_request, tag, manual]
+
+steps:
+  lint:
+    image: python:3.12-slim
+    commands:
+      - pip install --quiet ruff
+      - cd services/dagster && ruff check . && ruff format --check . && cd ../..
+      - cd services/datahub-ui && ruff check . && ruff format --check .
+
+  test-config:
+    image: python:3.12-slim
+    commands:
+      - apt-get update -qq && apt-get install -y -qq git > /dev/null
+      - pip install --quiet pytest pyyaml
+      - python -m pytest -q tests/config
+
+  test-dagster:
+    image: python:3.12-slim
+    commands:
+      - pip install --quiet -r services/dagster/requirements.lock pytest
+      - pip install --quiet --no-deps -e services/dagster
+      - cd services/dagster && python -m pytest -q
+
+  test-ui:
+    image: python:3.12-slim
+    commands:
+      - pip install --quiet -r services/datahub-ui/requirements.lock pytest
+      - pip install --quiet --no-deps -e services/datahub-ui
+      - cd services/datahub-ui && python -m pytest -q tests/unit
+
+  alert-rules:
+    image: prom/prometheus:v3.16.0
+    entrypoint: ["/bin/sh", "-c"]
+    commands:
+      - promtool check rules services/prometheus/rules/datahub.yml
+      - cd services/prometheus/tests && promtool test rules datahub_rules_test.yml

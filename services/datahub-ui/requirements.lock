@@ -4,6 +4,7 @@ altair==6.3.0
     # via streamlit
 anyio==4.16.0
     # via
+    #   httpx
     #   starlette
     #   streamlit
 attrs==26.1.0
@@ -13,7 +14,10 @@ attrs==26.1.0
 authlib==1.9.9
     # via -r requirements.in
 certifi==2026.10.23
-    # via requests
+    # via
+    #   httpcore
+    #   httpx
+    #   requests
 cffi==2.1.1
     # via cryptography
 charset-normalizer==3.5.2
@@ -28,11 +32,20 @@ cryptography==50.0.2
     #   joserfc
 duckdb==2.0.0
     # via -r requirements.in
+googleapis-common-protos==1.76.0
+    # via opentelemetry-exporter-otlp-proto-http
 h11==0.16.0
-    # via uvicorn
+    # via
+    #   httpcore
+    #   uvicorn
+httpcore==1.0.9
+    # via httpx
+httpx==0.28.1
+    # via -r requirements.in
 idna==3.20
     # via
     #   anyio
+    #   httpx
     #   requests
 itsdangerous==2.2.0
     # via streamlit
@@ -57,9 +70,46 @@ numpy==2.5.5
     #   pandas
     #   pydeck
     #   streamlit
+opentelemetry-api==1.45.2
+    # via
+    #   opentelemetry-exporter-http-transport
+    #   opentelemetry-exporter-otlp-proto-http
+    #   opentelemetry-instrumentation
+    #   opentelemetry-instrumentation-requests
+    #   opentelemetry-sdk
+    #   opentelemetry-semantic-conventions
+opentelemetry-exporter-http-transport==0.66b2
+    # via opentelemetry-exporter-otlp-proto-http
+opentelemetry-exporter-otlp-common==0.66b2
+    # via opentelemetry-exporter-otlp-proto-http
+opentelemetry-exporter-otlp-proto-common==1.45.2
+    # via opentelemetry-exporter-otlp-proto-http
+opentelemetry-exporter-otlp-proto-http==1.45.2
+    # via -r requirements.in
+opentelemetry-instrumentation==0.66b2
+    # via opentelemetry-instrumentation-requests
+opentelemetry-instrumentation-requests==0.66b2
+    # via -r requirements.in
+opentelemetry-proto==1.45.2
+    # via
+    #   opentelemetry-exporter-otlp-proto-common
+    #   opentelemetry-exporter-otlp-proto-http
+opentelemetry-sdk==1.45.2
+    # via
+    #   -r requirements.in
+    #   opentelemetry-exporter-otlp-common
+    #   opentelemetry-exporter-otlp-proto-http
+opentelemetry-semantic-conventions==0.66b2
+    # via
+    #   opentelemetry-instrumentation
+    #   opentelemetry-instrumentation-requests
+    #   opentelemetry-sdk
+opentelemetry-util-http==0.66b2
+    # via opentelemetry-instrumentation-requests
 packaging==26.3
     # via
     #   altair
+    #   opentelemetry-instrumentation
     #   plotly
     #   streamlit
 pandas==3.1.1
@@ -73,7 +123,10 @@ plotly==7.1.0
 prometheus-client==0.26.0
     # via -r requirements.in
 protobuf==7.36.2
-    # via streamlit
+    # via
+    #   googleapis-common-protos
+    #   opentelemetry-proto
+    #   streamlit
 psycopg==3.3.9
     # via -r requirements.in
 psycopg-binary==3.3.9
@@ -97,6 +150,8 @@ referencing==0.37.0
 requests==2.34.2
     # via
     #   -r requirements.in
+    #   opentelemetry-exporter-http-transport
+    #   opentelemetry-exporter-otlp-proto-http
     #   streamlit
 rpds-py==2026.9.1
     # via
@@ -112,6 +167,10 @@ typing-extensions==4.16.0
     # via
     #   altair
     #   anyio
+    #   opentelemetry-api
+    #   opentelemetry-exporter-otlp-proto-http
+    #   opentelemetry-sdk
+    #   opentelemetry-semantic-conventions
     #   psycopg
     #   referencing
     #   starlette
@@ -126,3 +185,5 @@ watchdog==7.1.0
     # via streamlit
 websockets==17.4
     # via streamlit
+wrapt==2.5.2
+    # via opentelemetry-instrumentation

@@ -1,0 +1,4 @@
+# STAGING override: same topology as production, smaller retention (see envs/staging.env).
+services:
+  dagster-code:
+    mem_limit: 3g

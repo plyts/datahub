@@ -4,7 +4,14 @@ import pytest
 from datahub_ui.clients.dbt_artifacts import DbtArtifacts
 from datahub_ui.incidents import classify
 from datahub_ui.lineage import (
-    build_graph, catalog_schema, column_lineage, downstream, impact_analysis, reverse, to_dot, upstream,
+    build_graph,
+    catalog_schema,
+    column_lineage,
+    downstream,
+    impact_analysis,
+    reverse,
+    to_dot,
+    upstream,
 )
 from datahub_ui.pages.m07_backfill import missing_partitions
 from datahub_ui.perf import compare_steps, detect_slowdowns, duration_stats, runs_frame
@@ -95,12 +102,40 @@ def test_error_classification(message, category):
 
 
 def _runs():
-    base = [{"runId": f"r{i}", "jobName": "daily", "status": "SUCCESS", "startTime": 1000.0 * i,
-             "endTime": 1000.0 * i + 60, "duration": 60.0, "tags": {}} for i in range(8)]
-    base.append({"runId": "slow", "jobName": "daily", "status": "SUCCESS", "startTime": 9000.0, "endTime": 9200.0,
-                 "duration": 200.0, "tags": {"dagster/partition": "2026-01-09"}})
-    base.append({"runId": "ko", "jobName": "daily", "status": "FAILURE", "startTime": 9500.0, "endTime": 9510.0,
-                 "duration": 10.0, "tags": {}})
+    base = [
+        {
+            "runId": f"r{i}",
+            "jobName": "daily",
+            "status": "SUCCESS",
+            "startTime": 1000.0 * i,
+            "endTime": 1000.0 * i + 60,
+            "duration": 60.0,
+            "tags": {},
+        }
+        for i in range(8)
+    ]
+    base.append(
+        {
+            "runId": "slow",
+            "jobName": "daily",
+            "status": "SUCCESS",
+            "startTime": 9000.0,
+            "endTime": 9200.0,
+            "duration": 200.0,
+            "tags": {"dagster/partition": "2026-01-09"},
+        }
+    )
+    base.append(
+        {
+            "runId": "ko",
+            "jobName": "daily",
+            "status": "FAILURE",
+            "startTime": 9500.0,
+            "endTime": 9510.0,
+            "duration": 10.0,
+            "tags": {},
+        }
+    )
     return base
 
 
@@ -128,7 +163,9 @@ def test_compare_steps():
 
 def test_missing_partitions():
     keys = [f"2026-01-0{i}" for i in range(1, 8)]
-    ranges = [{"startKey": "2026-01-01", "endKey": "2026-01-03", "status": "MATERIALIZED"},
-              {"startKey": "2026-01-05", "endKey": "2026-01-05", "status": "FAILED"}]
+    ranges = [
+        {"startKey": "2026-01-01", "endKey": "2026-01-03", "status": "MATERIALIZED"},
+        {"startKey": "2026-01-05", "endKey": "2026-01-05", "status": "FAILED"},
+    ]
     assert missing_partitions(keys, ranges) == ["2026-01-04", "2026-01-05", "2026-01-06", "2026-01-07"]
     assert missing_partitions(keys, ranges, include_failed=False) == ["2026-01-04", "2026-01-06", "2026-01-07"]

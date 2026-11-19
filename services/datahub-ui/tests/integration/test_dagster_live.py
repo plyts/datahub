@@ -53,7 +53,9 @@ def test_workspace_and_daemons(client):
 
 
 def test_definitions_visible(client):
-    assert {"daily_partition_job", "dbt_marts_job", "landing_files_job", "dbt_docs_job"} <= {j["name"] for j in client.jobs()}
+    assert {"daily_partition_job", "dbt_marts_job", "landing_files_job", "dbt_docs_job"} <= {
+        j["name"] for j in client.jobs()
+    }
     schedules = {s["name"]: s for s in client.schedules()}
     assert schedules["daily_partition_schedule"]["status"] == "RUNNING"
     assert len(schedules["daily_partition_schedule"]["next_ticks"]) == 5
@@ -89,8 +91,12 @@ def test_reexecution(client):
 
 def test_backfill_of_two_partitions(client):
     days = [(date.today() - timedelta(days=d)).isoformat() for d in (5, 4)]
-    backfill_id = client.launch_backfill(["raw/orders", "raw/payments", "marts/fct_orders"], partition_names=days,
-                                         title="it backfill", tags={"datahub/user": "it"})
+    backfill_id = client.launch_backfill(
+        ["raw/orders", "raw/payments", "marts/fct_orders"],
+        partition_names=days,
+        title="it backfill",
+        tags={"datahub/user": "it"},
+    )
     deadline = time.time() + 420
     while time.time() < deadline:
         backfill = next(b for b in client.backfills() if b["id"] == backfill_id)
@@ -114,8 +120,9 @@ def test_custom_pipeline_created_from_ui_runs_in_dagster(client):
 
     db = AppDB(os.environ["DATAHUB_TEST_PG_URL"])
     name = f"it_finance_{uuid.uuid4().hex[:6]}"
-    db.save_pipeline({"name": name, "selection_type": "dagster", "selection": "group:marts_finance",
-                      "cron": "0 7 * * 1-5"}, "it")
+    db.save_pipeline(
+        {"name": name, "selection_type": "dagster", "selection": "group:marts_finance", "cron": "0 7 * * 1-5"}, "it"
+    )
     try:
         assert client.reload_location() == "LOADED"
         assert f"custom_{name}" in {j["name"] for j in client.jobs()}

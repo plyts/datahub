@@ -5,7 +5,7 @@
 set -euo pipefail
 
 : "${DAGSTER_PG_PASSWORD:?}" "${KEYCLOAK_DB_PASSWORD:?}" "${DATAHUB_APP_DB_PASSWORD:?}" \
-  "${DATAHUB_RO_PASSWORD:?}" "${GRAFANA_DB_PASSWORD:?}"
+  "${DATAHUB_RO_PASSWORD:?}" "${GRAFANA_DB_PASSWORD:?}" "${POSTGRES_EXPORTER_PASSWORD:?}"
 
 psql_admin() {
   psql -v ON_ERROR_STOP=1 --username "${POSTGRES_USER}" --dbname "${POSTGRES_DB:-postgres}" "$@"
@@ -35,6 +35,14 @@ SELECT format('CREATE ROLE datahub_ro LOGIN PASSWORD %L', :'password')
 WHERE NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'datahub_ro') \gexec
 SELECT format('ALTER ROLE datahub_ro PASSWORD %L', :'password') \gexec
 GRANT CONNECT ON DATABASE datahub TO datahub_ro;
+SQL
+
+# Monitoring role for postgres-exporter (built-in pg_monitor, no data access).
+psql_admin -v password="${POSTGRES_EXPORTER_PASSWORD}" <<'SQL'
+SELECT format('CREATE ROLE postgres_exporter LOGIN PASSWORD %L', :'password')
+WHERE NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'postgres_exporter') \gexec
+SELECT format('ALTER ROLE postgres_exporter PASSWORD %L', :'password') \gexec
+GRANT pg_monitor TO postgres_exporter;
 SQL
 
 # The application role owns its schema (created by the migrations).

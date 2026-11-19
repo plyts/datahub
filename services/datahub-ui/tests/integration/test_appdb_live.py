@@ -1,7 +1,7 @@
 """Integration tests of the application database against a real PostgreSQL.
 
-    DATAHUB_TEST_PG_URL=postgresql://datahub_app:...@localhost:5432/datahub
-    DATAHUB_TEST_PG_RO_URL=postgresql://datahub_ro:...@localhost:5432/datahub   (optional)
+DATAHUB_TEST_PG_URL=postgresql://datahub_app:...@localhost:5432/datahub
+DATAHUB_TEST_PG_RO_URL=postgresql://datahub_ro:...@localhost:5432/datahub   (optional)
 """
 
 import os
@@ -40,26 +40,46 @@ def test_glossary_is_seeded(db):
 
 def test_pipeline_crud_and_validation(db):
     name = f"it_{uuid.uuid4().hex[:8]}"
-    saved = db.save_pipeline({"name": name, "selection_type": "dagster", "selection": "group:staging",
-                              "cron": "0 6 * * *", "tags": {"team": "data"}}, "alice")
+    saved = db.save_pipeline(
+        {
+            "name": name,
+            "selection_type": "dagster",
+            "selection": "group:staging",
+            "cron": "0 6 * * *",
+            "tags": {"team": "data"},
+        },
+        "alice",
+    )
     assert saved["created_by"] == "alice" and saved["tags"] == {"team": "data"}
-    updated = db.save_pipeline({"name": name, "selection_type": "dbt", "selection": "tag:finance", "enabled": False}, "bob")
+    updated = db.save_pipeline(
+        {"name": name, "selection_type": "dbt", "selection": "tag:finance", "enabled": False}, "bob"
+    )
     assert updated["selection_type"] == "dbt" and updated["updated_by"] == "bob" and updated["created_by"] == "alice"
     assert updated["cron"] is None
     with pytest.raises(ValidationError):
         db.save_pipeline({"name": "Bad Name", "selection_type": "dagster", "selection": "x"}, "alice")
     with pytest.raises(psycopg.errors.CheckViolation):
         with db._conn() as conn:
-            conn.execute("insert into datahub.pipeline_definitions (name, selection_type, selection, created_by, updated_by)"
-                         " values ('ok_name_x', 'sql', 'x', 'a', 'a')")
+            conn.execute(
+                "insert into datahub.pipeline_definitions (name, selection_type, selection, created_by, updated_by)"
+                " values ('ok_name_x', 'sql', 'x', 'a', 'a')"
+            )
     assert db.delete_pipeline(name) and not db.delete_pipeline(name)
 
 
 def test_connections_never_store_secret_values(db):
     with pytest.raises(ValidationError):
         db.save_connection({"name": "crm", "kind": "postgresql", "secret_ref": "p@ssw0rd!"}, "admin")
-    row = db.save_connection({"name": f"crm_{uuid.uuid4().hex[:6]}", "kind": "postgresql", "host": "crm.local",
-                              "port": 5432, "secret_ref": "CRM_DB_PASSWORD"}, "admin")
+    row = db.save_connection(
+        {
+            "name": f"crm_{uuid.uuid4().hex[:6]}",
+            "kind": "postgresql",
+            "host": "crm.local",
+            "port": 5432,
+            "secret_ref": "CRM_DB_PASSWORD",
+        },
+        "admin",
+    )
     assert row["secret_ref"] == "CRM_DB_PASSWORD"
     db.delete_connection(row["name"])
 

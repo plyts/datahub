@@ -1,0 +1,198 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: "3.12"
+  UV_SYSTEM_PYTHON: "1"
+
+jobs:
+  lint:
+    name: Lint (ruff, shellcheck)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - uses: actions/setup-python@v5
+        with: {python-version: "${{ env.PYTHON_VERSION }}"}
+      - run: uv pip install ruff
+      - run: cd services/dagster && ruff check . && ruff format --check .
+      - run: cd services/datahub-ui && ruff check . && ruff format --check .
+      - run: shellcheck -S warning scripts/*.sh services/postgres/init/*.sh services/datahub-ui/entrypoint.sh
+
+  test-dagster:
+    name: Dagster + dbt (real pipeline runs on DuckDB)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - uses: actions/setup-python@v5
+        with: {python-version: "${{ env.PYTHON_VERSION }}"}
+      - run: uv pip install -r services/dagster/requirements.lock pytest
+      - run: uv pip install --no-deps -e services/dagster
+      - run: cd services/dagster && python -m pytest -q
+
+  test-ui:
+    name: Data Hub UI (unit, every page x every role)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - uses: actions/setup-python@v5
+        with: {python-version: "${{ env.PYTHON_VERSION }}"}
+      - run: uv pip install -r services/datahub-ui/requirements.lock pytest
+      - run: uv pip install --no-deps -e services/datahub-ui
+      - run: cd services/datahub-ui && python -m pytest -q tests/unit
+
+  test-config:
+    name: Infrastructure configuration
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "${{ env.PYTHON_VERSION }}"}
+      - run: pip install pytest pyyaml
+      - name: Static checks (compose, Keycloak realm vs RBAC, secrets, dashboards)
+        run: python -m pytest -q tests/config
+      - name: Docker Compose config (all environments)
+        run: |
+          ./scripts/generate-secrets.sh
+          for env in dev staging prod ci; do
+            file=compose/docker-compose.$env.yml
+            docker compose --env-file envs/${env/ci/dev}.env --env-file .env -f docker-compose.yml -f $file config -q
+            echo "compose $env OK"
+          done
+      - name: Prometheus config + alert rules unit tests
+        run: |
+          docker run --rm -v "$PWD/services/prometheus:/p" --entrypoint promtool prom/prometheus:v3.16.0 check rules /p/rules/datahub.yml
+          docker run --rm -v "$PWD/services/prometheus:/p" -w /p/tests --entrypoint promtool prom/prometheus:v3.16.0 test rules datahub_rules_test.yml
+      - name: Loki config
+        run: docker run --rm -v "$PWD/services/loki:/l" grafana/loki:3.7.10 -config.file=/l/loki-config.yml -config.expand-env=true -verify-config
+      - name: Alloy config (format = syntax check)
+        run: docker run --rm -v "$PWD/services/alloy:/a" grafana/alloy:v1.22.0 fmt /a/config.alloy > /dev/null
+      - name: Caddyfile
+        run: docker run --rm -v "$PWD/services/caddy:/c" caddy:2.11.9 caddy validate --config /c/Caddyfile --adapter caddyfile
+
+  integration:
+    name: Integration (live Dagster on PostgreSQL)
+    runs-on: ubuntu-24.04
+    needs: [test-dagster, test-ui]
+    services:
+      postgres:
+        image: postgres:17-bookworm
+        env: {POSTGRES_PASSWORD: postgres}
+        ports: ["5432:5432"]
+        options: --health-cmd "pg_isready -U postgres" --health-interval 5s --health-retries 20
+    env:
+      PGHOST: 127.0.0.1
+      PGPASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+      DAGSTER_PG_PASSWORD: dagster_ci
+      KEYCLOAK_DB_PASSWORD: kc_ci
+      DATAHUB_APP_DB_PASSWORD: app_ci
+      DATAHUB_RO_PASSWORD: ro_ci
+      GRAFANA_DB_PASSWORD: gf_ci
+      POSTGRES_EXPORTER_PASSWORD: pe_ci
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - uses: actions/setup-python@v5
+        with: {python-version: "${{ env.PYTHON_VERSION }}"}
+      - name: Initialise databases (real init script, run twice for idempotence)
+        run: bash services/postgres/init/01-create-databases.sh && bash services/postgres/init/01-create-databases.sh
+      - name: Install both services (separate virtualenvs, as in the images)
+        run: |
+          uv venv /tmp/venv-dagster -p ${{ env.PYTHON_VERSION }} && VIRTUAL_ENV=/tmp/venv-dagster uv pip install -r services/dagster/requirements.lock && VIRTUAL_ENV=/tmp/venv-dagster uv pip install --no-deps -e services/dagster
+          uv venv /tmp/venv-ui -p ${{ env.PYTHON_VERSION }} && VIRTUAL_ENV=/tmp/venv-ui uv pip install -r services/datahub-ui/requirements.lock pytest && VIRTUAL_ENV=/tmp/venv-ui uv pip install --no-deps -e services/datahub-ui
+      - name: Application database migrations
+        run: DATAHUB_APP_DB_URL=postgresql://datahub_app:app_ci@127.0.0.1:5432/datahub /tmp/venv-ui/bin/python -m datahub_ui.db.migrate
+      - name: Start Dagster (code server, webserver, daemon) with the production dagster.yaml
+        run: |
+          mkdir -p /tmp/dh/home /tmp/dh/storage /tmp/dh/data
+          sed 's#/opt/dagster/storage#/tmp/dh/storage#g' services/dagster/dagster.yaml > /tmp/dh/home/dagster.yaml
+          cat > /tmp/dh/env.sh <<'ENV'
+          export DAGSTER_HOME=/tmp/dh/home DATAHUB_ENV=dev DUCKDB_PATH=/tmp/dh/data/datahub_dev.duckdb
+          export DBT_ARTIFACTS_DIR=/tmp/dh/data/dbt_artifacts DATAHUB_LANDING_DIR=/tmp/dh/data/landing
+          export DAGSTER_PG_HOST=127.0.0.1 DAGSTER_PG_DB=dagster DAGSTER_PG_USER=dagster DAGSTER_PG_PASSWORD=dagster_ci
+          export DAGSTER_CODE_HOST=127.0.0.1 DATAHUB_APP_DB_RO_URL=postgresql://datahub_ro:ro_ci@127.0.0.1:5432/datahub
+          ENV
+          source /tmp/dh/env.sh
+          cd services/dagster
+          (cd dbt_project && DUCKDB_PATH=/tmp/parse.duckdb /tmp/venv-dagster/bin/dbt parse --profiles-dir . --quiet)
+          nohup /tmp/venv-dagster/bin/dagster code-server start -h 127.0.0.1 -p 4000 -m datahub_pipelines.definitions --location-name datahub > /tmp/dh/code.log 2>&1 &
+          for i in $(seq 1 90); do (echo > /dev/tcp/127.0.0.1/4000) 2>/dev/null && break; sleep 2; done
+          nohup /tmp/venv-dagster/bin/dagster-webserver -h 127.0.0.1 -p 3000 -w workspace.yaml --path-prefix /dagster > /tmp/dh/web.log 2>&1 &
+          nohup /tmp/venv-dagster/bin/dagster-daemon run -w workspace.yaml > /tmp/dh/daemon.log 2>&1 &
+          for i in $(seq 1 90); do curl -sf http://127.0.0.1:3000/dagster/server_info && break; sleep 2; done
+      - name: Integration tests (real runs, backfill, re-execution, custom pipeline from the UI)
+        env:
+          DAGSTER_GRAPHQL_URL: http://127.0.0.1:3000/dagster/graphql
+          DATAHUB_TEST_PG_URL: postgresql://datahub_app:app_ci@127.0.0.1:5432/datahub
+          DATAHUB_TEST_PG_RO_URL: postgresql://datahub_ro:ro_ci@127.0.0.1:5432/datahub
+        run: cd services/datahub-ui && /tmp/venv-ui/bin/python -m pytest -q tests/integration
+      - name: Dagster logs
+        if: failure()
+        run: tail -n 200 /tmp/dh/*.log
+
+  e2e:
+    name: E2E — full Docker Compose stack (SSO, RBAC, pipelines, observability)
+    runs-on: ubuntu-24.04
+    needs: [lint, test-config, integration]
+    timeout-minutes: 45
+    env:
+      COMPOSE_OVERRIDE: compose/docker-compose.ci.yml
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "${{ env.PYTHON_VERSION }}"}
+      - name: Secrets and host name
+        run: |
+          ./scripts/generate-secrets.sh
+          echo "127.0.0.1 datahub.local" | sudo tee -a /etc/hosts
+      - name: Build images
+        run: docker compose --env-file envs/dev.env --env-file .env -f docker-compose.yml -f compose/docker-compose.ci.yml build
+      - name: Start the stack
+        run: |
+          docker compose --env-file envs/dev.env --env-file .env -f docker-compose.yml -f compose/docker-compose.ci.yml up -d
+          TIMEOUT=900 ./scripts/wait-healthy.sh dev
+      - name: Demo users
+        run: make seed-demo-users ENV=dev
+      - name: Smoke tests
+        run: ./scripts/smoke-test.sh dev
+      - name: E2E tests
+        run: |
+          pip install -r services/datahub-ui/requirements.lock pytest
+          set -a && source envs/dev.env && source .env && set +a
+          python -m pytest -q tests/e2e
+      - name: Observability checks (Prometheus targets, Loki logs, Grafana)
+        run: |
+          sleep 60
+          down=$(curl -s http://127.0.0.1:9090/api/v1/targets | python -c "import sys,json; print(' '.join(t['labels']['job'] for t in json.load(sys.stdin)['data']['activeTargets'] if t['health']!='up'))")
+          echo "Prometheus targets down: [${down}]"; test -z "${down}"
+          test "$(curl -s 'http://127.0.0.1:9090/api/v1/query?query=datahub_dagster_up' | python -c "import sys,json; print(json.load(sys.stdin)['data']['result'][0]['value'][1])")" = "1"
+          curl -sG http://127.0.0.1:3100/loki/api/v1/label/container/values | python -c "import sys,json; v=json.load(sys.stdin)['data']; print(v); assert any('dagster-code' in c for c in v)"
+          set -a && source .env && set +a
+          curl -sf -u "admin:${GRAFANA_ADMIN_PASSWORD}" http://datahub.local/grafana/api/search?tag=datahub | python -c "import sys,json; d=json.load(sys.stdin); print([x['title'] for x in d]); assert len(d) == 3"
+      - name: Service status and logs
+        if: always()
+        run: |
+          docker compose --env-file envs/dev.env --env-file .env -f docker-compose.yml -f compose/docker-compose.ci.yml ps
+          docker compose --env-file envs/dev.env --env-file .env -f docker-compose.yml -f compose/docker-compose.ci.yml logs --no-color --tail=150 > compose-logs.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: compose-logs
+          path: compose-logs.txt
