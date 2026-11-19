@@ -300,3 +300,10 @@ def test_status_command(repo, run, capsys):
     assert run("status")[0] == 0
     out = capsys.readouterr().out
     assert '"ref": "main"' in out and "deployed" in out
+
+
+def test_missing_repository_is_a_configuration_error(tmp_path, capsys):
+    """Exit 3 (unit failure in systemd), never a traceback with exit 1 (which systemd treats as success)."""
+    code = deployer.main(["--env", "staging", "--repo-dir", str(tmp_path / "absent"),
+                          "--state-dir", str(tmp_path / "state"), "run"])
+    assert code == 3

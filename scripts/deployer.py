@@ -136,6 +136,8 @@ class Deployer:
     def __init__(self, args: argparse.Namespace):
         self.env = args.env
         self.repo_dir = Path(args.repo_dir).resolve()
+        if not (self.repo_dir / ".git").exists():
+            raise DeployerError(f"{self.repo_dir} is not a git clone of the repository (--repo-dir)")
         self.state_dir = Path(args.state_dir or f"/var/lib/datahub-deployer/{self.env}")
         self.track = args.track or DEFAULT_TRACK.get(self.env, "main")
         self.workflow = args.workflow
