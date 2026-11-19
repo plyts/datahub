@@ -115,8 +115,13 @@ jobs:
         run: bash services/postgres/init/01-create-databases.sh && bash services/postgres/init/01-create-databases.sh
       - name: Install both services (separate virtualenvs, as in the images)
         run: |
-          uv venv /tmp/venv-dagster -p ${{ env.PYTHON_VERSION }} && VIRTUAL_ENV=/tmp/venv-dagster uv pip install -r services/dagster/requirements.lock && VIRTUAL_ENV=/tmp/venv-dagster uv pip install --no-deps -e services/dagster
-          uv venv /tmp/venv-ui -p ${{ env.PYTHON_VERSION }} && VIRTUAL_ENV=/tmp/venv-ui uv pip install -r services/datahub-ui/requirements.lock pytest && VIRTUAL_ENV=/tmp/venv-ui uv pip install --no-deps -e services/datahub-ui
+          uv venv /tmp/venv-dagster -p ${{ env.PYTHON_VERSION }}
+          uv pip install --python /tmp/venv-dagster/bin/python -r services/dagster/requirements.lock
+          uv pip install --python /tmp/venv-dagster/bin/python --no-deps -e services/dagster
+          uv venv /tmp/venv-ui -p ${{ env.PYTHON_VERSION }}
+          uv pip install --python /tmp/venv-ui/bin/python -r services/datahub-ui/requirements.lock pytest
+          uv pip install --python /tmp/venv-ui/bin/python --no-deps -e services/datahub-ui
+          /tmp/venv-dagster/bin/python -c "import datahub_pipelines, dagster_dbt" && /tmp/venv-ui/bin/python -c "import datahub_ui, streamlit"
       - name: Application database migrations
         run: DATAHUB_APP_DB_URL=postgresql://datahub_app:app_ci@127.0.0.1:5432/datahub /tmp/venv-ui/bin/python -m datahub_ui.db.migrate
       - name: Start Dagster (code server, webserver, daemon) with the production dagster.yaml
