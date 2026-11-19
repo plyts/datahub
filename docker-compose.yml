@@ -166,6 +166,7 @@ services:
 
   dagster-webserver:
     image: datahub/dagster:${DATAHUB_VERSION:-1.0.0}
+    pull_policy: never  # image built locally by the service that has `build:`
     <<: *restart
     logging: *logging
     mem_limit: 1g
@@ -184,6 +185,7 @@ services:
 
   dagster-daemon:
     image: datahub/dagster:${DATAHUB_VERSION:-1.0.0}
+    pull_policy: never  # image built locally by the service that has `build:`
     <<: *restart
     logging: *logging
     mem_limit: 768m
@@ -221,6 +223,7 @@ services:
 
   datahub-exporter:
     image: datahub/ui:${DATAHUB_VERSION:-1.0.0}
+    pull_policy: never  # image built locally by the service that has `build:`
     <<: *restart
     logging: *logging
     mem_limit: 256m

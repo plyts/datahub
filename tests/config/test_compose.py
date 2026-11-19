@@ -101,3 +101,10 @@ def test_environment_files(env):
     assert (ROOT / "compose" / f"docker-compose.{env}.yml").exists()
     if env == "prod":
         assert values["COOKIE_SECURE"] == "true" and values["DATAHUB_PUBLIC_URL"].startswith("https://")
+
+
+def test_locally_built_images_are_never_pulled():
+    built = {svc["image"] for svc in SERVICES.values() if "build" in svc}
+    for name, svc in SERVICES.items():
+        if svc["image"] in built and "build" not in svc:
+            assert svc.get("pull_policy") == "never", name

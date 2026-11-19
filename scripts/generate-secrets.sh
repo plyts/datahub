@@ -6,9 +6,9 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 random_password() {  # 24 chars, always satisfies the Keycloak password policy (upper, lower, digit)
-  printf 'Dh1%s' "$(LC_ALL=C tr -dc 'A-Za-z0-9' </dev/urandom | head -c 21)"
+  printf 'Dh1%s' "$(head -c 4096 /dev/urandom | LC_ALL=C tr -dc 'A-Za-z0-9' | cut -c1-21)"
 }
-random_hex32() { LC_ALL=C tr -dc 'a-f0-9' </dev/urandom | head -c 32; }
+random_hex32() { head -c 4096 /dev/urandom | LC_ALL=C tr -dc 'a-f0-9' | cut -c1-32; }
 
 value_for() {
   case "$1" in
