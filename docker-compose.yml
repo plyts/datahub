@@ -369,6 +369,30 @@ services:
       timeout: 5s
       retries: 10
 
+  # Routes the Prometheus alerts (services/prometheus/rules) to the webhook / e-mail of .env.
+  alertmanager:
+    image: prom/alertmanager:v0.33.1
+    <<: *restart
+    logging: *logging
+    mem_limit: 128m
+    entrypoint: ["/bin/sh", "/etc/alertmanager/render-config.sh", "/tmp/alertmanager"]
+    command: ["--config.file=/tmp/alertmanager/alertmanager.yml", "--storage.path=/alertmanager"]
+    environment:
+      DATAHUB_ENV: ${DATAHUB_ENV:-dev}
+      NOTIFY_WEBHOOK_URL: ${NOTIFY_WEBHOOK_URL:-}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-25}
+      SMTP_FROM: ${SMTP_FROM:-datahub@localhost}
+      NOTIFY_EMAIL_TO: ${NOTIFY_EMAIL_TO:-}
+    volumes:
+      - ./services/alertmanager/render-config.sh:/etc/alertmanager/render-config.sh:ro
+      - alertmanager_data:/alertmanager
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost:9093/-/healthy"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+
   loki:
     image: grafana/loki:3.7.10
     <<: *restart
@@ -447,3 +471,4 @@ volumes:
   grafana_data:
   loki_data:
   alloy_data:
+  alertmanager_data:

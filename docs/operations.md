@@ -79,7 +79,7 @@ Rétention locale : 14 jours (`BACKUP_RETENTION_DAYS`). Copiez les sauvegardes h
 | `TargetDown`, `PostgresDown` | Service injoignable |
 | `HostHighCpu`, `HostHighMemory`, `HostDiskAlmostFull` | Ressources de la VM |
 
-Notifications d'échec de pipeline : renseignez `NOTIFY_WEBHOOK_URL` (Mattermost, Slack ou Rocket.Chat) et/ou `SMTP_HOST` + `NOTIFY_EMAIL_TO` dans `.env`, puis `make up`. Pour router aussi les alertes Prometheus, configurez un *contact point* dans Grafana (Alerting).
+Notifications : renseignez `NOTIFY_WEBHOOK_URL` (webhook entrant Slack, Mattermost ou Rocket.Chat) et/ou `SMTP_HOST` + `NOTIFY_EMAIL_TO` dans `.env`, puis `make up`. Les mêmes canaux reçoivent les échecs de pipeline (sensor Dagster), les alertes Prometheus (Alertmanager, configuration générée au démarrage par `services/alertmanager/render-config.sh`) et les alertes du déployeur. Les alertes actives et les silences sont visibles dans Grafana → *Alerting*, source *Alertmanager*.
 
 ## Dépôt de fichiers (sensor)
 

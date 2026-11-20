@@ -18,6 +18,16 @@ datasources:
     jsonData:
       maxLines: 1000
 
+  # Active alerts and silences of the Prometheus rules (Grafana > Alerting).
+  - name: Alertmanager
+    uid: alertmanager
+    type: alertmanager
+    access: proxy
+    url: http://alertmanager:9093
+    jsonData:
+      implementation: prometheus
+      handleGrafanaManagedAlerts: false
+
   # Read-only access to the Data Hub application database (audit trail, incidents).
   - name: Data Hub (PostgreSQL)
     uid: datahub-pg

@@ -2,7 +2,7 @@
 
 ## Vue d'ensemble
 
-Une seule VM VirtualBox sous **SUSE Linux Enterprise Server 15**, Docker Engine, un projet Docker Compose (`datahub`), un réseau interne et des volumes persistants. **Seul Caddy publie des ports** (80/443) ; tous les autres services ne sont joignables que sur le réseau Docker.
+Une seule VM sous **SUSE Linux Enterprise Server 16** (ou 15 SP7, ou openSUSE Leap 16), Docker Engine, un projet Docker Compose (`datahub`), un réseau interne et des volumes persistants. **Seul Caddy publie des ports** (80/443) ; tous les autres services ne sont joignables que sur le réseau Docker.
 
 | Conteneur | Image | Rôle | Mémoire max |
 |---|---|---|---|
@@ -16,6 +16,7 @@ Une seule VM VirtualBox sous **SUSE Linux Enterprise Server 15**, Docker Engine,
 | `dagster-daemon` | même image | Schedules, sensors, file d'attente, backfills, fraîcheur | 768 Mo |
 | `postgres` | PostgreSQL 17 | Bases `dagster`, `keycloak`, `datahub`, `grafana` | 1 Go |
 | `prometheus` | Prometheus 3.16 | Métriques, règles d'alerte, réception remote-write | 1 Go |
+| `alertmanager` | Alertmanager 0.33 | Envoi des alertes Prometheus (webhook, e-mail de `.env`) | 128 Mo |
 | `loki` | Loki 3.7 | Logs (rétention 30 jours) | 1 Go |
 | `alloy` | Grafana Alloy 1.22 | Collecte des logs Docker, récepteur OTLP | 512 Mo |
 | `grafana` | Grafana OSS 13.3 | Dashboards provisionnés, SSO Keycloak | 512 Mo |
@@ -23,7 +24,7 @@ Une seule VM VirtualBox sous **SUSE Linux Enterprise Server 15**, Docker Engine,
 | `cadvisor` | 0.61 | Ressources par conteneur | 256 Mo |
 | `postgres-exporter` | 0.21 | Santé et activité PostgreSQL | 128 Mo |
 
-Total des limites : environ 12 Go, compatible avec une VM de 12 à 16 Go (test `test_total_memory_fits_the_vm`).
+Total des limites : environ 11,8 Go, compatible avec une VM de 12 à 16 Go (test `test_total_memory_fits_the_vm`).
 
 ## Routage (Caddy)
 

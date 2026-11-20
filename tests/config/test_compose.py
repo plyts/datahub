@@ -24,7 +24,7 @@ def declared_variables() -> set[str]:
 def test_expected_services():
     expected = {"postgres", "keycloak", "dagster-code", "dagster-webserver", "dagster-daemon", "datahub-ui",
                 "datahub-exporter", "caddy", "oauth2-proxy", "prometheus", "grafana", "loki", "alloy",
-                "node-exporter", "cadvisor", "postgres-exporter"}
+                "node-exporter", "cadvisor", "postgres-exporter", "alertmanager"}
     assert set(SERVICES) == expected
 
 
