@@ -168,12 +168,18 @@ jobs:
         run: tail -n 200 /tmp/dh/*.log
 
   e2e:
-    name: E2E — full Docker Compose stack (SSO, RBAC, pipelines, observability)
+    name: E2E — full Docker Compose stack, ${{ matrix.tls }} (SSO, RBAC, pipelines, observability)
     runs-on: ubuntu-24.04
     needs: [lint, test-config, integration]
     timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        # https = production mode: Caddy's internal CA, secure cookies, OIDC back-channel inside the network
+        tls: [http, https]
     env:
       COMPOSE_OVERRIDE: compose/docker-compose.ci.yml
+      STACK_ENV: ${{ matrix.tls == 'https' && 'tls' || 'dev' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -182,22 +188,35 @@ jobs:
         run: |
           ./scripts/generate-secrets.sh
           echo "127.0.0.1 datahub.local" | sudo tee -a /etc/hosts
+          if [ "$STACK_ENV" = tls ]; then
+            sed -e 's#^DATAHUB_PUBLIC_URL=.*#DATAHUB_PUBLIC_URL=https://datahub.local#' \
+                -e 's#^DATAHUB_SITE_ADDRESS=.*#DATAHUB_SITE_ADDRESS=https://datahub.local#' \
+                -e 's#^COOKIE_SECURE=.*#COOKIE_SECURE=true#' envs/dev.env > envs/tls.env
+            grep -E '^(DATAHUB_PUBLIC_URL|DATAHUB_SITE_ADDRESS|COOKIE_SECURE)=' envs/tls.env
+          fi
       - name: Pull pinned images (fails clearly on an unknown tag)
-        run: docker compose --env-file envs/dev.env --env-file .env -f docker-compose.yml -f compose/docker-compose.ci.yml pull --ignore-buildable --quiet
+        run: docker compose --env-file envs/${STACK_ENV}.env --env-file .env -f docker-compose.yml -f compose/docker-compose.ci.yml pull --ignore-buildable --quiet
       - name: Build images
-        run: docker compose --env-file envs/dev.env --env-file .env -f docker-compose.yml -f compose/docker-compose.ci.yml build
+        run: docker compose --env-file envs/${STACK_ENV}.env --env-file .env -f docker-compose.yml -f compose/docker-compose.ci.yml build
       - name: Start the stack
         run: |
-          docker compose --env-file envs/dev.env --env-file .env -f docker-compose.yml -f compose/docker-compose.ci.yml up -d
-          TIMEOUT=900 ./scripts/wait-healthy.sh dev
+          docker compose --env-file envs/${STACK_ENV}.env --env-file .env -f docker-compose.yml -f compose/docker-compose.ci.yml up -d
+          TIMEOUT=900 ./scripts/wait-healthy.sh "$STACK_ENV"
       - name: Demo users
-        run: make seed-demo-users ENV=dev
+        run: make seed-demo-users ENV="$STACK_ENV"
       - name: Smoke tests
-        run: ./scripts/smoke-test.sh dev
+        run: ./scripts/smoke-test.sh "$STACK_ENV"
       - name: E2E tests
         run: |
           pip install -r services/datahub-ui/requirements.lock pytest
-          set -a && source envs/dev.env && source .env && set +a
+          set -a && source envs/${STACK_ENV}.env && source .env && set +a
+          if [ "$STACK_ENV" = tls ]; then
+            # The test client trusts Caddy's internal CA, like a workstation that installed it.
+            docker compose --env-file envs/tls.env --env-file .env -f docker-compose.yml -f compose/docker-compose.ci.yml \
+              cp caddy:/data/caddy/pki/authorities/local/root.crt /tmp/caddy-root.crt
+            export REQUESTS_CA_BUNDLE=/tmp/caddy-root.crt
+            test "$(curl -s -o /dev/null -w '%{http_code}' http://datahub.local/)" = 308   # HTTP redirected to HTTPS
+          fi
           python -m pytest -q tests/e2e
       - name: Observability checks (Prometheus targets, Loki logs, Grafana)
         run: |
@@ -207,23 +226,24 @@ jobs:
           test "$(curl -s 'http://127.0.0.1:9090/api/v1/query?query=datahub_dagster_up' | python -c "import sys,json; print(json.load(sys.stdin)['data']['result'][0]['value'][1])")" = "1"
           curl -s http://127.0.0.1:9090/api/v1/alertmanagers | python -c "import sys,json; d=json.load(sys.stdin)['data']; print(d); assert d['activeAlertmanagers']"
           curl -sG http://127.0.0.1:3100/loki/api/v1/label/container/values | python -c "import sys,json; v=json.load(sys.stdin)['data']; print(v); assert any('dagster-code' in c for c in v)"
-          set -a && source .env && set +a
-          curl -sf -u "admin:${GRAFANA_ADMIN_PASSWORD}" http://datahub.local/grafana/api/search?tag=datahub | python -c "import sys,json; d=json.load(sys.stdin); print([x['title'] for x in d]); assert len(d) == 3"
+          set -a && source envs/${STACK_ENV}.env && source .env && set +a
+          tls=(); [ "$STACK_ENV" = tls ] && tls=(--cacert /tmp/caddy-root.crt)
+          curl -sf "${tls[@]}" -u "admin:${GRAFANA_ADMIN_PASSWORD}" "${DATAHUB_PUBLIC_URL}/grafana/api/search?tag=datahub" | python -c "import sys,json; d=json.load(sys.stdin); print([x['title'] for x in d]); assert len(d) == 3"
       - name: Service status and logs
         if: always()
         run: |
-          docker compose --env-file envs/dev.env --env-file .env -f docker-compose.yml -f compose/docker-compose.ci.yml ps
-          docker compose --env-file envs/dev.env --env-file .env -f docker-compose.yml -f compose/docker-compose.ci.yml logs --no-color --tail=150 > compose-logs.txt
+          docker compose --env-file envs/${STACK_ENV}.env --env-file .env -f docker-compose.yml -f compose/docker-compose.ci.yml ps
+          docker compose --env-file envs/${STACK_ENV}.env --env-file .env -f docker-compose.yml -f compose/docker-compose.ci.yml logs --no-color --tail=150 > compose-logs.txt
       - name: Logs of the edge services (inline)
         if: failure()
         run: |
           for s in oauth2-proxy caddy keycloak datahub-ui dagster-code dagster-webserver; do
             echo "::group::$s"
-            docker compose --env-file envs/dev.env --env-file .env -f docker-compose.yml -f compose/docker-compose.ci.yml logs --no-color --tail=60 $s
+            docker compose --env-file envs/${STACK_ENV}.env --env-file .env -f docker-compose.yml -f compose/docker-compose.ci.yml logs --no-color --tail=60 $s
             echo "::endgroup::"
           done
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: compose-logs
+          name: compose-logs-${{ matrix.tls }}
           path: compose-logs.txt

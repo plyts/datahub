@@ -108,6 +108,9 @@ services:
       KC_HTTP_ENABLED: "true"
       KC_HTTP_RELATIVE_PATH: /auth
       KC_HOSTNAME: ${DATAHUB_PUBLIC_URL:?}/auth
+      # Browsers use the public URL; containers call http://keycloak:8080 (token, keys, userinfo),
+      # so HTTPS with an internal CA in production needs no CA inside the containers.
+      KC_HOSTNAME_BACKCHANNEL_DYNAMIC: "true"
       KC_PROXY_HEADERS: xforwarded
       KC_HEALTH_ENABLED: "true"
       KC_METRICS_ENABLED: "true"
@@ -276,6 +279,12 @@ services:
       OAUTH2_PROXY_CLIENT_ID: dagster-proxy
       OAUTH2_PROXY_CLIENT_SECRET: ${DAGSTER_PROXY_CLIENT_SECRET:?}
       OAUTH2_PROXY_OIDC_ISSUER_URL: ${DATAHUB_PUBLIC_URL:?}/auth/realms/${KEYCLOAK_REALM:-datahub}
+      # Login page through the public URL (browser); token, keys and userinfo on the internal network.
+      OAUTH2_PROXY_SKIP_OIDC_DISCOVERY: "true"
+      OAUTH2_PROXY_LOGIN_URL: ${DATAHUB_PUBLIC_URL:?}/auth/realms/${KEYCLOAK_REALM:-datahub}/protocol/openid-connect/auth
+      OAUTH2_PROXY_REDEEM_URL: http://keycloak:8080/auth/realms/${KEYCLOAK_REALM:-datahub}/protocol/openid-connect/token
+      OAUTH2_PROXY_OIDC_JWKS_URL: http://keycloak:8080/auth/realms/${KEYCLOAK_REALM:-datahub}/protocol/openid-connect/certs
+      OAUTH2_PROXY_VALIDATE_URL: http://keycloak:8080/auth/realms/${KEYCLOAK_REALM:-datahub}/protocol/openid-connect/userinfo
       OAUTH2_PROXY_REDIRECT_URL: ${DATAHUB_PUBLIC_URL:?}/oauth2/callback
       OAUTH2_PROXY_COOKIE_SECRET: ${OAUTH2_PROXY_COOKIE_SECRET:?}
       OAUTH2_PROXY_COOKIE_SECURE: ${COOKIE_SECURE:-false}
@@ -295,9 +304,6 @@ services:
       OAUTH2_PROXY_WHITELIST_DOMAINS: ${DATAHUB_HOST:?}
       OAUTH2_PROXY_SCOPE: openid profile email
     depends_on:
-      # OIDC discovery goes through the public URL, i.e. through Caddy.
-      caddy:
-        condition: service_started
       keycloak:
         condition: service_healthy
 
@@ -345,8 +351,9 @@ services:
       GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET: ${GRAFANA_OIDC_CLIENT_SECRET:?}
       GF_AUTH_GENERIC_OAUTH_SCOPES: openid profile email
       GF_AUTH_GENERIC_OAUTH_AUTH_URL: ${DATAHUB_PUBLIC_URL:?}/auth/realms/${KEYCLOAK_REALM:-datahub}/protocol/openid-connect/auth
-      GF_AUTH_GENERIC_OAUTH_TOKEN_URL: ${DATAHUB_PUBLIC_URL:?}/auth/realms/${KEYCLOAK_REALM:-datahub}/protocol/openid-connect/token
-      GF_AUTH_GENERIC_OAUTH_API_URL: ${DATAHUB_PUBLIC_URL:?}/auth/realms/${KEYCLOAK_REALM:-datahub}/protocol/openid-connect/userinfo
+      # Token and userinfo are server-side calls: internal URL (no TLS trust needed in production).
+      GF_AUTH_GENERIC_OAUTH_TOKEN_URL: http://keycloak:8080/auth/realms/${KEYCLOAK_REALM:-datahub}/protocol/openid-connect/token
+      GF_AUTH_GENERIC_OAUTH_API_URL: http://keycloak:8080/auth/realms/${KEYCLOAK_REALM:-datahub}/protocol/openid-connect/userinfo
       GF_AUTH_GENERIC_OAUTH_USE_PKCE: "true"
       GF_AUTH_GENERIC_OAUTH_ALLOW_SIGN_UP: "true"
       GF_AUTH_GENERIC_OAUTH_LOGIN_ATTRIBUTE_PATH: preferred_username

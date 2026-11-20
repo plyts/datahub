@@ -7,6 +7,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+import yaml
+
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "services" / "datahub-ui"))
 from datahub_ui.rbac import Role  # noqa: E402
@@ -95,3 +97,41 @@ def test_caddy_routes_streamlit_auth_before_keycloak():
     assert "handle /auth/logout" in caddyfile
     dagster_block = caddyfile[caddyfile.index("handle /dagster*"):caddyfile.index("redir /dbt-docs")]
     assert "import protected" in dagster_block
+
+
+# --- HTTPS in production: server-to-server OIDC calls never go through the public TLS endpoint.
+# With DATAHUB_PUBLIC_URL=https://... and Caddy's internal CA, containers do not trust the
+# certificate; browsers use the public URL, back-channel calls use http://keycloak:8080.
+KEYCLOAK_INTERNAL = "http://keycloak:8080/auth/realms/${KEYCLOAK_REALM:-datahub}/protocol/openid-connect"
+
+
+def _compose_services():
+    return yaml.safe_load((ROOT / "docker-compose.yml").read_text())["services"]
+
+
+def test_keycloak_resolves_backchannel_urls_dynamically():
+    env = _compose_services()["keycloak"]["environment"]
+    assert env["KC_HOSTNAME"] == "${DATAHUB_PUBLIC_URL:?}/auth"   # issuer and browser URLs stay public
+    assert env["KC_HOSTNAME_BACKCHANNEL_DYNAMIC"] == "true"
+
+
+def test_oauth2_proxy_uses_the_public_login_and_internal_backchannel():
+    env = _compose_services()["oauth2-proxy"]["environment"]
+    assert env["OAUTH2_PROXY_SKIP_OIDC_DISCOVERY"] == "true"
+    assert env["OAUTH2_PROXY_OIDC_ISSUER_URL"].startswith("${DATAHUB_PUBLIC_URL:?}/")
+    assert env["OAUTH2_PROXY_LOGIN_URL"].startswith("${DATAHUB_PUBLIC_URL:?}/")
+    for key, suffix in [("REDEEM_URL", "/token"), ("OIDC_JWKS_URL", "/certs"), ("VALIDATE_URL", "/userinfo")]:
+        assert env[f"OAUTH2_PROXY_{key}"] == KEYCLOAK_INTERNAL + suffix
+
+
+def test_grafana_redeems_tokens_on_the_internal_url():
+    env = _compose_services()["grafana"]["environment"]
+    assert env["GF_AUTH_GENERIC_OAUTH_AUTH_URL"].startswith("${DATAHUB_PUBLIC_URL:?}/")
+    assert env["GF_AUTH_GENERIC_OAUTH_TOKEN_URL"] == KEYCLOAK_INTERNAL + "/token"
+    assert env["GF_AUTH_GENERIC_OAUTH_API_URL"] == KEYCLOAK_INTERNAL + "/userinfo"
+
+
+def test_streamlit_discovers_oidc_on_the_internal_url():
+    entrypoint = (ROOT / "services/datahub-ui/entrypoint.sh").read_text()
+    assert 'server_metadata_url = "${KEYCLOAK_INTERNAL_URL:-${DATAHUB_PUBLIC_URL}/auth}/realms/' in entrypoint
+    assert _compose_services()["datahub-ui"]["environment"]["KEYCLOAK_INTERNAL_URL"] == "http://keycloak:8080/auth"

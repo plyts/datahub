@@ -16,7 +16,8 @@ cookie_secret = "${STREAMLIT_COOKIE_SECRET}"
 [auth.keycloak]
 client_id = "${OIDC_CLIENT_ID:-datahub-ui}"
 client_secret = "${OIDC_CLIENT_SECRET}"
-server_metadata_url = "${DATAHUB_PUBLIC_URL}/auth/realms/${KEYCLOAK_REALM:-datahub}/.well-known/openid-configuration"
+# Discovery on the internal URL: Keycloak returns public browser endpoints and internal back-channel ones.
+server_metadata_url = "${KEYCLOAK_INTERNAL_URL:-${DATAHUB_PUBLIC_URL}/auth}/realms/${KEYCLOAK_REALM:-datahub}/.well-known/openid-configuration"
 client_kwargs = { scope = "openid profile email", prompt = "login" }
 TOML
 fi
