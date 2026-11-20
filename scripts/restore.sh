@@ -12,13 +12,25 @@ for db in dagster keycloak datahub grafana; do
   "${COMPOSE[@]}" exec -T postgres pg_restore -U postgres --clean --if-exists -d "$db" < "${SRC}/${db}.dump"
 done
 "${COMPOSE[@]}" run --rm --no-deps -T dagster-code bash -c '
-  tar -C /data -xzf - &&
-  python -c "
-import duckdb, os, shutil
-path = os.environ[\"DUCKDB_PATH\"]
-if os.path.exists(path): os.remove(path)
-with duckdb.connect(path) as conn: conn.execute(\"IMPORT DATABASE '"'"'/data/duckdb/_backup_export'"'"'\")
-"' < "${SRC}/data.tar.gz"
+  tar -C /data -xzf - && python - <<"PY"
+import os, shutil, duckdb
+path = os.environ["DUCKDB_PATH"]
+copy = os.path.join("/data/duckdb/_backup", os.path.basename(path))
+for suffix in ("", ".wal"):
+    if os.path.exists(path + suffix):
+        os.remove(path + suffix)
+if os.path.exists(copy):                      # backups made by this version: the database file itself
+    for suffix in ("", ".wal"):
+        if os.path.exists(copy + suffix):
+            shutil.copy2(copy + suffix, path + suffix)
+else:                                         # older backups: Parquet export
+    with duckdb.connect(path) as conn:
+        conn.execute("IMPORT DATABASE '"'"'/data/duckdb/_backup_export'"'"'")
+with duckdb.connect(path, read_only=True) as conn:
+    tables = conn.execute("select count(*) from duckdb_tables() where not internal").fetchone()[0]
+    views = conn.execute("select count(*) from duckdb_views() where not internal").fetchone()[0]
+print(f"DuckDB restored: {tables} tables, {views} views")
+PY' < "${SRC}/data.tar.gz"
 if [[ -f "${SRC}/caddy-pki.tar.gz" ]]; then
   echo "Caddy internal CA"
   "${COMPOSE[@]}" run --rm --no-deps -T caddy tar -C /data -xzf - < "${SRC}/caddy-pki.tar.gz"

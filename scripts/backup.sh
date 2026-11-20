@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Backup: one pg_dump (custom format) per database + DuckDB + dbt artifacts + landing files.
+# Backup: one pg_dump (custom format) per database + DuckDB file + dbt artifacts + landing files + Caddy CA.
 #   scripts/backup.sh prod            -> backups/<timestamp>/
 # Keep BACKUP_RETENTION_DAYS (default 14) days of backups. Encrypt/offload them with your tooling (age, restic...).
 set -euo pipefail
@@ -14,18 +14,24 @@ for db in dagster keycloak datahub grafana; do
   "${COMPOSE[@]}" exec -T postgres pg_dump -U postgres -Fc "$db" > "${DEST}/${db}.dump"
 done
 "${COMPOSE[@]}" exec -T postgres pg_dumpall -U postgres --globals-only > "${DEST}/globals.sql"
-# DuckDB: a copy is only consistent when no pipeline writes; the "duckdb" pool serializes writers,
-# so the copy is taken through a read-only DuckDB EXPORT inside the code container.
-echo "DuckDB export"
+# DuckDB: byte copy of the database file under a read-only connection. The read-only connection holds
+# DuckDB's shared file lock, so no pipeline can write during the copy (writers need the exclusive lock).
+# (EXPORT DATABASE is not used: it writes views in alphabetical order, and IMPORT then fails on a view
+# that depends on a view of a later schema, e.g. marts -> staging.)
+echo "DuckDB copy"
 "${COMPOSE[@]}" exec -T dagster-code python - <<'PY'
-import os, duckdb, shutil
+import os, shutil, duckdb
 src = os.environ["DUCKDB_PATH"]
-out = "/data/duckdb/_backup_export"
+out = "/data/duckdb/_backup"
 shutil.rmtree(out, ignore_errors=True)
-with duckdb.connect(src, read_only=True) as conn:
-    conn.execute(f"EXPORT DATABASE '{out}' (FORMAT parquet)")
+shutil.rmtree("/data/duckdb/_backup_export", ignore_errors=True)
+os.makedirs(out)
+with duckdb.connect(src, read_only=True):
+    for suffix in ("", ".wal"):
+        if os.path.exists(src + suffix):
+            shutil.copy2(src + suffix, os.path.join(out, os.path.basename(src) + suffix))
 PY
-"${COMPOSE[@]}" exec -T dagster-code tar -C /data -czf - duckdb/_backup_export dbt_artifacts landing > "${DEST}/data.tar.gz"
+"${COMPOSE[@]}" exec -T dagster-code tar -C /data -czf - duckdb/_backup dbt_artifacts landing > "${DEST}/data.tar.gz"
 # Caddy's internal CA (HTTPS with .internal names): keeping it avoids re-installing a new root on every workstation.
 if "${COMPOSE[@]}" exec -T caddy test -d /data/caddy/pki; then
   "${COMPOSE[@]}" exec -T caddy tar -C /data -czf - caddy/pki > "${DEST}/caddy-pki.tar.gz"

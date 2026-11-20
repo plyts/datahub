@@ -46,7 +46,7 @@ Le flux recommandé est le suivant : merge request → CI verte → tag `vX.Y.Z`
 ## Sauvegardes
 
 ```bash
-make backup ENV=prod            # backups/<horodatage>/ : pg_dump par base + export DuckDB (Parquet) + artefacts dbt + fichiers d'atterrissage
+make backup ENV=prod            # backups/<horodatage>/ : pg_dump par base + copie du fichier DuckDB (sous verrou de lecture) + artefacts dbt + fichiers d'atterrissage + CA de Caddy
 make restore ENV=prod BACKUP=backups/20261119-030000
 ```
 
