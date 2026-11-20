@@ -105,12 +105,12 @@ Keycloak gère identités, rôles et groupes. Le Data Hub filtre ses pages et **
 |---|---|---|
 | Dagster + dbt | `make test-dagster` | 58 tests, dont de **vrais runs** du pipeline (ingestion → dbt → tests), l'idempotence, le backfill d'une plage en un run, les artefacts dbt docs, le sensor de fichiers et les **scénarios de panne** de la source simulée |
 | Interface | `make test-ui` | 97 tests : RBAC, auth OIDC, clients, lineage de colonnes sur le vrai SQL compilé, **chaque page rendue pour chaque rôle**, audit des actions, traces OpenTelemetry |
-| Configuration + déploiement | `make test-config` | 123 tests : Compose (ports, images épinglées, mémoire, variables, Docker Desktop, SELinux), Alertmanager, sauvegardes (restic, timer, métriques), OIDC interne, bootstrap SUSE (SLES 15/16, Leap 16), realm Keycloak ↔ RBAC, hygiène des secrets, routage Caddy, dashboards, **déployeur pull** (17 scénarios) |
-| Alertes | `promtool test rules` | Tests unitaires des règles Prometheus |
+| Configuration + déploiement | `make test-config` | 126 tests : Compose (ports, images épinglées, mémoire, variables, Docker Desktop, SELinux), Alertmanager, sauvegardes (restic, timer, métriques), OIDC interne, bootstrap SUSE (SLES 15/16, Leap 16), realm Keycloak ↔ RBAC, hygiène des secrets, routage Caddy, dashboards, **déployeur pull** (17 scénarios) |
+| Alertes | `promtool test rules` | Tests unitaires des règles Prometheus (pipelines, infrastructure, sauvegardes) ; `amtool check-config` sur la configuration Alertmanager générée |
 | Intégration | `make test-integration` | Dagster réel sur PostgreSQL : runs, ré-exécution, backfill, schedules/sensors, **pipeline créé depuis l'UI**, migrations et moindre privilège |
-| E2E | `make test-e2e` | Stack complète via Caddy : SSO Keycloak pour chaque rôle, RBAC de l'UI Dagster, pipeline exécuté à travers la plateforme |
+| E2E | `make test-e2e` | Stack complète via Caddy, **en HTTP et en HTTPS** (CA interne, mode production) : SSO Keycloak pour chaque rôle, RBAC de l'UI Dagster, pipeline exécuté à travers la plateforme, puis **sauvegarde → restauration → smoke tests** |
 
-La CI GitHub Actions exécute tout cela à chaque push, y compris la **stack Docker Compose complète** (build, healthchecks, SSO, RBAC, pipeline, cibles Prometheus, logs Loki, dashboards Grafana). Les dépendances Python sont verrouillées (`requirements.lock`), les images épinglées, et les dashboards générés depuis le code.
+La CI GitHub Actions exécute tout cela à chaque push, y compris la **stack Docker Compose complète**, deux fois (HTTP et HTTPS) : build, healthchecks, SSO, RBAC, pipeline, cibles Prometheus, Alertmanager actif, logs Loki, dashboards Grafana, répétition de reprise après sinistre. Les dépendances Python sont verrouillées (`requirements.lock`), les images épinglées, et les dashboards générés depuis le code.
 
 ## Documentation
 

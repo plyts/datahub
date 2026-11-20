@@ -134,12 +134,14 @@ services:
         condition: service_healthy
     healthcheck:
       # The Keycloak image has no curl: plain HTTP over bash /dev/tcp on the management port.
+      # Ready = HTTP 200. While the realm import runs, /health/ready answers 503 with a body that still
+      # contains "UP" for some sub-checks, so the status line is checked, not the body.
       test:
         - CMD-SHELL
         - >-
           exec 3<>/dev/tcp/127.0.0.1/9000 &&
           printf 'GET /auth/health/ready HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n' >&3 &&
-          grep -q '"UP"' <&3
+          read -r status <&3 && [[ "$$status" == *" 200 "* ]]
       interval: 15s
       timeout: 5s
       retries: 20

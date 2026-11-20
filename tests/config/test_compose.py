@@ -136,3 +136,11 @@ def test_docker_desktop_override_keeps_dev_debug_ports_on_localhost():
 def test_shell_scripts_keep_lf_line_endings_on_windows():
     attributes = (ROOT / ".gitattributes").read_text()
     assert "* text=auto eol=lf" in attributes
+
+
+def test_keycloak_is_ready_only_on_http_200():
+    """During the realm import /health/ready returns 503 with sub-checks "UP": never grep the body."""
+    command = SERVICES["keycloak"]["healthcheck"]["test"][1]
+    assert "/auth/health/ready" in command
+    assert '[[ "$$status" == *" 200 "* ]]' in command
+    assert "grep" not in command
