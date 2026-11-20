@@ -257,8 +257,11 @@ services:
       - "${DATAHUB_HTTPS_PORT:-443}:443"
     environment:
       DATAHUB_SITE_ADDRESS: ${DATAHUB_SITE_ADDRESS:-${DATAHUB_PUBLIC_URL}}
+      DATAHUB_TLS_MODE: ${DATAHUB_TLS_MODE:-auto}
     volumes:
       - ./services/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      # Company PKI certificate (DATAHUB_TLS_MODE=files): fullchain.pem + privkey.pem, never committed.
+      - ${DATAHUB_TLS_DIR:-./certs}:/etc/caddy/certs:ro
       - dbt_artifacts:/srv/dbt-docs:ro
       - caddy_data:/data
       - caddy_config:/config
@@ -433,7 +436,8 @@ services:
     logging: *logging
     mem_limit: 128m
     pid: host
-    command: ["--path.rootfs=/host"]
+    # Textfile collector: backup freshness written by scripts/backup-job.sh (alerts BackupFailed / BackupTooOld).
+    command: ["--path.rootfs=/host", "--collector.textfile.directory=/host/var/lib/datahub-backup/textfile"]
     security_opt: ["label=disable"]   # host filesystem stats on SELinux hosts
     volumes:
       - /:/host:ro,rslave

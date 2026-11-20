@@ -77,3 +77,18 @@ groups:
         labels: {severity: critical}
         annotations:
           summary: "PostgreSQL injoignable (métadonnées Dagster, Keycloak, Data Hub)"
+
+  # Written by scripts/backup-job.sh (node-exporter textfile collector).
+  - name: datahub-backups
+    rules:
+      - alert: BackupFailed
+        expr: datahub_backup_last_status == 0
+        labels: {severity: critical}
+        annotations:
+          summary: "La dernière sauvegarde {{ $labels.kind }} ({{ $labels.env }}) a échoué"
+      - alert: BackupTooOld
+        expr: time() - datahub_backup_last_success_timestamp_seconds > 26 * 3600
+        for: 10m
+        labels: {severity: warning}
+        annotations:
+          summary: "Aucune sauvegarde {{ $labels.kind }} réussie depuis plus de 26 h ({{ $labels.env }})"

@@ -135,3 +135,20 @@ def test_streamlit_discovers_oidc_on_the_internal_url():
     entrypoint = (ROOT / "services/datahub-ui/entrypoint.sh").read_text()
     assert 'server_metadata_url = "${KEYCLOAK_INTERNAL_URL:-${DATAHUB_PUBLIC_URL}/auth}/realms/' in entrypoint
     assert _compose_services()["datahub-ui"]["environment"]["KEYCLOAK_INTERNAL_URL"] == "http://keycloak:8080/auth"
+
+
+def test_tls_mode_selects_automatic_or_company_certificates():
+    caddyfile = (ROOT / "services/caddy/Caddyfile").read_text()
+    assert "import tls_{$DATAHUB_TLS_MODE:auto}" in caddyfile
+    assert "(tls_auto) {" in caddyfile
+    assert "tls /etc/caddy/certs/fullchain.pem /etc/caddy/certs/privkey.pem" in caddyfile
+    caddy = _compose_services()["caddy"]
+    assert "${DATAHUB_TLS_DIR:-./certs}:/etc/caddy/certs:ro" in caddy["volumes"]
+    assert caddy["environment"]["DATAHUB_TLS_MODE"] == "${DATAHUB_TLS_MODE:-auto}"
+
+
+def test_private_keys_are_never_committed():
+    ignored = subprocess.run(["git", "check-ignore", "certs/privkey.pem", "certs/fullchain.pem"], cwd=ROOT,
+                             capture_output=True, text=True, check=False).stdout.split()
+    assert ignored == ["certs/privkey.pem", "certs/fullchain.pem"]
+    assert subprocess.run(["git", "check-ignore", "-q", "certs/.gitkeep"], cwd=ROOT, check=False).returncode == 1

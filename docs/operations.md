@@ -50,13 +50,17 @@ make backup ENV=prod            # backups/<horodatage>/ : pg_dump par base + exp
 make restore ENV=prod BACKUP=backups/20261119-030000
 ```
 
-À planifier chaque nuit (cron de la VM, 02:30, avant le pipeline de 05:30) :
+Planification (02:30, avant le pipeline de 05:30, rattrapée au démarrage si le serveur était éteint) :
 
-```cron
-30 2 * * * cd /opt/datahub && make backup ENV=prod >> /var/log/datahub-backup.log 2>&1
+```bash
+sudo ./scripts/install-backup.sh prod          # timer systemd datahub-backup@prod
+sudo systemctl start datahub-backup@prod.service   # premier essai immédiat
+journalctl -u datahub-backup@prod -n 50
 ```
 
-Rétention locale : 14 jours (`BACKUP_RETENTION_DAYS`). Copiez les sauvegardes hors de la VM, chiffrées (restic, borg ou `age`). Testez une restauration au moins une fois par trimestre.
+`scripts/backup-job.sh` enchaîne la sauvegarde locale (rétention `BACKUP_RETENTION_DAYS`, 14 jours), la copie hors site chiffrée avec [restic](https://restic.net) si `RESTIC_REPOSITORY` est renseigné dans `/etc/datahub/backup-prod.env` (dernière sauvegarde + `.env`, rétention 7 jours / 4 semaines / 12 mois, `restic check`), puis écrit des métriques lues par node-exporter. Prometheus alerte si une sauvegarde échoue (`BackupFailed`) ou date de plus de 26 h (`BackupTooOld`).
+
+Copie hors site, une seule fois : `sudo zypper install restic`, renseigner le dépôt, puis `set -a; source <(sudo cat /etc/datahub/backup-prod.env); set +a; restic init`. Gardez une copie de `/etc/datahub/restic-prod.password` hors du serveur : sans lui, les copies sont illisibles. Testez une restauration au moins une fois par trimestre.
 
 ## Supervision et alertes
 

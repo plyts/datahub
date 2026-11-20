@@ -26,6 +26,10 @@ with duckdb.connect(src, read_only=True) as conn:
     conn.execute(f"EXPORT DATABASE '{out}' (FORMAT parquet)")
 PY
 "${COMPOSE[@]}" exec -T dagster-code tar -C /data -czf - duckdb/_backup_export dbt_artifacts landing > "${DEST}/data.tar.gz"
+# Caddy's internal CA (HTTPS with .internal names): keeping it avoids re-installing a new root on every workstation.
+if "${COMPOSE[@]}" exec -T caddy test -d /data/caddy/pki; then
+  "${COMPOSE[@]}" exec -T caddy tar -C /data -czf - caddy/pki > "${DEST}/caddy-pki.tar.gz"
+fi
 git rev-parse HEAD > "${DEST}/git_commit" 2>/dev/null || true
 cp "envs/${ENV}.env" "${DEST}/"
 find backups -mindepth 1 -maxdepth 1 -type d -mtime "+${BACKUP_RETENTION_DAYS:-14}" -exec rm -rf {} +

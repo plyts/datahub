@@ -1,0 +1,11 @@
+# Every night at 02:30 (before the 05:30 pipeline); a missed run (server off) is caught up at boot.
+[Unit]
+Description=Data Hub nightly backup (%i)
+
+[Timer]
+OnCalendar=*-*-* 02:30:00
+RandomizedDelaySec=10min
+Persistent=true
+
+[Install]
+WantedBy=timers.target

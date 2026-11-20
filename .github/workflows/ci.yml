@@ -97,8 +97,18 @@ jobs:
         run: docker run --rm -v "$PWD/services/loki:/l" grafana/loki:3.7.10 -config.file=/l/loki-config.yml -config.expand-env=true -verify-config
       - name: Alloy config (format = syntax check)
         run: docker run --rm -v "$PWD/services/alloy:/a" grafana/alloy:v1.22.0 fmt /a/config.alloy > /dev/null
-      - name: Caddyfile
-        run: docker run --rm -v "$PWD/services/caddy:/c" caddy:2.11.9 caddy validate --config /c/Caddyfile --adapter caddyfile
+      - name: Caddyfile (HTTP, HTTPS automatic, HTTPS with a company certificate)
+        run: |
+          mkdir -p /tmp/certs && openssl req -x509 -newkey rsa:2048 -nodes -days 2 -subj "/CN=datahub.internal" \
+            -addext "subjectAltName=DNS:datahub.internal" -keyout /tmp/certs/privkey.pem -out /tmp/certs/fullchain.pem
+          chmod 644 /tmp/certs/*.pem
+          validate() {
+            docker run --rm -e DATAHUB_SITE_ADDRESS="$1" -e DATAHUB_TLS_MODE="$2" -v "$PWD/services/caddy:/c" \
+              -v /tmp/certs:/etc/caddy/certs:ro caddy:2.11.9 caddy validate --config /c/Caddyfile --adapter caddyfile
+          }
+          validate http://datahub.local auto
+          validate https://datahub.internal auto
+          validate https://datahub.internal files
 
   integration:
     name: Integration (live Dagster on PostgreSQL)
@@ -229,6 +239,16 @@ jobs:
           set -a && source envs/${STACK_ENV}.env && source .env && set +a
           tls=(); [ "$STACK_ENV" = tls ] && tls=(--cacert /tmp/caddy-root.crt)
           curl -sf "${tls[@]}" -u "admin:${GRAFANA_ADMIN_PASSWORD}" "${DATAHUB_PUBLIC_URL}/grafana/api/search?tag=datahub" | python -c "import sys,json; d=json.load(sys.stdin); print([x['title'] for x in d]); assert len(d) == 3"
+      - name: Backup, restore, smoke tests again (disaster-recovery rehearsal)
+        run: |
+          ./scripts/backup.sh "$STACK_ENV"
+          latest="$(ls -d backups/20* | sort | tail -n 1)"
+          ls -l "$latest"
+          for f in dagster keycloak datahub grafana; do test -s "$latest/$f.dump"; done
+          test -s "$latest/data.tar.gz" && test -s "$latest/globals.sql"
+          if [ "$STACK_ENV" = tls ]; then test -s "$latest/caddy-pki.tar.gz"; fi
+          echo YES | ./scripts/restore.sh "$STACK_ENV" "$latest"
+          ./scripts/smoke-test.sh "$STACK_ENV"
       - name: Service status and logs
         if: always()
         run: |

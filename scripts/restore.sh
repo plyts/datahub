@@ -19,6 +19,11 @@ path = os.environ[\"DUCKDB_PATH\"]
 if os.path.exists(path): os.remove(path)
 with duckdb.connect(path) as conn: conn.execute(\"IMPORT DATABASE '"'"'/data/duckdb/_backup_export'"'"'\")
 "' < "${SRC}/data.tar.gz"
+if [[ -f "${SRC}/caddy-pki.tar.gz" ]]; then
+  echo "Caddy internal CA"
+  "${COMPOSE[@]}" run --rm --no-deps -T caddy tar -C /data -xzf - < "${SRC}/caddy-pki.tar.gz"
+  "${COMPOSE[@]}" restart caddy     # reload the restored CA (a fresh server generated its own at first start)
+fi
 "${COMPOSE[@]}" up -d
 ./scripts/wait-healthy.sh "$ENV"
 echo "Restore complete."

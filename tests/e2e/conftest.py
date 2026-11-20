@@ -32,6 +32,8 @@ FORM_RE = re.compile(r'<form[^>]*id="kc-form-login"[^>]*action="([^"]+)"', re.S)
 def new_session() -> requests.Session:
     session = requests.Session()
     session.trust_env = False  # never send local traffic through a corporate proxy
+    # HTTPS with an internal CA (production mode): trust it explicitly, trust_env being off.
+    session.verify = os.environ.get("REQUESTS_CA_BUNDLE", True)
     return session
 
 
@@ -49,7 +51,7 @@ def wait_for(url: str, timeout: int = 300, ok=(200,)) -> None:
     last = None
     while time.time() < deadline:
         try:
-            last = requests.get(url, timeout=10, proxies={"http": None, "https": None}).status_code
+            last = new_session().get(url, timeout=10).status_code
             if last in ok:
                 return
         except requests.RequestException as exc:

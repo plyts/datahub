@@ -62,3 +62,27 @@ tests:
       - eval_time: 25h
         alertname: DailyPipelineLate
         exp_alerts: []
+
+  # Backups: a failed off-site copy alerts at once; a local backup older than 26 h alerts after 10 min.
+  - interval: 1m
+    input_series:
+      - series: 'datahub_backup_last_status{env="prod",kind="offsite"}'
+        values: '1 0 0'
+      - series: 'datahub_backup_last_success_timestamp_seconds{env="prod",kind="local"}'
+        values: '0x1700'
+    alert_rule_test:
+      - eval_time: 1m
+        alertname: BackupFailed
+        exp_alerts:
+          - exp_labels: {severity: critical, env: prod, kind: offsite}
+            exp_annotations:
+              summary: "La dernière sauvegarde offsite (prod) a échoué"
+      - eval_time: 25h
+        alertname: BackupTooOld
+        exp_alerts: []
+      - eval_time: 1625m
+        alertname: BackupTooOld
+        exp_alerts:
+          - exp_labels: {severity: warning, env: prod, kind: local}
+            exp_annotations:
+              summary: "Aucune sauvegarde local réussie depuis plus de 26 h (prod)"

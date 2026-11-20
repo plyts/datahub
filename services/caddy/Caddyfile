@@ -25,6 +25,16 @@
 	}
 }
 
+# TLS of an https:// site address, chosen by DATAHUB_TLS_MODE:
+#   auto  (default) Let's Encrypt for a public name, Caddy's internal CA for .local / .internal names
+#   files certificate of the company PKI: certs/fullchain.pem + certs/privkey.pem (DATAHUB_TLS_DIR)
+(tls_auto) {
+}
+
+(tls_files) {
+	tls /etc/caddy/certs/fullchain.pem /etc/caddy/certs/privkey.pem
+}
+
 (protected) {
 	forward_auth {$OAUTH2_PROXY_UPSTREAM:oauth2-proxy:4180} {
 		uri /oauth2/auth
@@ -38,6 +48,7 @@
 }
 
 {$DATAHUB_SITE_ADDRESS:http://datahub.local} {
+	import tls_{$DATAHUB_TLS_MODE:auto}
 	import security_headers
 	encode zstd gzip
 

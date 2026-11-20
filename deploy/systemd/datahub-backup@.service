@@ -1,0 +1,20 @@
+# Data Hub nightly backup — one instance per environment: datahub-backup@prod.service
+# Installed by scripts/install-backup.sh (which sets User= and /etc/datahub/backup-<env>.env).
+[Unit]
+Description=Data Hub nightly backup (%i)
+Documentation=https://github.com/plyts/datahub/blob/main/docs/operations.md
+After=network-online.target docker.service
+Wants=network-online.target
+Requires=docker.service
+
+[Service]
+Type=oneshot
+User=__BACKUP_USER__
+Group=docker
+WorkingDirectory=/opt/datahub
+EnvironmentFile=-/opt/datahub/.env
+EnvironmentFile=/etc/datahub/backup-%i.env
+ExecStart=/opt/datahub/scripts/backup-job.sh %i
+TimeoutStartSec=4h
+Nice=10
+IOSchedulingClass=idle

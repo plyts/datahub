@@ -34,3 +34,6 @@ backups/
 .idea/
 .vscode/
 envs/tls.env
+# TLS certificates and keys of the company PKI (DATAHUB_TLS_MODE=files)
+certs/*
+!certs/.gitkeep
